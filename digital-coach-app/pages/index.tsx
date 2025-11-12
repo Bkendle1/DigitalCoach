@@ -4,37 +4,19 @@ import useAuthContext from "@App/lib/auth/AuthContext";
 import AuthGuard from "@App/lib/auth/AuthGuard";
 import styles from "@App/styles/Home.module.scss";
 import Card from "@App/components/atoms/Card";
-import IssuesChart from "@App/components/molecules/IssuesChart";
 import ScoreChart from "@App/components/molecules/ScoreChart";
 import PracticeCalendar from "@App/components/molecules/PracticeCalendar";
-import useGetFeaturedQuestionSets from "@App/lib/questionSets/useGetFeaturedQuestionSets";
 import Link from "next/link";
-import useGetUserAverageScore from "@App/lib/interviewQuestion/useGetUserAverageScore";
-import useFetchUserInterviews from "@App/lib/interview/useFetchUserInterviews";
 import useGetAnswersByUserId from "@App/lib/answer/useGetAnswerByUserId";
-import seed from "@App/pages/api/seed";
 
 const Home: NextPage = () => {
   const { currentUser } = useAuthContext();
-
-  const {
-    data: questionSets,
-    isLoading,
-    isFetching,
-  } = useGetFeaturedQuestionSets();
-  console.log(questionSets, isLoading, isFetching);
 
   const {
     data: answerData,
     isLoading: isAnswerLoading,
     isFetching: isAnswerFetching,
   } = useGetAnswersByUserId(currentUser?.id);
-
-  const {
-    data: averageScore,
-    isLoading: isLoadingAverageScore,
-    isFetching: isFetchingAverageScore,
-  } = useGetUserAverageScore(currentUser?.id);
 
   const [tip, setTips] = useState("");
 
@@ -61,37 +43,13 @@ const Home: NextPage = () => {
     setTips(tips[randInd]);
   }, []);
 
-  if (isLoading || isFetching) return <div>Loading...</div>;
-
-  const mockIssuesData = [
-    {
-      skill: "No Eye Contact",
-      value: 0.9,
-    },
-    {
-      skill: "Filler Word",
-      value: 0.75,
-    },
-    {
-      skill: "Long Pause",
-      value: 0.65,
-    },
-    {
-      skill: "Voice Not Clear",
-      value: 0.6,
-    },
-    {
-      skill: "Off Topic",
-      value: 0.4,
-    },
-  ];
   const events =
-    answerData?.docs.map((answer) => {
-      return {
-        start: answer.data().createdAt.toDate().toISOString(),
-        end: answer.data().createdAt.toDate().toISOString(),
-      };
-    }) || [];
+  answerData?.docs.map((answer) => {
+    return {
+      start: answer.data().createdAt.toDate().toISOString(),
+      end: answer.data().createdAt.toDate().toISOString(),
+    };
+  }) || [];
 
   return (
     <AuthGuard>
@@ -99,43 +57,38 @@ const Home: NextPage = () => {
         <h1>Welcome back, {currentUser?.data()?.name}!</h1>
         <h2>Dashboard</h2>
         <div className={styles.cards}>
-          <Card title={"Quick Start Interviews"} multiline>
-            <ul>
-              {questionSets?.docs.map((questionSet) => (
-                <li key={questionSet.id}>
-                  <Link href="/">{questionSet.data().title}</Link>
-                  <span>→</span>
-                </li>
-              ))}
-            </ul>
+          <Card title={"Get Started with Natural Conversation"} multiline>
+            <p>Start a natural conversation with the avatar to practice your skills.</p>
+            <Link href="/naturalconversation">
+              <button style={{ marginTop: "10px", padding: "10px 20px", cursor: "pointer" }}>
+                Start Natural Conversation
+              </button>
+            </Link>
           </Card>
-          <Card title={"Your Random Interview Tip!"} multiline>
+          <Card title={"Your Random Tip!"} multiline>
             <div className={styles.tipoftheday}>
               <p>{tip}</p>
             </div>
-          </Card>
-          <Card title={"Recent Recordings"} multiline>
-            <h4>You have not recorded an interview yet!</h4>
           </Card>
           <Card multiline>
             <div className={styles.calendarWrapper}>
               <PracticeCalendar events={events} />
             </div>
           </Card>
-          <Card title={"Most Common Flags"} multiline>
-            <div className={styles.issuesChartWrapper}>
-              <IssuesChart chartData={mockIssuesData} />
-            </div>
-            <h2>Average Score: {Math.round(averageScore * 100)}%</h2>
+          <Card title={"Quick Links"} multiline>
+            <ul style={{ listStyle: "none", padding: 0 }}>
+              <li style={{ marginBottom: "10px" }}>
+                <Link href="/naturalconversation">Natural Conversation</Link>
+              </li>
+              <li style={{ marginBottom: "10px" }}>
+                <Link href="/progress">Progress Tracking</Link>
+              </li>
+              <li style={{ marginBottom: "10px" }}>
+                <Link href="/profile">Profile</Link>
+              </li>
+            </ul>
           </Card>
         </div>
-
-        {/*
-        <span>id: {currentUser?.id}</span>
-        <span>email: {currentUser?.email}</span>
-        <span>name: {currentUser?.name}</span>
-        <span>concentration: {currentUser?.concentration}</span>
-        <span>proficiency: {currentUser?.proficiency}</span>*/}
       </div>
     </AuthGuard>
   );

@@ -25,78 +25,28 @@ function ProgressPage() {
       >
         <Card
           className={styles.ProgressPage_bodyCard}
-          title="Followup Interview"
+          title="Get Started with Natural Conversation"
         >
-          <Link href="/start" className={styles.linksText}>
-            Start Followup Interview
+          <p>Start practicing your conversation skills with the avatar.</p>
+          <Link href="/naturalconversation" className={styles.linksText}>
+            Start Natural Conversation
           </Link>
-          <p></p>
         </Card>
-        <Card className={styles.ProgressPage_bodyCard} title="Big Five Score">
-          Current Score: 75<br></br>
-          Target Score: 100<br></br>
+        <Card className={styles.ProgressPage_bodyCard} title="Progress Tracking">
+          <p>Track your progress here.</p>
         </Card>
-        <Card className={styles.ProgressPage_bodyCard} title="How to Improve">
-          1) Make more eye contact<br></br>
-          2) Say "Um" less<br></br>
-        </Card>
-        <Card
-          className={styles.ProgressPage_bodyGraph}
-          title="Graph of User's Score Progress"
-        >
-          <img
-            src="sampleLineGraph.png"
-            alt="Sample Graph"
-            width="300"
-            height="200"
-          ></img>
+        <Card className={styles.ProgressPage_bodyCard} title="Tips">
+          <p>Keep practicing to improve your communication skills!</p>
         </Card>
       </Grid>
     </div>
   );
 }
 
-function ProgressInit() {
-  const { currentUser } = useAuthContext();
-  return (
-    <div className={styles.ProgressPage}>
-      <h1>Your Progress</h1>
-
-      <div className={styles.ProgressPage_avatarWrapper}>
-        {currentUser?.data()?.avatarUrl && (
-          <Avatar size={125} src={currentUser?.data()!.avatarUrl} />
-        )}
-      </div>
-
-      <div className={styles.ProgressPage_body}>
-        <div className={styles.ProgressPage_bodyLeft}>
-          <Card title="Initial Interview">
-            <Link href="/video" className={styles.linksText}>
-              Start an Interview
-            </Link>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function Progress() {
-  //Store user's id here
-  const { currentUser } = useAuthContext();
-  let hasInterviewed = currentUser?.get("hasCompletedInterview");
-  //Add flag to user that says if they've completed an interview or not
-  if (hasInterviewed) {
-    return (
-      <AuthGuard>
-        <ProgressPage />
-      </AuthGuard>
-    );
-  } else {
-    return (
-      <AuthGuard>
-        <ProgressInit />
-      </AuthGuard>
-    );
-  }
+  return (
+    <AuthGuard>
+      <ProgressPage />
+    </AuthGuard>
+  );
 }
