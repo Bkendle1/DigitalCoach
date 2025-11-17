@@ -6,7 +6,6 @@ from routes import (
     big_five,
     star_feedback,
     audio_analysis,
-    facial_analysis,
 )
 
 
@@ -47,9 +46,3 @@ app.include_router(create_answer.router)
 app.include_router(big_five.router)
 app.include_router(star_feedback.router)
 app.include_router(audio_analysis.router)
-app.include_router(facial_analysis.router)
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
