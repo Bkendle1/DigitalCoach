@@ -13,8 +13,6 @@ api_description = """
 This API provides a simple interface to the various ML models used in Digital Coach. 
 ## Video Transcript 
 AssemblyAI provides the simple transcription service. 
-## Facial Recognition 
-DeepFace proivides emotional facial analysis for the submitted videos. 
 ## Feedback
 Provided feedback is Big Five Scores, Star Scores, competency scores, and statistical feedback.  
 """
