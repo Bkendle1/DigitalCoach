@@ -3,9 +3,9 @@ services:
   frontend:
     build:
       context: ./digital-coach-app # Path to frontend Dockerfile
-      target: deps # For develoopment, build up to the 'deps' stage
+      target: deps # For development, build up to the 'deps' stage
       args:
-        # Pass the environment variables as arguments (make sure the names match from .env, Dockerfile, and here)
+        # Pass the environment variables as arguments for build-time use (make sure the names match from .env, Dockerfile, and here)
         - NEXT_PUBLIC_FIREBASE_API_KEY
         - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
         - NEXT_PUBLIC_FIREBASE_PROJECT_ID
@@ -13,10 +13,9 @@ services:
         - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
         - NEXT_PUBLIC_FIREBASE_APP_ID
         - NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
-        - HEYGEN_API_KEY
     # Put secrets in the container environment as they're for runtime use
     environment:
-      - HEYGEN_API_KEY=${HEYGEN_API_KEY} # Pass HEYGEN_API_KEY to the container environment
+      - HEYGEN_API_KEY # Pass HEYGEN_API_KEY to the container environment
     volumes:
       # Mount the frontend code for live development
       - ./digital-coach-app:/app
