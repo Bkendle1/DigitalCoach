@@ -1,6 +1,6 @@
 from typing import Callable
 from rq.job import Job
-from rq.queue import Queue
+from rq.redis_queue import Queue
 from redisStore.myconnection import get_redis_con
 from utils.logger_config import get_logger
 

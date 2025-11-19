@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from rq.job import Job
 import json
 from utils.logger_config import get_logger
-from redisStore.queue import get_redis_con
+from redisStore.redis_queue import get_redis_con
 
 logger = get_logger(__name__)
 

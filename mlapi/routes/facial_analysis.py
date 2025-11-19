@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from schemas.jobs import JobId, JobResponse
 from schemas.create_answer import EmotionDetectionResult, FacialAnalysisJob
-from redisStore.queue import add_task_to_queue
+from redisStore.redis_queue import add_task_to_queue
 from tasks.detect_emotions import detect_emotions
 from rq.job import Job
 from redisStore.myconnection import get_redis_con

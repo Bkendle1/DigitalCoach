@@ -12,7 +12,7 @@ from schemas.create_answer import (
 
 # Redis
 from redisStore.myconnection import get_redis_con
-from redisStore.queue import add_task_to_queue
+from redisStore.redis_queue import add_task_to_queue
 
 # Functions
 from tasks.assemblyai_api import detect_audio_sentiment

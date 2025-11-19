@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from schemas.jobs import JobId, JobResponse, CreateAnswerJobRequest
 from schemas.create_answer import CreateAnswer
-from redisStore.queue import add_task_to_queue
+from redisStore.redis_queue import add_task_to_queue
 from tasks.create_answer_task import (
     create_answer,
     start_audio_analysis_job,
