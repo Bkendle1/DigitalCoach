@@ -52,7 +52,6 @@ ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=$NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the Next.js application for production
-# The docker compose file will override this command in development mode to run the dev server instead
 RUN yarn build
 
 # --- Stage 3: Production image ---

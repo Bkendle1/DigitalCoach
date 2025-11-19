@@ -4,21 +4,19 @@ services:
     build:
       context: ./digital-coach-app # Path to frontend Dockerfile
       target: deps # For development, build up to the 'deps' stage
-      args:
-        # Pass the environment variables as arguments for build-time use (make sure the names match from .env, Dockerfile, and here)
-        # Currently, these are null because the env file needs to be consolidated to the root folder first. However, this shouldn't be a problem for now we're using firebase emulators for local development.
-        - NEXT_PUBLIC_FIREBASE_API_KEY
-        - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-        - NEXT_PUBLIC_FIREBASE_PROJECT_ID
-        - NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-        - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-        - NEXT_PUBLIC_FIREBASE_APP_ID
-        - NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
-    # Put secrets in the container environment as they're for runtime use
+    # Pass the environment variables as arguments for runtime use (make sure the names match from .env, Dockerfile, and here)
+    # Currently, these are null because the env file needs to be consolidated to the root folder first. However, this shouldn't be a problem for now we're using firebase emulators for local development.
     # environment:
-    #   - HEYGEN_API_KEY # Pass HEYGEN_API_KEY to the container environment
+    #   - NEXT_PUBLIC_FIREBASE_API_KEY
+    #   - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    #   - NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    #   - NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    #   - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    #   - NEXT_PUBLIC_FIREBASE_APP_ID
+    #   - NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    #   - HEYGEN_API_KEY
     env_file:
-      - ./digital-coach-app/.env # load environment variables from .env file (this is specifically for HeyGen API key. TEMPORARY: use environment directive above after env files have been consolidated to the root folder)
+      - ./digital-coach-app/.env # load environment variables from .env file (TEMPORARY: use environment directive above after env files have been consolidated to the root folder)
     volumes:
       # Mount the frontend code for live development
       - ./digital-coach-app:/app
