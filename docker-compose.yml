@@ -22,6 +22,7 @@ services:
     volumes:
       # Mount the frontend code for live development
       - ./digital-coach-app:/app
+      - /app/node_modules # Preserve node_modules inside the container
     command: yarn dev # Start the Next.js development server
     ports:
       # Expose port 3000 for the frontend
