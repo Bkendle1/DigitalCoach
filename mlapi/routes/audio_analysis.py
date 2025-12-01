@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from schemas.jobs import JobId, JobResponse
-from schemas.create_answer import AudioSentimentResult, AudioAnalysisJob
+from schemas import JobId, JobResponse, AudioSentimentResult
 from redisStore.queue import add_task_to_queue
 from tasks.assemblyai_api import detect_audio_sentiment
 from rq.job import Job
