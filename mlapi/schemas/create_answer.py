@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 
+
 class Content(BaseModel):
     """
     Content to be processed by `create_answer`

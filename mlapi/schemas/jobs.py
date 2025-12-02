@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 from typing import Optional, Dict, Any, List
 from enum import Enum
 from schemas import AudioSentimentResult
@@ -38,8 +38,7 @@ class CreateAnswerJobRequest(BaseModel):
     """
     Request to create an answer job
     """
-
-    video_url: str
+    video_url: HttpUrl # URL of the video to analyze
 
 
 class JobsListResponse(BaseModel):
