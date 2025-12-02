@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from schemas.jobs import JobId, JobResponse, JobStatus
-from schemas.create_answer import AudioSentimentResult
+from schemas import JobId, JobResponse, JobStatus, AudioSentimentResult, AudioAnalysisRequest
 from redisStore.queue import add_task_to_queue
 from tasks.assemblyai_api import detect_audio_sentiment
 from rq.job import Job
@@ -11,39 +10,7 @@ from rq.exceptions import NoSuchJobError
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/audio_analysis", tags=["analysis"])
-
-
-class AudioAnalysisRequest(BaseModel):
-    """
-    Request to start an audio analysis job
-    Args: 
-        video_url: The URL of the video to analyze
-    Returns:
-        AudioAnalysisRequest: The request object
-    Raises:
-        ValueError: If the video_url is empty or not a valid URL
-    """
-
-    video_url: str = Field(...,description="URL to analyze")
-
-    @field_validator("video_url")
-    @classmethod
-    def validate_url(cls, url: str):
-        """
-        Validate the video URL to ensure not empty or invalid
-        Args:
-            url: The URL or file path to validate
-        Returns:
-            url: The trimmed URL or path
-        Raises:
-            ValueError: If the URL is empty 
-        """
-        url = url.strip()
-        if not url:
-            raise ValueError("video_url cannot be empty")
-        return url 
-        
+router = APIRouter(prefix="/api/audio_analysis", tags=["analysis"])       
     
 
 @router.post(

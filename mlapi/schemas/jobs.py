@@ -47,13 +47,3 @@ class JobsListResponse(BaseModel):
     """
 
     jobs: List[JobResponse] = Field(default_factory=list)
-
-class AudioAnalysisJob(BaseModel):
-    """
-    AssemblyAI API job details
-    """
-
-    video_url: str
-    job_id: str
-    status: JobStatus = JobStatus.PENDING
-    result: Optional[AudioSentimentResult] = None
