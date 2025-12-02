@@ -1,3 +1,6 @@
+# Handles orchestration of tasks for interview videos, e.g. starting analysis jobs. 
+# Can be called by route handlers.
+
 from tasks.assemblyai_api import detect_audio_sentiment
 from redisStore.queue import add_task_to_queue
 from tasks.create_answer_task import create_answer
@@ -20,3 +23,4 @@ def start_interview_analysis(video_url: str) -> str:
     job = add_task_to_queue(create_answer, video_url, audio_job.get_id())
 
     return job.get_id()
+

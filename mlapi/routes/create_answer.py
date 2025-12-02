@@ -1,11 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from schemas import JobId, JobResponse, CreateAnswerJobRequest, CreateAnswer
 from redisStore.queue import add_task_to_queue
-from services import orchestrator
-# from tasks.create_answer_task import (
-#     create_answer,
-#     start_audio_analysis_job,
-# )
+from services import orchestrator, jobs
 from rq.job import Job
 from redisStore.myconnection import get_redis_con
 from utils.logger_config import get_logger
@@ -13,6 +9,12 @@ from utils.logger_config import get_logger
 logger = get_logger(__name__) # create a logger instance to log messages 
 
 router = APIRouter(prefix="/api/create_answer", tags=["analysis"])
+
+def get_redis():
+    """
+    Returns a Redis connnection instance.
+    """
+    return get_redis_con()
 
 # POST /api/create_answer
 @router.post(
@@ -25,10 +27,12 @@ async def create_answer_job(request: CreateAnswerJobRequest):
     """
     Start a job to generate an answer for the given video URL.
 
-    This will:
-    1. Start an audio analysis job
-    1. Start an audio analysis job using AssemblyAI
-    3. Start a create_answer job that depends on the first two jobs
+    Starts interview analysis consisting of an audio analysis job followed by a create_answer job
+    
+    Args:
+        request (CreateAnswerJobRequest): The request body containing the video URL.
+    Returns:
+        JobId: The ID of the created job.
     """
 
     video_url = str(request.video_url) # convert video url into string
@@ -54,56 +58,35 @@ async def create_answer_job(request: CreateAnswerJobRequest):
     summary="Get the status of a create_answer job",
     description="Check the status of a create_answer job",
 )
-async def get_create_answer_job(job_id: str):
+async def get_answer_job(job_id: str, redis: Depends(get_redis)):
     """
     Get the status of a create_answer job with the given job ID.
 
-    Returns the job status and result if available.
+    Args:
+        job_id (str):  The ID of the job to check.
+        redis (Redis): The Redis connection instance, injected by FastAPI's Depends which can be replaced with a fake Redis object during testing.
+    Returns:
+        Returns the job status in the form of JobResponse schema.
     """
 
-    # Attempts to get the job object associated with the given job ID from Redis
     try:
-        job = Job.fetch(job_id, connection=get_redis_con())
+        
+        # Get the job status from Redis
+        job_status_data = jobs.get_job_status(job_id, redis)
+        
+        # Handle job not found
+        if not job_status_data:
+            logger.warning(f"Job {job_id} not found.")
+            raise HTTPException(status_code=404, detail=f"Job {job_id} not found.")
 
-        # Check job status and return appropriate response
-        if job.is_finished:
-            result = job.result
-            # If the result is an exception object, return the error with failed status
-            if isinstance(result, Exception):
-                return {
-                    "job_id": job_id,
-                    "status": "failed",
-                    "error": str(result),
-                }
-            # Otherwise, return successful result
-            return {
-                "job_id": job_id,
-                "status": "completed",
-                "result": result.dict() if hasattr(result, "dict") else result,
-            }
-        # If the job has failed then return the error information
-        elif job.is_failed:
-            return {
-                "job_id": job_id,
-                "status": "failed",
-                "error": str(job.exc_info),
-            }
-        # If the job is still being processed, return processing status
-        elif job.is_started:
-            return {
-                "job_id": job_id,
-                "status": "processing",
-            }
-        # If the job is queued or in any other state, return pending status
-        else:
-            return {
-                "job_id": job_id,
-                "status": "pending",
-            }
-    # Failed to fetch the job from Redis, likely because of invalid job ID
+        return job_status_data
+
+    except HTTPException: 
+        raise
+    # Catch all other exceptions
     except Exception as e:
-        logger.error(f"Error getting create_answer job {job_id}: {str(e)}")
-        raise HTTPException(status_code=404, detail=f"Job not found: {str(e)}")
+        logger.error(f"System error fetching job {job_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 # GET /api/create_answer/{job_id}/result
 @router.get(
