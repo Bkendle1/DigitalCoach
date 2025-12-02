@@ -1,9 +1,10 @@
 from rq.job import Job
 from rq.exceptions import NoSuchJobError
 from redis import Redis
-from typing import Dict, Any
 from schemas import JobResponse, JobStatus
-from fastapi import HTTPException
+from utils.logger_config import get_logger
+
+logger = get_logger(__name__) 
 
 def get_job_status(job_id: str, redis_conn: Redis) -> JobResponse:
     """
@@ -32,14 +33,17 @@ def get_job_status(job_id: str, redis_conn: Redis) -> JobResponse:
     # check job status
     # job failed, return failed status and error information
     if job.is_failed:
+        logger.error(f"Job {job_id} failed with error: {str(job.exc_info)}")
         response["status"] = JobStatus.FAILED,
         response["error"] = str(job.exc_info)
     # job finished, return complete status and result
     elif job.is_finished:
+        logger.info(f"Job {job_id} completed successfully.")
         response["status"] = JobStatus.COMPLETED,
         response["result"] = job.result,
     # job still processing, return processing status
     elif job.is_started:
+        logger.info(f"Job {job_id} is still processing.")
         response["status"] = JobStatus.PROCESSING
     
     return response

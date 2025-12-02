@@ -74,11 +74,11 @@ async def get_answer_job(job_id: str, redis: Redis = Depends(get_redis)):
         job_status_data = jobs.get_job_status(job_id, redis)
         
         # Handle job not found
-        if not job_status_data:
+        if job_status_data is None:
             logger.warning(f"Job {job_id} not found.")
             raise HTTPException(status_code=404, detail=f"Job {job_id} not found.")
 
-        return job_status_data
+        return CreateAnswerJobResponse(**job_status_data)
     # Catch HTTP exceptions and re-raise them
     except HTTPException: 
         raise
