@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 from typing import Optional, Dict, Any, List
 from enum import Enum
+from schemas.audio import AudioSentimentResult
 
 
 class JobStatus(str, Enum):
@@ -37,8 +38,7 @@ class CreateAnswerJobRequest(BaseModel):
     """
     Request to create an answer job
     """
-
-    video_url: str
+    video_url: HttpUrl # URL of the video to analyze
 
 
 class JobsListResponse(BaseModel):
@@ -47,3 +47,13 @@ class JobsListResponse(BaseModel):
     """
 
     jobs: List[JobResponse] = Field(default_factory=list)
+
+class AudioAnalysisJob(BaseModel):
+    """
+    AssemblyAI API job details
+    """
+
+    video_url: str
+    job_id: str
+    status: JobStatus = JobStatus.PENDING
+    result: Optional[AudioSentimentResult] = None
