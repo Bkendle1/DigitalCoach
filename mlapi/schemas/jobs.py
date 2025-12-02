@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Optional, Dict, Any, List
 from enum import Enum
-from schemas import AudioSentimentResult
+from schemas.audio import AudioSentimentResult
 
 
 class JobStatus(str, Enum):

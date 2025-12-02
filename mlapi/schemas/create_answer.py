@@ -1,7 +1,9 @@
 # Builds the final response schema
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from schemas import HighlightData, BigFiveScoreResult, OverallCompetencyFeedback, JobStatus
+from schemas.feedback import BigFiveScoreResult, OverallCompetencyFeedback
+from schemas.audio import HighlightData
+from schemas.jobs import JobStatus
 
 class TimelineStructure(BaseModel):
     """
@@ -35,3 +37,11 @@ class CreateAnswer(BaseModel):
 
     evaluation: CreateAnswerEvaluation
 
+class CreateAnswerJobResponse(BaseModel):
+    """
+    Response model for polling answer job status
+    """
+    job_id: str
+    status: JobStatus
+    result: Optional[CreateAnswer] = None
+    error: Optional[str] = None

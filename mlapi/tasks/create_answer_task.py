@@ -2,12 +2,11 @@ from rq.decorators import job
 from typing import List, Optional
 from schemas.create_answer import (
     CreateAnswer,
-    TextStructureResult,
+    # TextStructureResult,
     TimelineStructure,
     BigFiveScoreResult,
     CreateAnswerEvaluation,
     OverallCompetencyFeedback,
-    FacialStatistics,
 )
 
 # # Redis
