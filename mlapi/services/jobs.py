@@ -34,16 +34,29 @@ def get_job_status(job_id: str, redis_conn: Redis) -> JobResponse:
     # job failed, return failed status and error information
     if job.is_failed:
         logger.error(f"Job {job_id} failed with error: {str(job.exc_info)}")
-        response["status"] = JobStatus.FAILED,
-        response["error"] = str(job.exc_info)
+        response.status = JobStatus.FAILED
+        response.error = str(job.exc_info)
+        return response
     # job finished, return complete status and result
     elif job.is_finished:
+        # check if job finished with exception
+        if isinstance(job.result, Exception):
+            logger.error(f"Job {job_id} completed with an excewption: {str(job.result)}")
+            response.status = JobStatus.FAILED
+            response.error = str(job.result)
+            return response
+
         logger.info(f"Job {job_id} completed successfully.")
-        response["status"] = JobStatus.COMPLETED,
-        response["result"] = job.result,
+        response.status = JobStatus.COMPLETED
+        response.result = job.result
+        return response
+        
     # job still processing, return processing status
     elif job.is_started:
         logger.info(f"Job {job_id} is still processing.")
-        response["status"] = JobStatus.PROCESSING
+        response.status = JobStatus.PROCESSING
+        return response
     
+    # job is still pending in the queue
+    logger.info(f"Job {job_id} is still pending in the queue.")
     return response

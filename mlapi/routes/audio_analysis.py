@@ -1,18 +1,22 @@
-from fastapi import APIRouter, HTTPException
-from schemas import JobId, JobResponse, JobStatus, AudioSentimentResult, AudioAnalysisRequest
-from redisStore.queue import add_task_to_queue
-from tasks.assemblyai_api import detect_audio_sentiment
-from rq.job import Job
+from fastapi import APIRouter, HTTPException, Depends
+from schemas import JobId, AudioAnalysisRequest, AudioAnalysisResponse
 from redisStore.myconnection import get_redis_con
 from utils.logger_config import get_logger
-from pydantic import BaseModel, Field, field_validator 
-from rq.exceptions import NoSuchJobError
+from redis import Redis
+from services import jobs, orchestrator
+from pydantic import ValidationError
 
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/audio_analysis", tags=["analysis"])       
-    
 
+def get_redis():
+    """
+    Returns a Redis connnection instance.
+    """
+    return get_redis_con()
+
+# POST /api/audio_analysis
 @router.post(
     "/",
     response_model=JobId,
@@ -42,18 +46,17 @@ async def start_audio_analysis_job(request: AudioAnalysisRequest) -> JobId:
         #     video_url = "https://assembly.ai/wildfires.mp3"
         
         # The actual video URL to analyze
-        video_url = request.video_url
-    
+        video_url = str(request.video_url)
+        
         logger.info(f"Started audio analysis job for URL: {video_url}")
         
         # Queue the audio analysis job
-        job = add_task_to_queue(detect_audio_sentiment, video_url)
-        job_id = job.get_id()
+        job_id = orchestrator.start_audio_analysis(video_url)
         
         logger.info(f"Successfully started audio analysis job: {job_id}")
         return JobId(job_id=job_id)
-
-    except ValueError as e:
+    # Catch validation errors from Pydantic
+    except ValidationError as e:
         logger.error(f"Validation error starting audio analysis job: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -61,90 +64,41 @@ async def start_audio_analysis_job(request: AudioAnalysisRequest) -> JobId:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# GET /api/audio_analysis/{job_id}
 @router.get(
     "/{job_id}",
-    response_model=JobResponse,
+    response_model=AudioAnalysisResponse,
     summary="Get the status of an audio analysis job",
     description="Check the status of a previously started audio analysis job"
 )
-async def get_audio_analysis_job(job_id: str) -> JobResponse:
+async def get_audio_analysis_job(job_id: str, redis: Redis = Depends(get_redis)) -> AudioAnalysisResponse:
     """
     Get the status of an audio analysis job.
 
     Args:
-        job_id: The ID of the audio analysis job to get the status of
+        job_id (str): The ID of the audio analysis job to get the status of
     Returns:
-        JobResponse: The job status and result if available.
+        Response (AudioAnalysisResponse): The job status in the form of the AudioAnalysisResponse schema
     Raises:
         HTTPException: If the job cannot be found or an error occurs
     """
     try:
-        
-        if not job_id or job_id.strip():
-            raise HTTPException(status_code=400, detail="job_id cannot be empty")
-        
         job_id = job_id.strip()
-        job = Job.fetch(job_id, connection=get_redis_con())
+        # verify that job_id isn't whitespace
+        if not job_id:
+            raise HTTPException(status_code=400, detail="job_id cannot be whitespace")
 
-        # Check if the job is failed (error)
-        if job.is_failed:
-            logger.warning(f"Job {job_id} failed with exception: {str(job.exc_info)}")
-            return JobResponse(
-                job_id=job_id,
-                status=JobStatus.FAILED,
-                error=str(job.exc_info),
-            )
-
-        # Check if the job is finished (success)
-        if job.is_finished:
-            result = job.result
-
-            # Check if the result is an exception
-            if isinstance(result, Exception):
-                logger.warning(f"Job {job_id} was completed with an exception: {str(result)}")
-                return JobResponse(
-                    job_id=job_id,
-                    status=JobStatus.FAILED,
-                    error=str(result),
-                )
-
-            # Convert the result to a dictionary if it is a modern Pydantic model 
-            result_dict = None
-            if hasattr(result, "model_dump"): # Modern Pydantic models
-                result_dict = result.model_dump()
-            elif hasattr(result, "dict"): # Old Pydantic models
-                result_dict = result.dict()
-            elif isinstance(result, dict): # Dictionary
-                result_dict = result
-            else:
-                # If result is not a modern Pydantic model, old Pydantic model, or dictionary
-                logger.warning(f"Job {job_id} returned an unexpected result type: {type(result)}")
-                raise HTTPException(status_code=500, detail="Unexpected result type")
-
-            logger.info(f"Job {job_id} completed successfully")
-            return JobResponse(
-                job_id=job_id,
-                status=JobStatus.COMPLETED,
-                result=result_dict,
-            )
-
-        # Check if the job is still processing
-        if job.is_started:
-            logger.info(f"Job {job_id} is still processing")
-            return JobResponse(
-                job_id=job_id,
-                status=JobStatus.PROCESSING,
-            )
-        # Check if the job is pending (not started)
+        logger.info(f"Fetching audio analysis job status for job_id: {job_id}")        
+        job_status_data = jobs.get_job_status(job_id, redis)
         
-        logger.info(f"Job {job_id} has not started yet")
-        return JobResponse(
-            job_id=job_id,
-            status=JobStatus.PENDING,
-        )
-    except NoSuchJobError:
-        logger.warning(f"Trying to access non-existent job: {job_id}")
-        raise HTTPException(status_code=404, detail="Job not found")
+        # Handle if job doesn't exist
+        if job_status_data is None:
+            logger.warning(f"Job not found: {job_id}")
+            raise HTTPException(status_code=404, detail=f"Job not found: {job_id}")
+
+        # convert JobResponse to AudioAnalysisResponse
+        return AudioAnalysisResponse(**job_status_data.model_dump())
+
     except HTTPException:
         raise
     except Exception as e:

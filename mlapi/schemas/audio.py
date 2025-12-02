@@ -1,7 +1,8 @@
 # Audio analysis schemas for sentiment, highlights, and IAB categories
 from enum import Enum
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, Field, HttpUrl
 from typing import List, Optional
+from schemas.jobs import JobStatus
 
 class ASM_Sentiments(str, Enum):
     """
@@ -60,6 +61,17 @@ class AudioSentimentResult(BaseModel):
     clip_length_seconds: float = 0.0
     errors: Optional[str] = None
 
+class AudioAnalysisResponse(BaseModel):
+    """
+    Response model for audio analysis job
+    """
+
+    job_id: str
+    status: JobStatus
+    result: AudioSentimentResult | None = None
+    error: str | None = None
+
+
 class ExtractedAudio(BaseModel):
     """
     Result of audio extraction by MoviePy
@@ -71,12 +83,13 @@ class ExtractedAudio(BaseModel):
 class AudioAnalysisRequest(BaseModel):
     """
     Request to start an audio analysis job
+    
     Args: 
         video_url: The URL of the video to analyze
     Returns:
         AudioAnalysisRequest: The request object
     Raises:
-        ValueError: If the video_url is empty or not a valid URL
+        ValidationError: If the video_url is empty or not a valid URL
     """
 
     video_url: HttpUrl = Field(...,description="URL to analyze")

@@ -1,3 +1,4 @@
+from pydantic import ValidationError
 from fastapi import APIRouter, HTTPException, Depends
 from schemas import JobId, JobResponse, CreateAnswerJobRequest, CreateAnswerJobResponse
 from services import orchestrator, jobs
@@ -32,6 +33,9 @@ async def create_answer_job(request: CreateAnswerJobRequest):
         request (CreateAnswerJobRequest): The request body containing the video URL.
     Returns:
         JobId: The ID of the created job.
+    Raises: 
+        ValidationError: If the video_url is empty or not a valid URL
+        HTTPException: If there is an error starting the job.
     """
 
     video_url = str(request.video_url) # convert video url into string
@@ -44,9 +48,10 @@ async def create_answer_job(request: CreateAnswerJobRequest):
         logger.info(f"Started create_answer job: {job_id}")
 
         return JobId(job_id=job_id) # return the job ID of the created job
-    
+    except ValidationError as e:
+        logger.error(f"Validation error starting create_answer job: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        # log any errors
         logger.error(f"Error starting create_answer job: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error starting create_answer job: {str(e)}")
 
@@ -66,9 +71,16 @@ async def get_answer_job(job_id: str, redis: Redis = Depends(get_redis)):
         redis (Redis): The Redis connection instance, injected by FastAPI's Depends which can be replaced with a fake Redis object during testing.
     Returns:
         Returns the job status in the form of JobResponse schema.
+    Raises:
+        HTTPException: If there is an error fetching the job status.
     """
 
     try:
+        job_id = job_id.strip()  # Clean up any extra whitespace
+        # Verify that job_id isn't just whitespace
+        if not job_id:
+            raise HTTPException(status_code=400, detail="job_id cannot be whitespace")
+        logger.info(f"Fetching create_answer job status for job_id: {job_id}")
         
         # Get the job status from Redis
         job_status_data = jobs.get_job_status(job_id, redis)
@@ -78,7 +90,7 @@ async def get_answer_job(job_id: str, redis: Redis = Depends(get_redis)):
             logger.warning(f"Job {job_id} not found.")
             raise HTTPException(status_code=404, detail=f"Job {job_id} not found.")
 
-        return CreateAnswerJobResponse(**job_status_data)
+        return CreateAnswerJobResponse(**job_status_data.model_dump())
     # Catch HTTP exceptions and re-raise them
     except HTTPException: 
         raise

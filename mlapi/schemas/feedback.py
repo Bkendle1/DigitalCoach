@@ -104,7 +104,7 @@ class StarFeedbackEvaluation(BaseModel):
 
 class StarFeedbackResponse(BaseModel):
     """
-    Response model for STAR feedback
+    Response model for STAR feedback job
     """
 
     job_id: str
