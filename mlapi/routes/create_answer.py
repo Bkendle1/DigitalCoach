@@ -1,18 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-# from schemas.jobs import JobId, JobResponse, CreateAnswerJobRequest
-# from schemas.create_answer import CreateAnswer
-# from redisStore.queue import add_task_to_queue
+from schemas import JobId, JobResponse, CreateAnswerJobRequest, CreateAnswer
+from redisStore.queue import add_task_to_queue
 # from tasks.create_answer_task import (
 #     create_answer,
 #     start_audio_analysis_job,
 #     start_facial_analysis_job,
 # )
-# from rq.job import Job
-# from redisStore.myconnection import get_redis_con
-# from typing import Optional
-# from utils.logger_config import get_logger
+from rq.job import Job
+from redisStore.myconnection import get_redis_con
+from typing import Optional
+from utils.logger_config import get_logger
 
-# logger = get_logger(__name__)
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/create_answer", tags=["analysis"])
 
