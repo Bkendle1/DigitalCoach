@@ -1,6 +1,7 @@
 # User's Performance Feedback Schemas
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List
+from schemas.jobs import JobStatus
 
 class BigFiveScoreResult(BaseModel):
     """
@@ -58,3 +59,55 @@ class TextStructureResult(BaseModel):
     output_text: str
     details: StructureDetails = Field(default_factory=StructureDetails)
 
+class StarFeedbackRequest(BaseModel):
+    """
+    Request model for STAR feedback
+    """
+    
+    text: str
+    @field_validator("text")
+    def validate_text(cls, value):
+        if not value or len(value.strip()) < 10:
+            raise ValueError("Text is too short for analysis. Please provide a more detailed response.")
+        return value
+
+
+class StarClassification(BaseModel):
+    """
+    Classification result for a single sentence
+    """
+
+    sentence: str
+    category: str
+
+
+class StarPercentages(BaseModel):
+    """
+    Percentage breakdown of STAR components
+    """
+
+    action: float
+    result: float
+    situation: float
+    task: float
+
+
+class StarFeedbackEvaluation(BaseModel):
+    """
+    Results after performing STAR feedback analysis
+    """
+
+    fulfilled_star: bool
+    percentages: StarPercentages
+    classifications: List[StarClassification]
+    feedback: List[str]
+
+class StarFeedbackResponse(BaseModel):
+    """
+    Response model for STAR feedback
+    """
+
+    job_id: str
+    status: JobStatus
+    result: StarFeedbackEvaluation | None = None
+    error: str | None = None

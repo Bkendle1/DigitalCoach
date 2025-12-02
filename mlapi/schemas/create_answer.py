@@ -1,5 +1,5 @@
 # Builds the final response schema
-from typing import List, Optional
+from typing import List
 from pydantic import BaseModel, Field
 from schemas.feedback import BigFiveScoreResult, OverallCompetencyFeedback
 from schemas.audio import HighlightData
@@ -29,19 +29,11 @@ class CreateAnswerEvaluation(BaseModel):
     competencyFeedback: OverallCompetencyFeedback
     aggregateScore: float = 0.0  # Overall score (0-100)
 
-
-class CreateAnswer(BaseModel):
-    """
-    Result of creating an answer
-    """
-
-    evaluation: CreateAnswerEvaluation
-
 class CreateAnswerJobResponse(BaseModel):
     """
     Response model for polling answer job status
     """
     job_id: str
     status: JobStatus
-    result: Optional[CreateAnswer] = None
-    error: Optional[str] = None
+    result: CreateAnswerEvaluation | None = None
+    error: str | None = None

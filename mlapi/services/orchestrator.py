@@ -4,6 +4,7 @@
 from tasks.assemblyai_api import detect_audio_sentiment
 from redisStore.queue import add_task_to_queue
 from tasks.create_answer_task import create_answer
+from tasks.starscores import predict_star_scores
 
 def start_interview_analysis(video_url: str) -> str:
     """
@@ -24,3 +25,17 @@ def start_interview_analysis(video_url: str) -> str:
 
     return job.get_id()
 
+def start_star_feedback_analysis(text: str) -> str:
+    """
+    Start the STAR feedback analysis job by adding it to the queue.
+    
+    Args:
+        text (str): The text to analyze using the STAR method.
+    Returns:
+        str: The job ID of the queue STAR feedback analysis job.
+    """
+    data = {"text": text} # predict_star_scores expects a dict with "text" key
+    # Enqueue STAR feedback analysis job
+    job = add_task_to_queue(predict_star_scores, data)
+
+    return job.get_id()

@@ -1,7 +1,6 @@
 from rq.decorators import job
 from typing import List, Optional
 from schemas.create_answer import (
-    CreateAnswer,
     # TextStructureResult,
     TimelineStructure,
     BigFiveScoreResult,
@@ -88,7 +87,7 @@ from schemas.create_answer import (
 def create_answer(
     video_url: str,
     audio_job_id: Optional[str] = None
-) -> CreateAnswer:
+) -> CreateAnswerEvaluation:
     """
     Creates feedback answer by running or retrieving audio and facial analysis,
     then combining the results.

@@ -1,58 +1,24 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import List
-from rq.job import Job
+from fastapi import APIRouter, HTTPException, Depends
 from redisStore.myconnection import get_redis_con
 from utils.logger_config import get_logger
-from tasks.starscores import predict_star_scores
-from redisStore.queue import add_task_to_queue
-import json
+from schemas import StarFeedbackRequest, StarFeedbackResponse, JobId
+from services import orchestrator, jobs
+from redis import Redis
 
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/star_feedback", tags=["star_feedback"])
 
-
-class StarFeedbackRequest(BaseModel):
+def get_redis():
     """
-    Request model for STAR feedback
+    Get Redis connection
     """
+    return get_redis_con()
 
-    text: str
-
-
-class StarClassification(BaseModel):
-    """
-    Classification result for a single sentence
-    """
-
-    sentence: str
-    category: str
-
-
-class StarPercentages(BaseModel):
-    """
-    Percentage breakdown of STAR components
-    """
-
-    action: float
-    result: float
-    situation: float
-    task: float
-
-
-class StarFeedbackResponse(BaseModel):
-    """
-    Response model for STAR feedback
-    """
-
-    fulfilled_star: bool
-    percentages: StarPercentages
-    classifications: List[StarClassification]
-    feedback: List[str]
-
-
-@router.post("/analyze", response_model=dict)
+# POST /api/star_feedback/analyze
+@router.post(
+        "/analyze",
+        response_model=JobId)
 async def analyze_star_method(request: StarFeedbackRequest):
     """
     Analyze text using the STAR method (Situation, Task, Action, Result)
@@ -65,19 +31,23 @@ async def analyze_star_method(request: StarFeedbackRequest):
 
     Returns a job ID that can be used to track the status of the analysis.
     The results will be processed by success or failure handlers.
+
+    Args:
+        request (StarFeedbackRequest): Request model containing the text to analyze
+    Returns:
     """
     try:
+        # Check that the input text is long enough for analysis
         if not request.text or len(request.text.strip()) < 10:
             raise HTTPException(
                 status_code=400,
                 detail="Text is too short for analysis. Please provide a more detailed response.",
             )
-        data = {"text": request.text}
 
-        # Enqueue task with success and failure handlers
-        job = add_task_to_queue(predict_star_scores, data)
-
-        return {"job_id": job.id, "status": "queued"}
+        # Trigger STAR analysis task
+        job_id = orchestrator.start_star_feedback_analysis(request.text) 
+        
+        return JobId(job_id=job_id)
 
     except HTTPException:
         raise
@@ -89,18 +59,29 @@ async def analyze_star_method(request: StarFeedbackRequest):
         )
 
 
-@router.get("/result/{job_id}", response_model=dict)
-async def get_star_feedback_result(job_id: str):
+# GET /api/star_feedback/{job_id}
+@router.get(
+        "/{job_id}",
+        response_model=StarFeedbackResponse,
+        summary="Get the result of a STAR feedback analysis job",
+        description="Retrieve the results of a completed STAR feedback analysis job using the job ID",
+        )
+async def get_star_feedback_result(job_id: str, redis : Redis=Depends(get_redis)):
     """
     Get the result of a completed STAR feedback analysis job.
 
     Only returns the result if the job is completed, otherwise raises an error.
     """
     logger.info(f"Fetching results for job_id: {job_id}")
-    # get connection
-    conn = get_redis_con()
+    # # get connection
+    # conn = get_redis_con()
+
     try:
-        job = Job.fetch(job_id, connection=conn)
+        job_status_data = jobs.get_job_status(job_id, redis)
+        if job_status_data is None:
+            logger.warning(f"Job not found: {job_id}")
+            return HTTPException(status_code=404, detail=f"Job not found: {job_id}")
+        # job = Job.fetch(job_id, connection=redis)
     except Exception as e:
         logger.warning(f"Job not found: {job_id}. Error: {str(e)}")
         return HTTPException(status_code=404, detail=f"Job not found: {str(e)}")

@@ -13,7 +13,7 @@ def get_job_status(job_id: str, redis_conn: Redis) -> JobResponse:
         job_id (str): ID of the job to check
         redis_conn (Redis): Redis connection object
     Returns:
-        Dict[str, Any]: A dictionary containing the job status and result or error information.
+        Response (JobResponse): A dictionary containing the job status and result or error information in the format of the JobResponse schema.
     """ 
 
     # Attempt to get job object with given job ID
