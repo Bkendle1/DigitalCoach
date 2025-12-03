@@ -1,14 +1,12 @@
-# from rq.decorators import job
-# from typing import List, Optional
-# from schemas.create_answer import (
-#     CreateAnswer,
-#     TextStructureResult,
-#     TimelineStructure,
-#     BigFiveScoreResult,
-#     CreateAnswerEvaluation,
-#     OverallCompetencyFeedback,
-#     FacialStatistics,
-# )
+from rq.decorators import job
+from typing import List, Optional
+from schemas.create_answer import (
+    # TextStructureResult,
+    TimelineStructure,
+    BigFiveScoreResult,
+    CreateAnswerEvaluation,
+    OverallCompetencyFeedback,
+)
 
 # # Redis
 # from redisStore.myconnection import get_redis_con
@@ -86,23 +84,21 @@
 
 
 # @job("default", connection=get_redis_con())
-# def create_answer(
-#     video_url: str,
-#     audio_job_id: Optional[str] = None,
-#     facial_job_id: Optional[str] = None,
-# ) -> CreateAnswer:
-#     """
-#     Creates feedback answer by running or retrieving audio and facial analysis,
-#     then combining the results.
+def create_answer(
+    video_url: str,
+    audio_job_id: Optional[str] = None
+) -> CreateAnswerEvaluation:
+    """
+    Creates feedback answer by running or retrieving audio and facial analysis,
+    then combining the results.
 
-#     Args:
-#         video_url: URL or path to the video file
-#         audio_job_id: Optional job ID for audio analysis
-#         facial_job_id: Optional job ID for facial analysis
+    Args:
+        video_url: URL or path to the video file
+        audio_job_id: Optional job ID for audio analysis
 
-#     Returns:
-#         CreateAnswer: Complete analysis result
-#     """
+    Returns:
+        CreateAnswer: Complete analysis result
+    """
 #     from rq.job import Job
 
 #     # If job IDs aren't provided, start the jobs
