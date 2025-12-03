@@ -1,6 +1,9 @@
-# User's Performance Feedback Schemas
-from pydantic import BaseModel, Field, field_validator
-from typing import List
+"""
+User's Performance Feedback Schemas
+"""
+
+from pydantic import BaseModel, Field, field_validator, confloat
+from typing import List, Optional
 from schemas.jobs import JobStatus
 
 class BigFiveScoreResult(BaseModel):
@@ -8,34 +11,34 @@ class BigFiveScoreResult(BaseModel):
     Big Five Score Analysis
     """
 
-    o: float
-    c: float
-    e: float
-    a: float
-    n: float
-    _disclaimer: str
+    o: float  # Openness
+    c: float  # Conscientiousness
+    e: float  # Extraversion
+    a: float  # Agreeableness
+    n: float  # Neuroticism
+    _disclaimer: Optional[str] = None # Optional Disclaimer about score interpretation
 
 class CompetencyFeedback(BaseModel):
     """
-    Competency Feedback
+    Feedback for a specific competency
     """
 
-    score: float
-    strengths: List[str] = Field(default_factory=list)
-    areas_for_improvement: List[str] = Field(default_factory=list)
-    recommendations: List[str] = Field(default_factory=list)
+    score: float # Overall score
+    strengths: List[str] = Field(default_factory=list)  # List of strengths displayed in interview
+    areas_for_improvement: List[str] = Field(default_factory=list) # List of areas to improve
+    recommendations: List[str] = Field(default_factory=list) # Recommended course of action
 
 class OverallCompetencyFeedback(BaseModel):
     """
     Overall Competency Feedback
     """
 
-    communication_clarity: CompetencyFeedback
-    confidence: CompetencyFeedback
-    engagement: CompetencyFeedback
-    overall_score: float
-    summary: str
-    key_recommendations: List[str] = Field(default_factory=list)
+    communication_clarity: CompetencyFeedback # Feedback on communication clarity
+    confidence: CompetencyFeedback # Feedback on confidence
+    engagement: CompetencyFeedback # Feedback on engagement
+    overall_score: float # Overall score
+    summary: str   # Summary of overall performance
+    key_recommendations: List[str] = Field(default_factory=list) # Specific actions to take
 
 class StructureDetails(BaseModel):
     """
