@@ -1,4 +1,5 @@
 from schemas.create_answer import (
+    CreateAnswer,
     CreateAnswerEvaluation,
     OverallCompetencyFeedback,
 )
@@ -68,17 +69,17 @@ def create_answer(
 
     # Generate competency feedback
     competency_feedback: OverallCompetencyFeedback = generate_competency_feedback(
-        facial_result, audio_result, text_answer
+        None, audio_result, None
     )
 
 
     # Build evaluation result
     evaluation = CreateAnswerEvaluation(
         # isStructured=text_answer.binary_prediction,
-        predictionScore=text_answer.prediction_score,
+        predictionScore=0, # placeholder 
         overallSentiment=calculate_overall_audio_sentiment(audio_result),
         # topFiveKeywords=grab_top_five_keywords(audio_result),
-        transcript=text_answer.output_text,
+        transcript="",
         competencyFeedback=competency_feedback,
     )
 

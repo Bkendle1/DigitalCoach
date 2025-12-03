@@ -51,25 +51,35 @@ class BigFiveScores:
         },
     }
 
-
 def big_five_feedback(scores: dict[str, float]) -> list[str]:
-    """
-    Gets the feedback for the big five scores
-    """
+    """Converts Big Five numeric scores into feedback for users"""
+
+    big_five_keys = ["o", "c", "e", "a", "n"]
+
+    """Added Input Validation"""
+    for key in big_five_keys:
+        if key not in scores:
+            raise ValueError(f"Missing required Big Five score: '{key}'")
+        scores[key] = float(scores[key]) 
+
     big_five = BigFiveScores(
         scores["o"], scores["c"], scores["e"], scores["a"], scores["n"]
     )
-    user_feedback = []
-    for trait, attr in zip(
-        [
-            "openness",
-            "conscientiousness",
-            "extraversion",
-            "agreeableness",
-            "neuroticism",
-        ],
-        ["o", "c", "e", "a", "n"],
-    ):
-        trait_level = big_five.determine_level(getattr(big_five, attr))
-        user_feedback.append(BigFiveScores.FEEDBACK[trait][trait_level])
-    return user_feedback
+
+    feedback_output = []
+    traits = [
+        ("openness", "o"),
+        ("conscientiousness", "c"),
+        ("extraversion", "e"),
+        ("agreeableness", "a"),
+        ("neuroticism", "n"),
+    ]
+
+    """Give the appropriate feedback based on user's numeric score"""
+    for trait, attr in traits:
+        level = big_five.determine_level(getattr(big_five, attr))
+        message = BigFiveScores.FEEDBACK[trait][level]
+        feedback_output.append(message)
+
+    return feedback_output
+
