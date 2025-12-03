@@ -1,4 +1,7 @@
-# User's Performance Feedback Schemas
+"""
+User's Performance Feedback Schemas
+"""
+
 from pydantic import BaseModel, Field
 from typing import List
 from schemas.jobs import JobStatus
@@ -13,7 +16,7 @@ class BigFiveScoreResult(BaseModel):
     e: float = Field(..., description="Extraversion score", ge=0, le=100)
     a: float = Field(..., description="Agreeableness score", ge=0, le=100)
     n: float = Field(..., description="Neuroticism score", ge=0, le=100)
-    _disclaimer: str
+    _disclaimer: str | None = None # Optional Disclaimer about score interpretation
 
 class BigFiveRequest(BaseModel):
     """
@@ -36,25 +39,25 @@ class BigFiveResponse(BaseModel):
 
 class CompetencyFeedback(BaseModel):
     """
-    Competency Feedback
+    Feedback for a specific competency
     """
 
-    score: float
-    strengths: List[str] = Field(default_factory=list)
-    areas_for_improvement: List[str] = Field(default_factory=list)
-    recommendations: List[str] = Field(default_factory=list)
+    score: float # Overall score
+    strengths: List[str] = Field(default_factory=list) # List of strengths displayed in interview
+    areas_for_improvement: List[str] = Field(default_factory=list) # List of areas to improve
+    recommendations: List[str] = Field(default_factory=list) # Recommended course of action
 
 class OverallCompetencyFeedback(BaseModel):
     """
     Overall Competency Feedback
     """
 
-    communication_clarity: CompetencyFeedback
-    confidence: CompetencyFeedback
-    engagement: CompetencyFeedback
-    overall_score: float
-    summary: str
-    key_recommendations: List[str] = Field(default_factory=list)
+    communication_clarity: CompetencyFeedback  # Feedback on communication clarity
+    confidence: CompetencyFeedback # Feedback on confidence
+    engagement: CompetencyFeedback # Feedback on engagement
+    overall_score: float # Overall sscore
+    summary: str # Summary of overall performance
+    key_recommendations: List[str] = Field(default_factory=list) # Specific actions to take
 
 class StructureDetails(BaseModel):
     """
