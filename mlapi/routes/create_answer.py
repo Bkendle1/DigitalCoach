@@ -97,4 +97,4 @@ async def get_answer_job(job_id: str, redis: Redis = Depends(get_redis)):
     # Catch all other exceptions
     except Exception as e:
         logger.error(f"System error fetching job {job_id}: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail=f"System error fetching job {job_id}: {str(e)}")

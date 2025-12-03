@@ -1,5 +1,5 @@
 # User's Performance Feedback Schemas
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from typing import List
 from schemas.jobs import JobStatus
 
@@ -8,12 +8,31 @@ class BigFiveScoreResult(BaseModel):
     Big Five Score Analysis
     """
 
-    o: float
-    c: float
-    e: float
-    a: float
-    n: float
+    o: float = Field(..., description="Openness score", ge=0, le=100)
+    c: float = Field(..., description="Conscientiousness score", ge=0, le=100)
+    e: float = Field(..., description="Extraversion score", ge=0, le=100)
+    a: float = Field(..., description="Agreeableness score", ge=0, le=100)
+    n: float = Field(..., description="Neuroticism score", ge=0, le=100)
     _disclaimer: str
+
+class BigFiveRequest(BaseModel):
+    """
+    Request model for Big Five scores
+    """
+
+    o: float = Field(..., description="Openness score", ge=0, le=100)
+    c: float = Field(..., description="Conscientiousness score", ge=0, le=100)
+    e: float = Field(..., description="Extraversion score", ge=0, le=100)
+    a: float = Field(..., description="Agreeableness score", ge=0, le=100)
+    n: float = Field(..., description="Neuroticism score", ge=0, le=100)
+
+
+class BigFiveResponse(BaseModel):
+    """
+    Response model for Big Five scores with feedback
+    """
+
+    feedback: List[str]
 
 class CompetencyFeedback(BaseModel):
     """
@@ -65,12 +84,6 @@ class StarFeedbackRequest(BaseModel):
     """
     
     text: str
-    @field_validator("text")
-    def validate_text(cls, value):
-        if not value or len(value.strip()) < 10:
-            raise ValueError("Text is too short for analysis. Please provide a more detailed response.")
-        return value
-
 
 class StarClassification(BaseModel):
     """
