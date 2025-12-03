@@ -1,3 +1,59 @@
+# from typing import Optional
+# from schemas.create_answer import (
+#     CreateAnswer,
+#     TextStructureResult,
+#     BigFiveScoreResult,
+#     CreateAnswerEvaluation,
+#     OverallCompetencyFeedback,
+# )
+# from tasks.helpers.create_answer_helpers import (
+#     score_text_structure,
+#     score_bigFive,
+#     compute_aggregate_score,
+# )
+# from tasks.helpers.competency_feedback import generate_competency_feedback
+# from utils.logger_config import get_logger
+
+# logger = get_logger(__name__)
+
+
+# def create_answer(user_text: str) -> CreateAnswer:
+#     """
+#     Creates feedback answer by analyzing and then scoring user text, text structure,
+#     computing the user's Big Five score, and aggregating feedback.
+
+#     i.e. Takes in the user's text and outputs feedback
+#     """
+
+#     # Process the text structure
+#     text_answer: TextStructureResult = score_text_structure(user_text)
+
+#     # Calculate Big Five scores
+#     bigFive: BigFiveScoreResult = score_bigFive(text_answer=text_answer)
+
+#     # Generate competency feedback
+#     competency_feedback: OverallCompetencyFeedback = generate_competency_feedback(
+#         None, text_answer  # No audio/facial input
+#     )
+
+#     # Build evaluation result
+#     evaluation = CreateAnswerEvaluation(
+#         isStructured=text_answer.binary_prediction,
+#         predictionScore=text_answer.prediction_score,
+#         transcript=text_answer.output_text,
+#         bigFive=bigFive,
+#         competencyFeedback=competency_feedback,
+#     )
+
+#     # Calculate aggregate score
+#     evaluation.aggregateScore = compute_aggregate_score(evaluation)
+
+#     return CreateAnswer(evaluation=evaluation)
+
+
+
+######## Old Version Below##################################################################
+
 # from rq.decorators import job
 # from typing import List, Optional
 # from schemas.create_answer import (
