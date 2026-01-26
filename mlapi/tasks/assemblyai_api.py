@@ -53,6 +53,10 @@ def detect_audio_sentiment(video_url: str) -> AudioSentimentResult:
         if transcript.error:
             raise Exception(transcript.error)
 
+        # Add transcript to result
+        if transcript.text:
+            result.text = transcript.text
+
         # Process sentiment analysis results
         if transcript.sentiment_analysis:
             sentiment_results: List[SentimentResult] = []

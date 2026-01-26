@@ -53,6 +53,7 @@ class AudioSentimentResult(BaseModel):
     Result of audio sentiment analysis by AssemblyAI
     """
 
+    text: str = ""
     sentiment_analysis: List[SentimentResult] = Field(default_factory=list)
     highlights: List[HighlightData] = Field(default_factory=list)
     iab_results: IABResult = Field(default_factory=IABResult)
