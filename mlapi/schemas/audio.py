@@ -28,7 +28,6 @@ class TimestampData(BaseModel):
     start: int  # Start time in milliseconds
     end: int  # End time in milliseconds
 
-
 class HighlightData(BaseModel):
     """Data for auto-highlighted keywords/phrases"""
 
@@ -42,7 +41,6 @@ class IABLabel(BaseModel):
 
     label: str  # Category name
     relevance: float  # Relevance score (0-1)
-
 
 class IABResult(BaseModel):
     """IAB category detection results from AssemblyAI"""
@@ -70,7 +68,6 @@ class AudioAnalysisResponse(BaseModel):
     status: JobStatus
     result: AudioSentimentResult | None = None
     error: str | None = None
-
 
 class ExtractedAudio(BaseModel):
     """
