@@ -1,58 +1,118 @@
-# from typing import Optional
-# from schemas.create_answer import (
-#     CreateAnswer,
-#     TextStructureResult,
-#     BigFiveScoreResult,
-#     CreateAnswerEvaluation,
-#     OverallCompetencyFeedback,
-# )
-# from tasks.helpers.create_answer_helpers import (
-#     score_text_structure,
-#     score_bigFive,
-#     compute_aggregate_score,
-# )
-# from tasks.helpers.competency_feedback import generate_competency_feedback
-# from utils.logger_config import get_logger
+from mlapi.schemas.create_answer import (
+    CreateAnswer,
+    TextStructureResult,
+    BigFiveScoreResult,
+    CreateAnswerEvaluation,
+    OverallCompetencyFeedback,
+    CompetencyFeedback,
+    FacialStatistics,
+)
+from mlapi.utils.logger_config import get_logger
 
-# logger = get_logger(__name__)
+logger = get_logger(__name__)
+
+# Basic scoring functions
+
+def score_text_structure(text: str) -> TextStructureResult:
+    return TextStructureResult(
+        binary_prediction=1 if len(text.split()) > 5 else 0,
+        prediction_score=min(len(text.split()) / 20, 1.0),
+        output_text=text
+    )
+
+def score_big_five(_: TextStructureResult) -> BigFiveScoreResult:
+    return BigFiveScoreResult(
+        o=0.6,
+        c=0.6,
+        e=0.6,
+        a=0.6,
+        n=0.4
+    )
+
+def compute_aggregate_score(evaluation: CreateAnswerEvaluation) -> float:
+    return round(
+        (evaluation.predictionScore +
+         evaluation.bigFive.o +
+         evaluation.bigFive.c +
+         evaluation.bigFive.e +
+         evaluation.bigFive.a) / 5,
+        2
+    )
+
+def generate_competency_feedback(_: TextStructureResult) -> OverallCompetencyFeedback:
+    return OverallCompetencyFeedback(
+        communication_clarity=CompetencyFeedback(
+            score=0.8,
+            strengths=["Clear structure"],
+            areas_for_improvement=["Add concrete examples"],
+            recommendations=["Use STAR method"]
+        ),
+        confidence=CompetencyFeedback(
+            score=0.7,
+            strengths=["Positive tone"],
+            areas_for_improvement=["Reduce filler words"],
+            recommendations=["Pause before answering"]
+        ),
+        engagement=CompetencyFeedback(
+            score=0.75,
+            strengths=["Good pacing"],
+            areas_for_improvement=["More energy"],
+            recommendations=["Vary intonation"]
+        ),
+        overall_score=0.75,
+        summary="Solid answer with good structure and clarity.",
+        key_recommendations=["Add examples", "Project confidence"]
+    )
+
+# Generate feedback
+
+def create_answer(user_text: str) -> CreateAnswer:
+    logger.info("Creating answer evaluation")
+
+    text_result = score_text_structure(user_text)
+    big_five = score_big_five(text_result)
+    competency_feedback = generate_competency_feedback(text_result)
+
+    evaluation = CreateAnswerEvaluation(
+        isStructured=text_result.binary_prediction,
+        predictionScore=text_result.prediction_score,
+        transcript=text_result.output_text,
+        facialStatistics=FacialStatistics(),
+        overallFacialEmotion="",
+        overallSentiment="",
+        topFiveKeywords=[],
+        bigFive=big_five,
+        competencyFeedback=competency_feedback,
+    )
+
+    evaluation.aggregateScore = compute_aggregate_score(evaluation)
+
+    return CreateAnswer(evaluation=evaluation)
+
+# Local testing 
+
+if __name__ == "__main__":
+    samples = [
+        "Hi.",
+        "I worked on a team project and communicated clearly.",
+        "I love learning new things and improving my communication skills.",
+        "My biggest strength is problem solving under pressure in cross-functional teams."
+    ]
+
+    for text in samples:
+        print("\nINPUT:", text)
+        result = create_answer(text)
+        print(result.model_dump_json(indent=2))
 
 
-# def create_answer(user_text: str) -> CreateAnswer:
-#     """
-#     Creates feedback answer by analyzing and then scoring user text, text structure,
-#     computing the user's Big Five score, and aggregating feedback.
-
-#     i.e. Takes in the user's text and outputs feedback
-#     """
-
-#     # Process the text structure
-#     text_answer: TextStructureResult = score_text_structure(user_text)
-
-#     # Calculate Big Five scores
-#     bigFive: BigFiveScoreResult = score_bigFive(text_answer=text_answer)
-
-#     # Generate competency feedback
-#     competency_feedback: OverallCompetencyFeedback = generate_competency_feedback(
-#         None, text_answer  # No audio/facial input
-#     )
-
-#     # Build evaluation result
-#     evaluation = CreateAnswerEvaluation(
-#         isStructured=text_answer.binary_prediction,
-#         predictionScore=text_answer.prediction_score,
-#         transcript=text_answer.output_text,
-#         bigFive=bigFive,
-#         competencyFeedback=competency_feedback,
-#     )
-
-#     # Calculate aggregate score
-#     evaluation.aggregateScore = compute_aggregate_score(evaluation)
-
-#     return CreateAnswer(evaluation=evaluation)
 
 
 
-######## Old Version Below##################################################################
+
+
+
+
+######## Old Version Below ########
 
 # from rq.decorators import job
 # from typing import List, Optional
@@ -91,7 +151,30 @@
 
 
 # logger = get_logger(__name__)
+############### working stub version
 
+# from typing import Optional
+# from ..schemas.create_answer import (
+#     CreateAnswer,
+#     TextStructureResult,
+#     BigFiveScoreResult,
+#     CreateAnswerEvaluation,
+#     OverallCompetencyFeedback,
+#     CompetencyFeedback,
+#     FacialStatistics,
+#     HighlightData
+# )
+# from ..utils.logger_config import get_logger
+
+# logger = get_logger(__name__)
+
+# # --- Stub functions for testing ---
+
+# def score_text_structure(text: str) -> TextStructureResult:
+#     """Stub for text structure scoring"""
+#     return TextStructureResult(
+#         binary_prediction=1,
+#         predi
 
 # def start_audio_analysis_job(video_url: str) -> str:
 #     """
