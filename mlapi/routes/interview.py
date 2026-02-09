@@ -8,6 +8,9 @@ from schemas import (
     GetInterviewResponse
 ) 
 from services.firebase_setup import get_firestore_client
+from fastapi import HTTPException
+from fastapi.responses import FileResponse
+import os
 
 logger = get_logger(__name__) # create a logger instance to log messages
 
@@ -26,6 +29,9 @@ async def create_interview(request: CreateInterviewRequest):
     try:
         # convert interview pydantic object into a dictionary 
         interview = request.interview.model_dump()
+
+        video_download_url = f"http://localhost:8000/api/interview/download/{interview['id']}"
+        interview['url'] = video_download_url
 
         # get reference to user's interview collection
         interviewRef = db.collection("users").document(request.userId).collection("interviews")
@@ -63,3 +69,29 @@ async def get_interview(request: GetInterviewRequest):
     except Exception as e:
         logger.info(f"Failed to retrieve interview: {e}")
         return GetInterviewResponse(interview=None)
+
+@router.get(
+    "/download/{interview_id}",
+    summary="Download user's interview file",
+    description="Returns the audio/video file for a given interview id so the user can download it.",
+)
+async def download_interview(user_id: str, interview_id: str):
+    """
+    Args:
+        user_id: ID of the user
+        interview_id: ID of the interview
+
+    Returns:
+        FileResponse: Downloadable interview file
+    """
+    # Path where interviews are stored
+    file_path = os.path.join("mlapi/data/interviews", f"{interview_id}.mp4")
+
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Interview file not found")
+
+    return FileResponse(
+        path=file_path,
+        filename=f"{interview_id}.mp4",
+        media_type="video/mp4"
+    )

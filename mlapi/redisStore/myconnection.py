@@ -1,7 +1,13 @@
 import os
+<<<<<<< HEAD
 from redis import Redis, ConnectionPool
 from utils.logger_config import get_logger
 from dotenv import load_dotenv
+=======
+from redis import Redis, from_url
+from mlapi.utils.logger_config import get_logger
+
+>>>>>>> eaa629c (saving changes in order to merge)
 logger = get_logger(__name__)
 
 

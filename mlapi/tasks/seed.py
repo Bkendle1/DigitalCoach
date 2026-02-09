@@ -11,7 +11,7 @@ def drop_emulator_data():
     Removes all data from Firebase emulators.
     """
     print("Dropping emulator data...")
-    PROJECT_ID = "demo-digital-coach"    
+    PROJECT_ID = "digitalcoach-31674"    
     # clear firestore
     firestore_url = f"http://firebase:8080/emulator/v1/projects/{PROJECT_ID}/databases/(default)/documents"
     try:

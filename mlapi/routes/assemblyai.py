@@ -47,9 +47,9 @@ async def request_token():
     logger.info("Requesting temporary AssemblyAI authentication token...")
 
     load_dotenv()
-    api_key = os.getenv("AAPI_KEY")
+    api_key = os.getenv("ASSEMBLY_API_KEY")
     if not api_key:
-        raise KeyError("AAPI_KEY key not found in .env file.")
+        raise KeyError("ASSEMBLY_API_KEY key not found in .env file.")
     
     client = StreamingClient(
         StreamingClientOptions(
@@ -93,9 +93,9 @@ async def get_sentiment_analysis(transcript_id: str):
     logger.info(f"Requesting sentiment analysis from AssemblyAI for transcript_id: {transcript_id}")
 
     load_dotenv()
-    api_key = os.getenv("AAPI_KEY")
+    api_key = os.getenv("ASSEMBLY_API_KEY")
     if not api_key:
-        raise KeyError("AAPI_KEY key not found in .env file.")
+        raise KeyError("ASSEMBLY_API_KEY key not found in .env file.")
     
     headers = {"authorization": api_key}
     transcript_endpoint = f"https://api.assemblyai.com/v2/transcript/{transcript_id}"

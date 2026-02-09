@@ -19,9 +19,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase app but check if it's already initialized 
-if (getApps().length === 0) {
-  var app = initializeApp(firebaseConfig)
-}
+// if (getApps().length === 0) {
+//   var app = initializeApp(firebaseConfig)
+// }
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
 // Initialize Firebase services
 const auth = getAuth(app) // Firebase Authentication

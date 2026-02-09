@@ -1,8 +1,9 @@
 from schemas.create_answer import (
-    CreateAnswer,
     CreateAnswerEvaluation,
-    OverallCompetencyFeedback,
+    CreateAnswerJobResponse,
 )
+
+from schemas.feedback import OverallCompetencyFeedback
 
 # Redis
 from redisStore.myconnection import get_redis_con
@@ -87,4 +88,9 @@ def create_answer(
     evaluation.aggregateScore = compute_overall_score(evaluation)
 
     # Return final result
-    return CreateAnswer(evaluation=evaluation)
+    return CreateAnswerJobResponse(
+    job_id="",
+    status="completed",
+    result=evaluation,
+    error=None
+)

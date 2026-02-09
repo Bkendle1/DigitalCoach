@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from fastapi import APIRouter, HTTPException, Depends
 from schemas import JobId, SentimentAnalysisRequest, SentimentAnalysisJobResponse
 from redisStore.myconnection import get_redis_con
@@ -5,6 +6,17 @@ from utils.logger_config import get_logger
 from redis import Redis
 from services import jobs, orchestrator
 from pydantic import ValidationError
+=======
+from fastapi import APIRouter, HTTPException
+from mlapi.schemas.jobs import JobId, JobResponse
+from mlapi.schemas.create_answer import AudioSentimentResult, AudioAnalysisJob
+from mlapi.redisStore.queue import add_task_to_queue
+from mlapi.tasks.assemblyai_api import detect_audio_sentiment
+from rq.job import Job
+from mlapi.redisStore.myconnection import get_redis_con
+from mlapi.utils.logger_config import get_logger
+from pydantic import BaseModel
+>>>>>>> eaa629c (saving changes in order to merge)
 
 logger = get_logger(__name__)
 

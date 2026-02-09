@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 from fastapi import APIRouter, Depends, HTTPException
 from schemas.jobs import JobResponse
 from utils.logger_config import get_logger
 from redisStore.queue import get_redis_con
 from redis import Redis
 from services import jobs
+=======
+from fastapi import APIRouter
+from rq.job import Job
+import json
+from mlapi.utils.logger_config import get_logger
+from mlapi.redisStore.queue import get_redis_con
+>>>>>>> eaa629c (saving changes in order to merge)
 
 # API router for job-releated endpoints which defines the root path as /api/jobs
 router = APIRouter(prefix="/api/jobs", tags=["jobs"]) 

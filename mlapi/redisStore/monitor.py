@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 # import time
 # from typing import Never, Set, Iterator
 # from utils.logger_config import get_logger
 # from redisStore.myconnection import get_redis_con
 # from rq import Queue
+=======
+import time
+from typing import Never, Set, Iterator
+from mlapi.utils.logger_config import get_logger
+from mlapi.redisStore.myconnection import get_redis_con
+from rq import Queue
+>>>>>>> eaa629c (saving changes in order to merge)
 
 # logger = get_logger(__name__)
 

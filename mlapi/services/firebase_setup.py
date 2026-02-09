@@ -19,7 +19,7 @@ def initialize_firebase():
         return firebase_admin.get_app()
 
     load_dotenv() # load environment variables
-    projectId = os.getenv("GCLOUD_PROJECT", "demo-digital-coach") # default to project id for using emulators
+    projectId = os.getenv("GCLOUD_PROJECT", "digitalcoach-31674") # default to project id for using emulators
     service_account_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
     logger.info(f"Checking {service_account_path} for service account credentials.")
     if os.path.exists(service_account_path):

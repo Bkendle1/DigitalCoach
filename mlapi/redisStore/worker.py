@@ -1,8 +1,14 @@
 import sys
 from rq import Worker
+<<<<<<< HEAD
 from redisStore.myconnection import get_redis_con
 from utils.logger_config import get_logger
 import uuid
+=======
+from mlapi.redisStore.myconnection import get_redis_con
+from mlapi.utils.logger_config import get_logger
+
+>>>>>>> eaa629c (saving changes in order to merge)
 logger = get_logger(__name__)
 
 # Default list of queues to listen for jobs on

@@ -2,7 +2,7 @@ import os
 import assemblyai as aai
 from mlapi.utils.logger_config import get_logger
 
-AAPI_KEY = os.getenv("AAPI_KEY")
+ASSEMBLY_API_KEY = os.getenv("ASSEMBLY_API_KEY")
 logger = get_logger(__name__)
 
 
@@ -11,10 +11,10 @@ def transcribe_audio(audio_url: str) -> str:
     Sends an audio or video file to AssemblyAI and returns the transcript
 
     """
-    if not AAPI_KEY:
-        raise RuntimeError("AssemblyAI API key not found in environment (AAPI_KEY)")
+    if not ASSEMBLY_API_KEY:
+        raise RuntimeError("AssemblyAI API key not found in environment (ASSEMBLY_API_KEY)")
 
-    aai.settings.api_key = AAPI_KEY
+    aai.settings.api_key = ASSEMBLY_API_KEY
     transcriber = aai.Transcriber()
 
     logger.info(f"Transcribing audio: {audio_url}")
