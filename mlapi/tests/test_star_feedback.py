@@ -6,8 +6,8 @@ Wait for the job to complete then. Get the result using the `api/jobs/results/{j
 import pytest
 import time
 from fastapi.testclient import TestClient
-from main import app
-from tasks.starscores import percentageFeedback
+from mlapi.main import app
+from mlapi.tasks.starscores import percentageFeedback
 
 client = TestClient(app)
 

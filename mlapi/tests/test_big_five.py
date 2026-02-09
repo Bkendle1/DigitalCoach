@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
-from main import app
-from tasks.bigfivescore import big_five_feedback, BigFiveScores, TraitLevel
+from mlapi.main import app
+from mlapi.tasks.bigfivescore import big_five_feedback, BigFiveScores, TraitLevel
 from unittest.mock import patch
 
 client = TestClient(app)
@@ -35,7 +35,7 @@ def test_big_five_feedback_function():
     assert "insecure" in feedback[4].lower()  # Neuroticism - High
 
 
-@patch("routes.big_five.big_five_feedback")
+@patch("mlapi.routes.big_five.big_five_feedback")
 def test_big_five_route_success(mock_big_five_feedback):
     """Test the big_five feedback route with a successful request"""
     # Mock the big_five_feedback function
@@ -84,7 +84,7 @@ def test_big_five_route_invalid_input():
     assert response.status_code == 422  # Validation error
 
 
-@patch("routes.big_five.big_five_feedback")
+@patch("mlapi.routes.big_five.big_five_feedback")
 def test_big_five_route_error_handling(mock_big_five_feedback):
     """Test error handling in the big_five feedback route"""
     # Mock the function to raise an exception

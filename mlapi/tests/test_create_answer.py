@@ -1,6 +1,6 @@
 import pytest
 import os
-from schemas.create_answer import (
+from mlapi.schemas.create_answer import (
     EmotionDetectionResult,
     AudioSentimentResult,
 )
@@ -8,14 +8,14 @@ from schemas.create_answer import (
 
 @pytest.fixture
 def get_redis_con():
-    from redisStore.myconnection import get_redis_con
+    from mlapi.redisStore.myconnection import get_redis_con
 
     return get_redis_con()
 
 
 @pytest.fixture
 def get_worker():
-    from redisStore.worker import get_worker
+    from mlapi.redisStore.worker import get_worker
 
     return get_worker()
 
@@ -31,7 +31,7 @@ def test_video_path():
 @pytest.fixture
 def mock_audio_result():
     """Create a mock audio analysis result for testing"""
-    from schemas.create_answer import (
+    from mlapi.schemas.create_answer import (
         SentimentResult,
         HighlightData,
         TimestampData,
@@ -83,7 +83,7 @@ def test_audio_analysis(monkeypatch):
 
     # Create a simple mock implementation of detect_audio_sentiment
     def mock_detect_audio_sentiment(video_url):
-        from schemas.create_answer import (
+        from mlapi.schemas.create_answer import (
             SentimentResult,
             HighlightData,
             TimestampData,
@@ -116,10 +116,10 @@ def test_audio_analysis(monkeypatch):
         )
 
     # Apply our mock implementation
-    import tasks.assemblyai_api
+    import mlapi.tasks.assemblyai_api
 
     monkeypatch.setattr(
-        tasks.assemblyai_api, "detect_audio_sentiment", mock_detect_audio_sentiment
+        mlapi.tasks.assemblyai_api, "detect_audio_sentiment", mock_detect_audio_sentiment
     )
 
     # Test the function
@@ -133,7 +133,7 @@ def test_audio_analysis(monkeypatch):
 
 def test_facial_analysis(test_video_path):
     """Test facial analysis job"""
-    from tasks.detect_emotions import detect_emotions
+    from mlapi.tasks.detect_emotions import detect_emotions # type: ignore
 
     # Run facial emotion detection with high sample rate for faster execution
     result = detect_emotions(test_video_path, sample_rate=60)
@@ -165,7 +165,7 @@ def test_facial_analysis(test_video_path):
 
 def test_create_answer(monkeypatch, test_video_path, mock_audio_result):
     """Test the create_answer function with mocked dependencies"""
-    from schemas.create_answer import (
+    from mlapi.schemas.create_answer import (
         CreateAnswer,
         CreateAnswerEvaluation,
         FacialStatistics,
@@ -229,9 +229,9 @@ def test_create_answer(monkeypatch, test_video_path, mock_audio_result):
         return result
 
     # Override the create_answer function with our mock
-    import tasks.create_answer_task
+    import mlapi.tasks.create_answer_task
 
-    monkeypatch.setattr(tasks.create_answer_task, "create_answer", mock_create_answer)
+    monkeypatch.setattr(mlapi.tasks.create_answer_task, "create_answer", mock_create_answer)
 
     # Test the mocked function
     result = mock_create_answer(test_video_path)
