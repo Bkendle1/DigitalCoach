@@ -1,4 +1,4 @@
-from schemas.create_answer import (
+from mlapi.schemas.create_answer import (
     AudioSentimentResult,
     SentimentResult,
     HighlightData,
@@ -7,9 +7,9 @@ from schemas.create_answer import (
 )
 from typing import List
 import assemblyai as aai
-from utils.logger_config import get_logger
+from mlapi.utils.logger_config import get_logger
 from rq.decorators import job
-from redisStore.myconnection import get_redis_con
+from mlapi.redisStore.myconnection import get_redis_con
 import os
 
 AAPI_KEY = os.getenv("AAPI_KEY")

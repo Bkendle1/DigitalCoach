@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException
-from schemas.jobs import JobId, JobResponse
-from schemas.create_answer import AudioSentimentResult, AudioAnalysisJob
-from redisStore.queue import add_task_to_queue
-from tasks.assemblyai_api import detect_audio_sentiment
+from mlapi.schemas.jobs import JobId, JobResponse
+from mlapi.schemas.create_answer import AudioSentimentResult, AudioAnalysisJob
+from mlapi.redisStore.queue import add_task_to_queue
+from mlapi.tasks.assemblyai_api import detect_audio_sentiment
 from rq.job import Job
-from redisStore.myconnection import get_redis_con
-from utils.logger_config import get_logger
+from mlapi.redisStore.myconnection import get_redis_con
+from mlapi.utils.logger_config import get_logger
 from pydantic import BaseModel
 
 logger = get_logger(__name__)

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import (
+from mlapi.routes import (
     jobs,
     create_answer,
     big_five,

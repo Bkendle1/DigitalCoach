@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
-from utils.logger_config import get_logger
-from tasks.bigfivescore import big_five_feedback
+from mlapi.utils.logger_config import get_logger
+from mlapi.tasks.bigfivescore import big_five_feedback
 
 logger = get_logger(__name__)
 

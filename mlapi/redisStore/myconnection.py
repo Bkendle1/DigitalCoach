@@ -1,6 +1,6 @@
 import os
 from redis import Redis, from_url
-from utils.logger_config import get_logger
+from mlapi.utils.logger_config import get_logger
 
 logger = get_logger(__name__)
 

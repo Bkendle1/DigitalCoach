@@ -1,7 +1,7 @@
 import time
 from typing import Never, Set, Iterator
-from utils.logger_config import get_logger
-from redisStore.myconnection import get_redis_con
+from mlapi.utils.logger_config import get_logger
+from mlapi.redisStore.myconnection import get_redis_con
 from rq import Queue
 
 logger = get_logger(__name__)

@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
 from rq.job import Job
-from redisStore.myconnection import get_redis_con
-from utils.logger_config import get_logger
-from tasks.starscores import predict_star_scores
-from redisStore.queue import add_task_to_queue
+from mlapi.redisStore.myconnection import get_redis_con
+from mlapi.utils.logger_config import get_logger
+from mlapi.tasks.starscores import predict_star_scores
+from mlapi.redisStore.queue import add_task_to_queue
 import json
 
 logger = get_logger(__name__)

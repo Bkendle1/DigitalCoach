@@ -1,8 +1,8 @@
 from typing import Callable
 from rq.job import Job
 from rq.queue import Queue
-from redisStore.myconnection import get_redis_con
-from utils.logger_config import get_logger
+from mlapi.redisStore.myconnection import get_redis_con
+from mlapi.utils.logger_config import get_logger
 
 logger = get_logger(__name__)
 
