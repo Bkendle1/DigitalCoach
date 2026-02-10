@@ -15,9 +15,10 @@ const nextConfig = {
     emotion: true,
   },
 
-  // Expose NODE_ENV to the client side so Firebase can detect development mode
+  // Expose emulator flag to client side for Firebase configuration
+  // This is set to 'true' in development (docker-compose) and 'false' in production
   env: {
-    NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_USE_FIREBASE_EMULATOR: process.env.NODE_ENV === "development" ? "true" : "false",
   },
 
   images: {
