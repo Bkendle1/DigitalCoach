@@ -17,7 +17,7 @@ test('can register and login', async ({ page }) => {
   await page.getByRole('button', { name: 'Register' }).click();
 
   // Login
-  await page.waitForURL("**/register")
+  await page.waitForURL("**/register");
   await page.waitForLoadState('networkidle'); // Wait for page to fully load
   const profilePicInput = page.locator("[name='avatar']");
   await expect(profilePicInput).toBeVisible({timeout: 10000});
