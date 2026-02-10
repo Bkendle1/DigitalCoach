@@ -45,9 +45,15 @@ export default function SignUpPage() {
 
   const onSubmit = async (data: LoginFormInputs) => {
     const { email, password } = data;
-    await signup(email, password);
-    // Explicitly navigate to register page after successful signup
-    router.push("/auth/register");
+    try {
+      await signup(email, password);
+      // Explicitly navigate to register page after successful signup
+      router.push("/auth/register");
+    } catch (error) {
+      // Error is already handled by the signup function and stored in authError
+      // No navigation occurs if signup fails
+      console.error("Signup failed:", error);
+    }
   };
 
   return (
