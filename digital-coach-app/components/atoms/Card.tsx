@@ -12,13 +12,15 @@ interface Props
 }
 
 export default function Card(props: PropsWithChildren<Props>) {
-
   const { title, className, multiline, ...rest } = props;
 
   return (
-    <section className={classNames(multiline ? styles.CardMulti : styles.Card, className)} {...rest}>
-      {title && <p className={styles.Cardtitle}>{title}</p>}
+    <section
+      {...rest}
+      className={classNames(multiline ? styles.cardMulti : styles.card, className)}>
+      {title && <p className={styles.cardTitle}>{title}</p>}
       {props.children}
     </section>
   );
 }
+

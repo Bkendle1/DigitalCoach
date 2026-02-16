@@ -6,7 +6,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
 import UnAuthGuard from "@App/lib/auth/UnAuthGuard";
-import { TextField } from "@App/components/molecules/TextField";
+import { TextField } from "@App/components/atoms/TextField";
 import LoginIcon from "@mui/icons-material/Login";
 import CenteredComponent from "@App/components/atoms/CenteredComponent";
 

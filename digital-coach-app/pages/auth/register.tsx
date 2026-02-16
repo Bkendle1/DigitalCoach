@@ -15,7 +15,7 @@ import {
   EUserConcentrations,
   EUserProficiencies,
 } from "@App/lib/user/models";
-import { TextField } from "@App/components/molecules/TextField";
+import { TextField } from "@App/components/atoms/TextField";
 
 interface RegFormInputs extends IBaseUserAttributes {
   avatar: FileList;

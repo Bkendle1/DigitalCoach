@@ -1,0 +1,24 @@
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.title {
+  margin-bottom: 1rem;
+}
+
+.select {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.cancelButton {
+  background-color: red;
+}

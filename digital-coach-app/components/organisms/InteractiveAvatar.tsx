@@ -114,7 +114,7 @@ const InteractiveAvatar = forwardRef((props: InteractiveAvatarProps, ref) => {
       });
       setData(res);
       // Start voice chat with silence prompt enabled.
-      await avatar.current?.startVoiceChat({ useSilencePrompt: true });
+      await avatar.current?.startVoiceChat({ useSilencePrompt: true } as any);
       setChatMode("voice_mode");
     } catch (error) {
       console.error("Error starting avatar session:", error);

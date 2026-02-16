@@ -8,15 +8,15 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const TextField = forwardRef<HTMLInputElement, Props>(
-  ({ ...props }, ref) => {
+  ({ title, className, ...props }, ref) => {
     return (
-      <div className={classNames(styles.TextField, props.className)}>
-        {props.title && (
-          <span className={styles.TextField_title}>{props.title}</span>
-        )}
-        <input className={styles.TextField_input} ref={ref} {...props} />
+      <div className={classNames(styles.TextField, className)}>
+        {title && <label className={styles.TextField_title}>{title}</label>}
+        <input ref={ref} className={styles.TextField_input} {...props} />
       </div>
     );
   }
 );
 TextField.displayName = "TextField";
+
+export default TextField;
