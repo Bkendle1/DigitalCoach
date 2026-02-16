@@ -104,12 +104,12 @@ export default function NaturalConversationPage() {
       };
       const file = await getFile();
 
-      const url = (await StorageService.uploadAnswerVideo(
+      const url = await StorageService.uploadAnswerVideo(
         file,
         uuidv4()
-      )) as any;
+      );
       const dlURL = await StorageService.getDownloadUrlFromVideoUrlRef(
-        "gs://" + url.ref._location.bucket + "/" + url.ref._location.path
+        url.ref.toString()
       );
       console.log(dlURL);
 
