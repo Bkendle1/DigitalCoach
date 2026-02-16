@@ -13,7 +13,7 @@ import {
   EUserConcentrations,
   EUserProficiencies,
 } from "@App/lib/user/models";
-import { TextField } from "@App/components/molecules/TextField";
+import { TextField } from "@App/components/atoms/TextField";
 
 import { useRouter } from "next/router";
 import { useAuth } from "@App/lib/auth/AuthContextProvider";

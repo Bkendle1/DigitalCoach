@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React from "react";
+import styles from "./Checkbox.module.scss";
 
 export interface CheckBoxProps
   extends React.DetailedHTMLProps<
@@ -7,8 +8,8 @@ export interface CheckBoxProps
     HTMLInputElement
   > {}
 
-export default function Checkbox(props: CheckBoxProps) {
+export default function Checkbox({ className, ...props }: CheckBoxProps) {
   return (
-    <input {...props} type="checkbox" className={classNames(props.className)} />
+    <input {...props} type="checkbox" className={classNames(styles.checkbox, className)} />
   );
 }

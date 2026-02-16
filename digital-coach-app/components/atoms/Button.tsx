@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
+import styles from "./Button.module.scss";
 
 interface Props
   extends DetailedHTMLProps<
@@ -7,5 +9,11 @@ interface Props
   > {}
 
 export default function Button(props: Props) {
-  return <button {...props}>{props.children}</button>;
+  const { className, ...rest } = props;
+  return (
+    <button 
+    {...rest} className={classNames(styles.button, className)}>
+      {props.children}
+    </button>
+  );
 }

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Modal from "react-modal";
+import { Card, Button } from "@App/components/atoms";
+import styles from "./AddQuestionToSetModal.module.scss";
 
 Modal.setAppElement("#__next");
 
@@ -12,49 +14,44 @@ interface Props {
   question: any;
 }
 
-import { Card, Box, Select, MenuItem, Button } from "@mui/material";
-
-function AddQuestionToSetModal(props: Props) {
-  const [showModal, setShowModal] = useState(props.isOpen);
+export default function AddQuestionToSetModal(props: Props) {
+  const { isOpen, handleClose, handleAdd, questionSets, question } = props;
   const [selectedQuestionSet, setSelectedQuestionSet] = useState(props.questionSets[0].id);
 
-  const handleClose = () => {
-    setShowModal(false);
-    props.handleClose();
-  };
-
-  const handleAdd = () => {
-    props.handleAdd(selectedQuestionSet, props.question);
+   const handleAddClick = () => {
+    if (!selectedQuestionSet) return;
+    handleAdd(selectedQuestionSet, question);
     handleClose();
   };
 
   return (
-    <div>
-      <Modal isOpen={showModal} onRequestClose={handleClose} className="addModal">
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-          <Card sx={{ pl: 2, pr: 2, pb: 2 }}>
-            <h1>Add Question</h1>
-            <Select id="question-set-select" value={selectedQuestionSet} onChange={(e) => setSelectedQuestionSet(e.target.value)}>
-              {props.questionSets.map((questionSet) => (
-                <MenuItem key={"qSet." + questionSet.id} value={questionSet.id}>
-                  {questionSet.title}
-                </MenuItem>
-              ))}
-            </Select>
-			<Box sx={{ p:2 }}>
-				<Button variant="contained" onClick={handleAdd}>
-				Add
-				</Button>
-				<Button variant="contained" sx={{ backgroundColor: "red" }} onClick={handleClose}>
-				Cancel
-				</Button>
-
-			</Box>
-          </Card>
-        </Box>
-      </Modal>
-    </div>
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={handleClose}
+      className={styles.modal}
+      overlayClassName={styles.overlay}
+    >
+      <Card>
+        <h2 className={styles.title}>Add Question</h2>
+        <select
+          className={styles.select}
+          value={selectedQuestionSet}
+          onChange={(e) => setSelectedQuestionSet(e.target.value)}
+        >
+          {questionSets.map((qs) => (
+            <option key={qs.id} value={qs.id}>
+              {qs.title}
+            </option>
+          ))}
+        </select>
+        <div className={styles.buttonRow}>
+          <Button onClick={handleAddClick}>Add</Button>
+          <Button onClick={handleClose} className={styles.cancelButton}>
+            Cancel
+          </Button>
+        </div>
+      </Card>
+    </Modal>
   );
 }
 
-export default AddQuestionToSetModal;
