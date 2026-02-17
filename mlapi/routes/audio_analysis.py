@@ -69,7 +69,22 @@ async def start_audio_analysis_job(request: AudioAnalysisRequest) -> JobId:
     "/{job_id}",
     response_model=AudioAnalysisResponse,
     summary="Get the status of an audio analysis job",
-    description="Check the status of a previously started audio analysis job"
+    description="Check the status of a previously started audio analysis job",
+    responses={
+        200: {
+            "description": "Job found, response contains status",
+            "model": AudioAnalysisResponse,
+        }, 
+        400: {
+            "description": "Job ID contains whitespace",
+        },
+        404: {
+            "description": "Unable to find job",
+        },
+        500: {
+            "description": "System error when trying to fetch status",
+        },
+    },
 )
 async def get_audio_analysis_job(job_id: str, redis: Redis = Depends(get_redis)) -> AudioAnalysisResponse:
     """

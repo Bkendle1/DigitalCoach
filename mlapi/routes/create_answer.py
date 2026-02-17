@@ -60,7 +60,22 @@ async def create_answer_job(request: CreateAnswerJobRequest):
     "/{job_id}",
     response_model=CreateAnswerJobResponse,
     summary="Get the status of a create_answer job",
-    description="Check the status of a create_answer job",
+    description="Check the status of a create_answer job", 
+    responses={
+        200: {
+            "description": "Job found, response contains status",
+            "model": CreateAnswerJobResponse,
+        },
+        400: {
+            "description": "Job ID contains whitespace",
+        },
+        404: {
+            "description": "Unable to find job",
+        },
+        500: {
+            "description": "System error when trying to fetch status",
+        },
+    },
 )
 async def get_answer_job(job_id: str, redis: Redis = Depends(get_redis)):
     """

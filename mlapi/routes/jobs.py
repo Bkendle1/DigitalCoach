@@ -21,7 +21,22 @@ def get_redis():
         response_model=JobResponse,
         summary="Polls job status by job ID",
         description="Checks the status of a job using its job ID from the Redis queue.",
-        )
+        responses={
+            200: {
+                "description": "Job found, response contains status",
+                "model": JobResponse,
+            },
+            400: {
+                "description": "Job ID contains whitespace",
+            },
+            404: {
+                "description": "Unable to find job",
+            },
+            500: {
+                "description": "System error when trying to fetch status",
+            },
+        },
+    )
 async def get_job_results(job_id: str, redis: Redis = Depends(get_redis)):
     """
     Polls the status for a job using its job ID from Redis queue.
