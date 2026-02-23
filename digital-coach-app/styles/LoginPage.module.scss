@@ -24,13 +24,13 @@
   border-radius: 8px;
 }
 .loginContainer {
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .loginBox {
-  width: 100%;
+  width: 70%;
+  min-width: 20px;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -40,7 +40,7 @@
     font-style: normal;
     font-weight: 600;
     font-size: 35px;
-    line-height: 24px;
+    line-height: 1.2;
 
     display: flex;
     align-items: center;
