@@ -39,7 +39,22 @@
       margin-bottom: 2rem;
     }
   }
-  .linksText{
-    margin: 20px 50px;
-    color: black
+.linksText {
+  margin: 20px 50px;
+  color: black;
+  text-decoration: none;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+
+  &:hover {
+    color: #1e88e5;
+    transform: translateY(-2px);
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1e88e5;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
