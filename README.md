@@ -19,6 +19,15 @@ The ML API now supports live transcription through AssemblyAI, text-based scorin
 - digital-coach-app/ – Frontend (Next.js + Firebase + React).
 - ml-api/ – Backend API (Flask) handling scoring, transcription, and feedback.
 
+# General Use Flow
+1. User records an interview response.
+1. The response is stored in Firebase Firestore and Storage.
+1. A Firebase Cloud Function triggers when an answer document is created.
+1. The function sends the request to the ML API.
+1. The ML API processes the response asynchronously using a Redis queue.
+1. When processing finishes, the ML API sends results back to Firebase.
+1. Firebase updates the answer document with feedback and scoring.
+1. The frontend displays the results to the user.
 
 # Setup Instructions
 
@@ -86,6 +95,13 @@ The ML API now supports live transcription through AssemblyAI, text-based scorin
 - Transcribe audio
 - Score text
 - Generate competency feedback
+
+# ML API
+This handles the following features:
+1. Audio transcription
+1. Text scoring
+1. Feedback generation
+1. Personality estimation
 
 # Technlogies Used
 
