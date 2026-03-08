@@ -16,4 +16,12 @@
     border-radius: 4px;
     min-height: 42px;
   }
+
+  // Displays a slight shadow
+  transition: all 0.2s ease;
+  &:focus {
+    border-color: #023047;
+    box-shadow: 0 0 5px rgba(2, 48, 71, 0.5);
+    outline: none;
+  }
 }
