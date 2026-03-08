@@ -1,20 +1,29 @@
 .button {
   border: none;
   border-radius: 10px;
+  
+    padding: 10px 16px;
+  
+    font-weight: 500;
+    cursor: pointer;
+  
+    transition: opacity 120ms ease;
 
-  padding: 10px 16px;
-
-  font-weight: 500;
-  cursor: pointer;
-
-  transition: opacity 120ms ease;
-}
-
-.button:hover {
-  opacity: 0.8;
-}
-
-.button:disabled {
-  opacity: 0.50;
-  cursor: not-allowed;
-}
+    // Changes color on hover and slightly zooms
+    transition: all 0.2s ease-in-out;
+  
+    &:hover {
+      background-color: #03588c;
+      transform: scale(1.05);
+    }
+  
+    &:active {
+      transform: scale(0.95);
+    }
+  
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
