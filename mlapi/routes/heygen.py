@@ -122,7 +122,7 @@ async def start_interview(configs: HeyGenSessionRequest):
 ) 
 async def get_session_token():
     """
-    Creates session token for end user based on predefined session configurations for how the avatar looks, how it sounds, and what's its knowledge base.
+    Creates session token for end user based on predefined session configurations for how the avatar looks, how it sounds, and what's its knowledge base. You can create new context within HeyGen's LiveAvatar API website: https://app.liveavatar.com/home
 
     Returns:
         session_token (str): String containing the session token for a HeyGen LiveAvatar session.
@@ -138,8 +138,8 @@ async def get_session_token():
     interviewConfig = {
       "avatar_id": "dd73ea75-1218-4ef3-92ce-606d5f7fbc0a", # ID for one of HeyGen LiveAvatar's avatars to choose what it looks like.
       "voice_id": "c2527536-6d1f-4412-a643-53a3497dada9", # ID for one of HeyGen LiveAvatar's voices to choose how it sounds like.
-      "context_id": "595268c3-a4cf-499d-bf85-efd006fe8a47", # ID for Context created in HeyGen LiveAvatar to choose how the avatar behaves and what it knows.
-      "is_sandbox": True # HeyGen LiveAvatar has a sandbox mode so the developer can test without using credits under strict session configurations. 
+      "context_id": "e6a7bbca-1ac1-4a2f-b0f0-f6cfce199b97", # ID for Context created in HeyGen LiveAvatar to choose how the avatar behaves and what it knows. # old context: "595268c3-a4cf-499d-bf85-efd006fe8a47" 
+      "is_sandbox": True # HeyGen LiveAvatar has a sandbox mode so the developer can test without using credits under strict session configurations. (Only a subset of avatars are available in sandbox mode)
     }
 
     # Session configuration
