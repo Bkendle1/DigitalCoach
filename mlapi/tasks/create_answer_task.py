@@ -1,9 +1,4 @@
-from rq.decorators import job
-from typing import List, Optional
 from schemas.create_answer import (
-    # TextStructureResult,
-    # TimelineStructure,
-    # BigFiveScoreResult,
     CreateAnswerEvaluation,
     OverallCompetencyFeedback,
 )
@@ -13,13 +8,13 @@ from redisStore.myconnection import get_redis_con
 from redisStore.queue import add_task_to_queue
 
 # Functions
-from tasks.assemblyai_api import detect_audio_sentiment
+from tasks.audio_analysis import detect_audio_sentiment
 from tasks.helpers.create_answer_helpers import compute_overall_score
 from tasks.helpers.av_processing import (
     calculate_overall_audio_sentiment,
-    grab_top_five_keywords,
+    # grab_top_five_keywords,
 )
-
+from redisStore.myconnection import get_redis_con
 from tasks.helpers.competency_feedback import generate_competency_feedback
 from utils.logger_config import get_logger
 from rq.job import Job
@@ -27,13 +22,12 @@ from rq.job import Job
 logger = get_logger(__name__)
 
 
-@job("default", connection=get_redis_con())
 def create_answer(
     video_url: str,
     audio_job_id: str,
 ) -> CreateAnswerEvaluation:
     """
-    Creates feedback answer based on results of audio analysis (can be extended in the future for facial analysis).
+    Compute metrics for feedback based on results of audio analysis (can be extended in the future for facial analysis).
 
     Args:
         video_url (str): URL or path to the video file
@@ -61,7 +55,7 @@ def create_answer(
 
     ### Process analysis results ### 
 
-    # Audio sentiment analysis
+    # Compute audio sentiment analysis scores
 
     # Compute the STAR score for the response
     

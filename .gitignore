@@ -1,7 +1,7 @@
 .DS_Store
 /mit-dataset/*
 /ml/dataset/*
-
+.vscode
 # Logs
 logs
 *.log
@@ -135,7 +135,6 @@ dist
 *.env
 venv
 
-/ml-api/data/*
 /ml-api/.env
 /ml-api/backend/__pycache__/
 
@@ -147,6 +146,3 @@ digital-coach-firebase-adminsdk.json
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
-package-lock.json
-yarn.lock
-package-lock.json
