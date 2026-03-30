@@ -8,7 +8,7 @@ from tasks.starscores import predict_star_scores
 from utils.logger_config import get_logger
 from schemas import (
     SentimentAnalysisRequest,
-    AnalyzeInterviewRequest
+    AnalyzeInterviewRequest, StarFeedbackRequest
 )
 
 logger = get_logger(__name__)
@@ -32,18 +32,17 @@ def start_audio_analysis(req: SentimentAnalysisRequest) -> str:
 
     return job.id # returns job id for polling later
 
-def start_star_feedback_analysis(text: str) -> str:
+def start_star_feedback_analysis(req: StarFeedbackRequest) -> str:
     """
     Start the STAR feedback analysis job by adding it to the queue.
     
     Args:
-        text (str): The text to analyze using the STAR method.
+        req (SentimentAnalysisRequest): The request body of the STAR feedback analysis job.
     Returns:
         str: The job ID of the queue STAR feedback analysis job.
     """
-    data = {"text": text} # predict_star_scores expects a dict with "text" key
     # Enqueue STAR feedback analysis job
-    job = add_task_to_queue("high", predict_star_scores, data)
+    job = add_task_to_queue("high", predict_star_scores, req.text)
 
     return job.id
 

@@ -1,44 +1,25 @@
 from transformers.pipelines import pipeline
-from typing import Any, TypedDict
+from typing import Any
+from schemas import StarClassification, StarFeedbackEvaluation, StarPercentages
 
 
-# Percentage of the total response that is Action, Result, Situation, Task
-class percentages(TypedDict):
-    """Distribution of STAR components"""
-    action: float
-    result: float
-    situation: float
-    task: float
-
-
-# StarScore type
-class StarScore(TypedDict):
-    """STAR results for response"""
-    fufilledStar: bool
-    percentages: percentages
-    classifications: list[list[str]]
-
-
-def predict_star_scores(*args) -> dict[str, Any]:
+def predict_star_scores(text: str) -> StarFeedbackEvaluation:
     """
-    Predict STAR scores for feedback
-    """
-    """
-    Predicts star scores
+    Predicts STAR scores and provides feedback.
     Parameters:
     data (dict: {"text": (The sentence to be predicted: str)}): The data to be predicted on
     Returns:
-    str: The predicted star label
+    str: The predicted STAR label
     """
-    #should only need to be set once
+    # Should only need to be set once
     classifier = pipeline("text-classification", model="dnttestmee/starclass_bert")  # type: ignore
     def predict(sentence) -> str:
         """
-        Predicts the star label
+        Predicts a sentence's STAR label.
         Parameters:
-        sentence (str): The single sentence to be predicted
+        sentence (str): The sentence to predict the STAR label of
         Returns:
-        str: The predicted star label
+        str: The predicted STAR label
         """
         labels = {
             "LABEL_0": "Action",
@@ -47,103 +28,98 @@ def predict_star_scores(*args) -> dict[str, Any]:
             "LABEL_3": "Task",
         }
         model_output: Any = classifier(sentence)
-        # Single Label output.
+        # Single label output
         result: str = labels[str(model_output[0]["label"])]
         return result
 
-    # Get the text from the data.
-    data = args[0]["text"]
-    # Split the text into sentences.
-    sentences: list = data.split(".")
-    # Contains sentence and label sentence type. 
-    # clasifications: list[list[str]]
-    classifications = []
+    # Split the text into sentences
+    sentences: list = text.split(".")
+
+    # Contains sentence and label sentence type
+    classifications: list[StarClassification] = []
     # Classify each sentence
     for sentence in sentences:
         if sentence == "":
             continue
-        classifications.append([sentence, (predict(sentence))])
+        classifications.append(StarClassification(
+            sentence=sentence,
+            category=predict(sentence)
+        ))
+
     # Figure out what percentage of the total text is Action, Result, Situation, Task
     action = 0
     result = 0
     situation = 0
     task = 0
     for i in classifications:
-        if i[1] == "Action":
+        if i.category == "Action":
             action += 1
-        elif i[1] == "Result":
+        elif i.category == "Result":
             result += 1
-        elif i[1] == "Situation":
+        elif i.category == "Situation":
             situation += 1
-        elif i[1] == "Task":
+        elif i.category == "Task":
             task += 1
     total = action + result + situation + task
+
+    # STAR is fulfilled if all categories are each hit by a sentence
+    fulfilled_star = action > 0 and result > 0 and situation > 0 and task > 0
+
     # Round to 2 decimal places
-    action: float = round(action / total * 100, 2)
-    result: float = round(result / total * 100, 2)
-    situation: float = round(situation / total * 100, 2)
-    task: float = round(task / total * 100, 2)
-    if action > 0 and result > 0 and situation > 0 and task > 0:
-        # If hits all categories, return True
-        return {
-            "fufilledStar": True,
-            "percentages": {
-                "action": action,
-                "result": result,
-                "situation": situation,
-                "task": task,
-            },
-            "classifications": classifications,
-        }
-    return {
-        "fufilledStar": False,
-        "percentages": {
-            "action": action,
-            "result": result,
-            "situation": situation,
-            "task": task,
-        },
-        "classifications": classifications,
-    }
+    percentages = StarPercentages(
+        action=round(action / total * 100, 2),
+        result=round(result / total * 100, 2),
+        situation=round(situation / total * 100, 2),
+        task=round(task / total * 100, 2)
+    )
 
+    # Evaluate feedback
+    feedback = percentage_feedback(percentages)
 
-def percentageFeedback(percentages):
+    return StarFeedbackEvaluation(
+        fulfilled_star=fulfilled_star,
+        percentages=percentages,
+        classifications=classifications,
+        feedback=feedback
+    )
+
+def percentage_feedback(percentages: StarPercentages) -> list[str]:
     """
-    Set Pre-determined feedback based on the final STAR value produced
+    Provides feedback based on the final STAR values produced.
     """
     feedback = []
     if (
-        percentages["action"] > 0
-        and percentages["result"] > 0
-        and percentages["situation"] > 0
-        and percentages["task"] > 0
+        percentages.action > 0
+        and percentages.result > 0
+        and percentages.situation > 0
+        and percentages.task > 0
     ):
         feedback.append(
             "You have fulfilled all of the parts the STAR method. Well done!"
         )
 
-    if percentages["action"] < 60:
+    if percentages.action < 60:
         feedback.append(
-            "You need to work on the Action category. Percentage of your Response that is Action: "
-            + str(percentages["action"])
+            "You need to work on the Action category. Percentage of your response that is Action: "
+            + str(percentages.action)
             + " The Action category is the most important part of the STAR method. Try to focus on what you did and how you did it. The expected percentage for the Action category is 60% of your total response."
         )
-    if percentages["result"] < 15:
+    if percentages.result < 15:
         feedback.append(
-            "You need to work on the Result category. Percentage of your Response that is Result:"
-            + str(percentages["result"])
-            + "The Result category is the most important part of the STAR method. Try to focus on outcomes related to your task or action. The expected percentage for the Result category is 10% of your total response."
+            "You need to work on the Result category. Percentage of your response that is Result:"
+            + str(percentages.result)
+            + "The Result category is the most important part of the STAR method. Try to focus on outcomes related to your task or action. The expected percentage for the Result category is 15% of your total response."
         )
-    if percentages["situation"] < 15:
+    if percentages.situation < 15:
         feedback.append(
             "You need to work on the Situation category. Percentage of your Response that is Situation:"
-            + str(percentages["situation"])
-            + "Try to focus on the context of the Situation and the circumstances that lead you to the task. The expected percentage for the Result category is 10% of your total response."
+            + str(percentages.situation)
+            + "Try to focus on the context of the Situation and the circumstances that lead you to the task. The expected percentage for the Result category is 15% of your total response."
         )
-    if percentages["task"] < 10:
+    if percentages.task < 10:
         feedback.append(
             "You need to work on the Task category. Percentage of your Response that is Task:"
-            + str(percentages["task"])
+            + str(percentages.task)
             + "The Task category is the most important part of the STAR method. Try to focus on the task itself. The expected percentage for the Task category is 10% of your total response."
         )
 

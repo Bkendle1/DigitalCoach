@@ -7,7 +7,7 @@ import pytest
 import time
 from fastapi.testclient import TestClient
 from main import app
-from tasks.starscores import percentageFeedback
+from tasks.starscores import percentage_feedback
 
 client = TestClient(app)
 
@@ -72,7 +72,7 @@ def test_star_scores():
         assert len(classifications[0]) == 2
 
     # Generate feedback from percentages and verify structure
-    feedback = percentageFeedback(percentages)
+    feedback = percentage_feedback(percentages)
     assert isinstance(feedback, list)
 
     # Verify at least one feedback message
