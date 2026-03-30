@@ -15,6 +15,14 @@ import os
 AAPI_KEY = os.getenv("AAPI_KEY")
 logger = get_logger(__name__)
 
+def compute_wpm(transcript_text, duration_seconds):
+    if not transcript_text or duration_seconds <= 0:
+        return 0
+
+    words = transcript_text.split()
+    word_count = len(words)
+
+    return (word_count / duration_seconds) * 60
 
 @job("high", connection=get_redis_con())
 def detect_audio_sentiment(video_url: str) -> AudioSentimentResult:
@@ -120,9 +128,39 @@ def detect_audio_sentiment(video_url: str) -> AudioSentimentResult:
 
         logger.info(f"Transcript processing completed for {video_url}")
         logger.info(f"transcript: {transcript.text}")
+        if transcript.text and result.clip_length_seconds > 0:
+            wpm = compute_wpm(transcript.text, result.clip_length_seconds)
+            result.wpm = wpm
+
+            print("WPM:", wpm)
 
     except Exception as e:
         logger.error(f"Exception in audio sentiment detection: {str(e)}")
         result.errors = str(e)
 
+    # Compute sentiment scores based on analysis
+    def compute_sentiment_score(sentiments):
+        pos = neg = neu = 0
+
+        for s in sentiments:
+            if s.sentiment == "POSITIVE":
+                pos += s.confidence
+            elif s.sentiment == "NEGATIVE":
+                neg += s.confidence
+            else:
+                neu += s.confidence
+
+        total = pos + neg + neu
+        return (pos - neg) / total if total > 0 else 0
+
+    if result.sentiment_analysis:
+        raw_score = compute_sentiment_score(result.sentiment_analysis)
+
+        final_score = int((raw_score + 1)) * 50
+
+        logger.info(f"Raw Sentiment Score (-1 to 1): {raw_score}")
+        logger.info(f"Final Sentiment Score (0-100): {final_score}")
+
+        result.sentiment_score = final_score 
+    
     return result

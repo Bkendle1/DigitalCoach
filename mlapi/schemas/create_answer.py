@@ -110,6 +110,8 @@ class AudioSentimentResult(BaseModel):
     highlights: List[HighlightData] = Field(default_factory=list)
     iab_results: IABResult = Field(default_factory=IABResult)
     clip_length_seconds: float = 0.0
+    sentiment_score: float = 0.0
+    wpm: float = 0.0
     errors: Optional[str] = None
 
 
