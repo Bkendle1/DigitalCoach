@@ -26,6 +26,50 @@ class OverallCompetencyFeedback(BaseModel):
     summary: str # Summary of overall performance including evaluations for individual competencies
 
 
+class StarBreakdown(BaseModel):
+    """
+    LLM-identified breakdown of each STAR component in the candidate's response
+    """
+
+    situation: str  # Situation described by the candidate
+    task: str       # Task or goal described by the candidate
+    action: str     # Actions the candidate took
+    result: str     # Measurable results or outcomes
+
+
+class LLMStarPercentages(BaseModel):
+    """
+    LLM-estimated percentage of response dedicated to each STAR component
+    """
+
+    situation_percentage: int
+    task_percentage: int
+    action_percentage: int
+    result_percentage: int
+
+
+class LLMStarFeedback(BaseModel):
+    """
+    LLM response for STAR method analysis
+    """
+
+    star_breakdown: StarBreakdown           # Identified STAR components
+    star_percentages: LLMStarPercentages    # Estimated percentage breakdown
+    overall_score: float                    # Score rating STAR adherence (0-10)
+    feedback: str                           # Actionable feedback to improve STAR usage
+
+
+class InterviewFeedbackResponse(BaseModel):
+    """
+    Response model for an interview feedback analysis job
+    """
+
+    job_id: str
+    status: JobStatus
+    result: dict | None = None
+    error: str | None = None
+
+
 class StarFeedbackRequest(BaseModel):
     """
     Request model for STAR feedback
