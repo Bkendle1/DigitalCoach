@@ -84,10 +84,10 @@ def predict_star_scores(*args) -> dict[str, Any]:
     situation: float = round(situation / total * 100, 2)
     task: float = round(task / total * 100, 2)
     percentages_dict = {
-        "action": action,
-        "result": result,
         "situation": situation,
         "task": task,
+        "action": action,
+        "result": result,
     }
     # Convert list-of-lists to list of dicts matching StarClassification schema
     classifications_out = [

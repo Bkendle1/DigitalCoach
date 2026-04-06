@@ -14,7 +14,7 @@ from data.interviews import getTranscriptById
 from services.firebase_setup import get_firestore_client
 from schemas.feedback import LLMStarFeedback, OverallCompetencyFeedback
 from schemas.interview import Feedback, OverallCompetency, CompetencyMetric
-from tasks.prompts import STAR_PROMPT, COMPETENCY_FEEDBACK_PROMT
+from tasks.prompts import STAR_PROMPT, COMPETENCY_FEEDBACK_PROMPT
 from utils.logger_config import get_logger
 
 load_dotenv()
@@ -100,7 +100,7 @@ async def analyze_competency_feedback(user_id: str, interview_id: str) -> Overal
     transcript = await getTranscriptById(user_id, interview_id)
 
     model_messages = [
-        {"role": "system", "content": COMPETENCY_FEEDBACK_PROMT},
+        {"role": "system", "content": COMPETENCY_FEEDBACK_PROMPT},
         {"role": "user", "content": transcript},
     ]
 

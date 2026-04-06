@@ -78,7 +78,7 @@ def start_interview_analysis(req: AnalyzeInterviewRequest) -> str:
     Args:
         req (AnalyzeInterviewRequest): Request body that contains the fields needed to perform the various interview analysis tasks.
     Returns:
-        feedback_job_id (str): The job ID of the queued feedback analysis job.
+        str: The job ID of the queued feedback analysis job.
     """
     # Enqueue audio sentiment analysis job
     sentiment_analysis_request = SentimentAnalysisRequest(user_id=req.user_id, interview_id=req.interview_id)
