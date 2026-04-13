@@ -116,7 +116,7 @@ def test_audio_analysis(monkeypatch):
         )
 
     # Apply our mock implementation
-    import mlapi.tasks.audio_analysis
+    import mlapi.tasks.ml_tasks
 
     monkeypatch.setattr(
         tasks.audio_analysis, "detect_audio_sentiment", mock_detect_audio_sentiment

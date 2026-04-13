@@ -1,7 +1,8 @@
 from schemas import (
     SentimentAnalysisResult,
     StarFeedbackEvaluation,
-    CompetencyFeedback
+    CompetencyFeedback,
+    OverallAnalysisResponse
 )
 from utils.logger_config import get_logger
 import os
@@ -13,7 +14,8 @@ from services.firebase_init import get_firestore_client
 from tasks.prompts import (
     SENTIMENT_ANALYSIS_PROMPT,
     STAR_PROMPT,
-    COMPETENCY_FEEDBACK_PROMPT
+    COMPETENCY_FEEDBACK_PROMPT,
+    OVERALL_FEEDBACK_PROMPT
 ) 
 logger = get_logger(__name__)
 
@@ -201,7 +203,7 @@ async def analyze_competencies(user_id: str, interview_id: str):
         interview_id (str): Interview id of the interview undergoing STAR analysis.
 
     Returns:
-        result: Competency analysis results according to StarFeedbackEvaluation schemas 
+        result: Competency analysis results.
     """
 
     class LLMResponse(BaseModel):
@@ -225,7 +227,7 @@ async def analyze_competencies(user_id: str, interview_id: str):
     # get interview's transcript
     transcript = await getTranscriptById(user_id, interview_id)
 
-# initialize messsages for LLM
+    # initialize messsages for LLM
     # system messages provide additional context to the LLM before inference
     # user messages are messages that the LLM responds to
     model_messages = [
@@ -235,7 +237,7 @@ async def analyze_competencies(user_id: str, interview_id: str):
         },
         {
             "role": "user",
-            "content": transcript # pass the transcript to the LLM for star analysis
+            "content": transcript # pass the transcript to the LLM for competencies analysis
         }
     ]
 
@@ -288,3 +290,74 @@ async def analyze_competencies(user_id: str, interview_id: str):
 
         raise ValidationError(f"LLM competencies analysis on interview={interview_id} is in invalid shape: {llm_response} Reason: {e}") # to make sure the RQ job returns a failed status, we must raise an exception
 
+async def overall_analysis(user_id: str, interview_id: str) -> OverallAnalysisResponse:
+    """
+    Perform the final overall analysis on the interview taking into account metrics like WPM and filler word count to produce feedback about the user's interview performance in general and compute a final overall score reflecting this performance. This should be a job performed by a Redis RQ Worker.
+
+    Args:
+        user_id (str): User id that owns the interview to be analyzed.
+        interview_id (str): Interview id of the interview undergoing STAR analysis.
+
+    Returns:
+        result (OverallAnalysisResponse): Overall analysis results, i.e. overall feedback and overall score.
+    """
+
+    logger.info(f"Starting final overall analysis on intervew={interview_id}...")
+
+    # extract relevant environment variables
+    base_url = os.getenv("LM_BASE_URL")
+    api_key = os.getenv("LM_API_KEY")
+    model_name = os.getenv("MODEL")
+
+    # initialize OpenAI-compliant LLM client
+    client = OpenAI(base_url=base_url, api_key=api_key)
+
+    # get interview's transcript
+    transcript = await getTranscriptById(user_id, interview_id)
+
+    # get the WPM 
+    wpm = 0
+    # get the filler word count
+    filler_count = 0
+
+    # initialize messsages for LLM
+    # system messages provide additional context to the LLM before inference
+    # user messages are messages that the LLM responds to
+    model_messages = [
+        {
+            "role": "system",
+            "content": COMPETENCY_FEEDBACK_PROMPT
+        },
+        {
+            "role": "user",
+            "content": f"TRANSCRIPT: {transcript}\nWPM: {wpm}\nFILLER WORD COUNT: {filler_count}" # pass the transcript, wpm, and filler word count to the LLM for final overall analysis
+        },
+    ]
+
+    # send task to local LLM
+    try:
+        response = client.chat.completions.create(
+            model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
+            messages = model_messages,
+        )
+    except Exception as e:
+        logger.error(f"Error communicating with LLM: {e}")
+        logger.error(f"Overall analysis for interview={interview_id} failed. Will attempt a retry...")
+        raise BaseException(e) # raise exception to set failed job status
+    
+    db = get_firestore_client()
+
+    # parse and return LLM response
+    try:
+        logger.info(f"Verifying LLM overall analysis on interview={interview_id}...")
+
+        llm_response = response.choices[0].message.content
+        # extract LLM's JSON response string
+        logger.info(f"LLM response={llm_response}")
+
+        return
+    
+    except ValidationError as e:
+        logger.error(f"LLM overall analysis on interview={interview_id} is in invalid shape. Reason: {e} Will attempt to retry...")
+
+        raise ValidationError(f"LLM overall analysis on interview={interview_id} is in invalid shape: {llm_response} Reason: {e}") # to make sure the RQ job returns a failed status, we must raise an exception

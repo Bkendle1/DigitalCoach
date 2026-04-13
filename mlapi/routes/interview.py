@@ -43,8 +43,14 @@ async def create_interview(request: CreateInterviewRequest):
         response = start_interview_analysis(analysisRequest) # start interview analysis and get the analysis job ids
 
         logger.info(f"Analysis tasks on interview={request.interview.id} for user={request.userId} successful!")
+
+        # set is_analyzed to true
+        
+
         return CreateInterviewResponse(sentiment_job_id=response.sentiment_job_id,
-                                       star_job_id=response.star_job_id, competency_job_id=response.competency_job_id, success=True)
+                                       star_job_id=response.star_job_id, competency_job_id=response.competency_job_id,
+                                       overall_job_id=response.overall_job_id,
+                                       success=True)
     except Exception as e:
         logger.error(f"Unexpected internal server error occurred during interview analysis id={request.interview.id}: {e}")
         raise HTTPException(

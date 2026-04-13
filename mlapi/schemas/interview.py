@@ -66,7 +66,8 @@ class CreateInterviewResponse(BaseModel):
     sentiment_job_id: str = ""
     star_job_id: str = ""
     competency_job_id: str = ""
-    
+    overall_job_id: str = ""
+
     success: bool
 
 class AnalyzeInterviewRequest(BaseModel):
@@ -83,6 +84,7 @@ class AnalyzeInterviewResponse(BaseModel):
     sentiment_job_id: str
     star_job_id: str
     competency_job_id: str
+    overall_job_id: str
 
 class GetInterviewRequest(BaseModel):
     """

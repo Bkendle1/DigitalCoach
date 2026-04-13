@@ -100,3 +100,22 @@ class StarFeedbackResponse(BaseModel):
     status: JobStatus
     result: StarFeedbackEvaluation | None = None
     error: str | None = None
+
+class OverallAnalysisRequest(BaseModel):
+    """
+    Request model for the final overall analysis feedback job.
+    Args:
+        user_id: The id of the user whose interview we're analyzing
+        interview_id: The id of the interview who owns the transcript to analyze
+    """
+    user_id: str
+    interview_id: str
+
+
+class OverallAnalysisResponse(BaseModel):
+    """
+    Reponse model for the final overall analysis feedback job.
+    Args:
+    """
+    overall_feedback: str # user's overall feedback on interview performance in general
+    overall_score: int # user's overall interview score
