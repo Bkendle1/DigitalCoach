@@ -1,19 +1,24 @@
 # Handles orchestration of tasks for interview videos, e.g. starting analysis jobs. 
 # Can be called by route handlers.
 
-from tasks.audio_analysis import detect_audio_sentiment
+from tasks.audio_analysis import (
+    detect_audio_sentiment,
+    star_analysis,
+) 
 from redisStore.queue import add_task_to_queue
 from tasks.create_answer_task import create_answer
 from tasks.starscores import predict_star_scores
 from utils.logger_config import get_logger
 from schemas import (
     SentimentAnalysisRequest,
-    AnalyzeInterviewRequest
+    StarFeedbackRequest,
+    AnalyzeInterviewRequest,
+    AnalyzeInterviewResponse
 )
 
 logger = get_logger(__name__)
 
-def start_audio_analysis(req: SentimentAnalysisRequest) -> str:
+def start_sentiment_analysis(req: SentimentAnalysisRequest) -> str:
     """
     Start the audio analysis job by adding it to the queue.
     
@@ -32,7 +37,7 @@ def start_audio_analysis(req: SentimentAnalysisRequest) -> str:
 
     return job.id # returns job id for polling later
 
-def start_star_feedback_analysis(text: str) -> str:
+def start_star_feedback_analysis(req: StarFeedbackRequest) -> str:
     """
     Start the STAR feedback analysis job by adding it to the queue.
     
@@ -41,31 +46,39 @@ def start_star_feedback_analysis(text: str) -> str:
     Returns:
         str: The job ID of the queue STAR feedback analysis job.
     """
-    data = {"text": text} # predict_star_scores expects a dict with "text" key
+
+    logger.info(f"Started STAR analysis job for interview={req.interview_id}.")
+    
     # Enqueue STAR feedback analysis job
-    job = add_task_to_queue("high", predict_star_scores, data)
+    job = add_task_to_queue("high", star_analysis, req.user_id, req.interview_id)
 
-    return job.id
+    logger.info(f"STAR analysis for interview={req.interview_id} job ID={job.id} enqueued!")
 
-def start_interview_analysis(req: AnalyzeInterviewRequest) -> str:
+    return job.id # return job id for polling
+
+def start_interview_analysis(req: AnalyzeInterviewRequest) -> AnalyzeInterviewResponse:
     """
     Start the interview analysis job by adding it to the task queue.
     
-    Currently, this function only starts the audio sentiment job but can be extended to also start facial analysis.
+    All analysis tasks are to start here.
 
     Args:
         req (AnalyzeInterviewRequest): Request body that contains the fields needed to perform the various interview analysis tasks.
     Returns:
-        answer_job_id (str): The job ID of the queued interview analysis job.
+        response (AnalyzeInterviewResponse): The job IDs of the queued interview analysis jobs.
     """
-    # Enqueue audio analysis job on the given video url
+    # Enqueue audio analysis job
     sentiment_analysis_request = SentimentAnalysisRequest(user_id=req.user_id, interview_id=req.interview_id)
 
-    audio_job = start_audio_analysis(sentiment_analysis_request)
+    sentiment_job_id = start_sentiment_analysis(sentiment_analysis_request)
 
+    # Enqueue STAR analysis job
+    star_analysis_request = StarFeedbackRequest(user_id=req.user_id, interview_id=req.interview_id)
+
+    star_job_id = start_star_feedback_analysis(star_analysis_request)
     # Invoke other tasks here...
 
-    return audio_job 
+    return AnalyzeInterviewResponse(sentiment_job_id=sentiment_job_id, star_job_id=star_job_id) 
 
     # Enqueue the create_answer job that's dependent on the analysis job(s) 
     # answer_job = add_task_to_queue(

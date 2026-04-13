@@ -8,7 +8,7 @@ from schemas import (
     JobId,
     JobStatus
 )
-from services.orchestrator import start_audio_analysis
+from services.orchestrator import start_sentiment_analysis
 from utils.logger_config import get_logger
 from redisStore.myconnection import get_redis_con
 from rq.job import Job
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/api/llm", tags=["LLM"])
 )
 async def sentiment_analysis(request: SentimentAnalysisRequest) -> JobId: 
     # start audio analysis job
-    job_id = start_audio_analysis(request)
+    job_id = start_sentiment_analysis(request)
 
     return JobId(job_id=job_id)
 

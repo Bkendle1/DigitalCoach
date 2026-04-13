@@ -23,7 +23,7 @@ router = APIRouter(prefix="/api/interview", tags=["interview"])
     "/",
     response_model=CreateInterviewResponse,
     summary="Create partially populated interview given after user finishes their interview.",
-    description="Creates interview document populated with initial data from user's interview before it gets analyzed.",
+    description="Creates interview document populated with initial data from user's interview before it gets analyzed. Then, perform analysis tasks.",
 )
 async def create_interview(request: CreateInterviewRequest):
     logger.info(f"Attempting to create new interview document for user={request.userId}...")
@@ -40,8 +40,10 @@ async def create_interview(request: CreateInterviewRequest):
             interview_id=request.interview.id
         )
 
-        job_id = start_interview_analysis(analysisRequest)
-        return CreateInterviewResponse(job_id=job_id, success=True)
+        response = start_interview_analysis(analysisRequest) # start interview analysis and get the analysis job ids
+
+        logger.info(f"Analysis tasks on interview={request.interview.id} for user={request.userId} successful!")
+        return CreateInterviewResponse(sentiment_job_id=response.sentiment_job_id, star_job_id=response.star_job_id, success=True)
     except Exception as e:
         logger.error(f"Unexpected internal server error occurred during interview analysis id={request.interview.id}: {e}")
         raise HTTPException(

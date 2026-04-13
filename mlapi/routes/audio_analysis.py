@@ -45,7 +45,7 @@ async def start_audio_analysis_job(request: SentimentAnalysisRequest) -> JobId:
         logger.info(f"Started audio analysis job for URL: {video_url}")
         
         # Queue the audio analysis job
-        job_id = orchestrator.start_audio_analysis(video_url)
+        job_id = orchestrator.start_sentiment_analysis(video_url)
         
         logger.info(f"Successfully started audio analysis job: {job_id}")
         return JobId(job_id=job_id)

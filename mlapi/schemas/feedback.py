@@ -29,39 +29,56 @@ class OverallCompetencyFeedback(BaseModel):
 class StarFeedbackRequest(BaseModel):
     """
     Request model for STAR feedback
-    """
     
-    text: str
-
-class StarClassification(BaseModel):
+    Args:
+        user_id: The id of the user whose interview we're analyzing
+        interview_id: The id of the interview who owns the transcript to analyze
     """
-    Classification result for a single sentence
+    user_id: str
+    interview_id: str
+    
+
+class StarBreakdown(BaseModel):
+    """
+    The deconstruction of a user's response against the STAR framework.
     """
 
-    sentence: str
-    category: str
+    situation: str # the situation the user described
+    task: str # the task/goal the user described
+    action: str # the action the user took 
+    result: str # the measurable result/outcome
 
 
 class StarPercentages(BaseModel):
     """
-    Percentage breakdown of STAR components
+    Percentage breakdown of STAR components for a single response (the percentages are ints to skip conversions)
     """
 
-    action: float
-    result: float
-    situation: float
-    task: float
+    situation_percentage: int
+    task_percentage: int
+    action_percentage: int
+    result_percentage: int
+
+class StarAnalysisResult(BaseModel):
+    """
+    Result of STAR analysis for one question-answer pair.
+    """
+    question: str # Question asked by interview
+    star_breakdown: StarBreakdown # Decomposition of answer against STAR
+    star_percentages: StarPercentages
 
 
 class StarFeedbackEvaluation(BaseModel):
     """
     Results after performing STAR feedback analysis
     """
-
-    fulfilled_star: bool
-    percentages: StarPercentages
-    classifications: List[StarClassification]
-    feedback: List[str]
+    star_analysis: List[StarAnalysisResult]
+    overall_score: int
+    feedback: str
+    # fulfilled_star: bool
+    # percentages: StarPercentages
+    # classifications: List[StarClassification]
+    # feedback: List[str]
 
 class StarFeedbackResponse(BaseModel):
     """
