@@ -8,8 +8,6 @@ from schemas.interview import (
     Interview,
     Feedback,
     Metrics,
-    OverallCompetency,
-    CompetencyMetric,
 )
 from google.api_core import exceptions
 from pydantic import ValidationError

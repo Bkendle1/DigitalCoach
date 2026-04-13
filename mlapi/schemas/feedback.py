@@ -12,23 +12,34 @@ class CompetencyFeedback(BaseModel):
     """
 
     score: float # Overall score
-    evaluation: str # States whether or not the user was compotent in some field 
+    summary: str # States whether or not the user was compotent in some field 
 
 class OverallCompetencyFeedback(BaseModel):
     """
     Overall Competency Feedback
     """
 
-    communication_clarity: CompetencyFeedback  # Evaluation on communication clarity
+    clarity: CompetencyFeedback  # Evaluation on communication clarity
     confidence: CompetencyFeedback # Evaluation on confidence
     engagement: CompetencyFeedback # Evaluation on engagement
-    overall_score: float # Overall score
-    summary: str # Summary of overall performance including evaluations for individual competencies
+    star: CompetencyFeedback # Evaluaton on STAR
+    # overall_score: float # Overall score
+    # summary: str # Summary of overall performance including evaluations for individual competencies
 
+class CompetencyFeedbackRequest(BaseModel):
+    """
+    Request model for competency feedback.
+
+    Args:
+        user_id: The id of the user whose interview we're analyzing
+        interview_id: The id of the interview who owns the transcript to analyze
+    """
+    user_id: str
+    interview_id: str
 
 class StarFeedbackRequest(BaseModel):
     """
-    Request model for STAR feedback
+    Request model for STAR feedback.
     
     Args:
         user_id: The id of the user whose interview we're analyzing

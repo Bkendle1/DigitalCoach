@@ -1,17 +1,19 @@
 from schemas import (
     SentimentAnalysisResult,
-    StarFeedbackEvaluation
+    StarFeedbackEvaluation,
+    CompetencyFeedback
 )
 from utils.logger_config import get_logger
 import os
 from openai import OpenAI
-from pydantic import ValidationError
+from pydantic import ValidationError, BaseModel
 from dotenv import load_dotenv
 from data.interviews import getTranscriptById
 from services.firebase_init import get_firestore_client
 from tasks.prompts import (
     SENTIMENT_ANALYSIS_PROMPT,
-    STAR_PROMPT
+    STAR_PROMPT,
+    COMPETENCY_FEEDBACK_PROMPT
 ) 
 logger = get_logger(__name__)
 
@@ -75,18 +77,37 @@ async def detect_audio_sentiment(user_id: str, interview_id: str) -> SentimentAn
         validated_data = SentimentAnalysisResult.model_validate_json(llm_response) # parses JSON string, checks if it fits our response schema and instantiates our schema if successful 
         logger.info(f"Sentiment Analysis on interview={interview_id} successful!")
 
-        # add sentiment analysis to user's interview as a JSON string to be parsed later and converted into an overall sentiment
+        # determine overall sentiment
+        data = validated_data.model_dump() # extract sentiment analysis from verified schema
+        positive = negative = neutral = 0 # initialize counters
+        
+        for res in data["sentiment_analysis"]:
+            if res["sentiment"] == "POSITIVE":
+                positive += 1
+            elif res["sentiment"] == "NEGATIVE":
+                negative += 1
+            elif res["sentiment"] == "NEUTRAL":
+                neutral += 1
+
+        overall_sentiment = "" 
+        if max(positive, negative, neutral) == positive:
+            overall_sentiment = "POSITIVE"
+        elif max(positive, negative, neutral) == negative:
+            overall_sentiment = "NEGATIVE"
+        else:
+            overall_sentiment = "NEUTRAL"
+
         # get reference to interview
         interviewRef = db.collection("users").document(user_id).collection("interviews").document(interview_id)
-        await interviewRef.update({"sentiment": validated_data.model_dump_json()})
+        await interviewRef.update({"sentiment": overall_sentiment})
 
         return validated_data
     except ValidationError as e:
         logger.error(f"LLM sentiment analysis on interview={interview_id} is in invalid shape. Reason: {e} Will attempt to retry...")
-        # return SentimentAnalysisResult(error=f"LLM sentiment analysis on interview={interview_id} is in invalid shape. Reason: {e}")
+
         raise ValidationError(f"LLM sentiment analysis on interview={interview_id} is in invalid shape: {llm_response} Reason: {e}") # to make sure the RQ job returns a failed status, we must raise an exception
 
-async def star_analysis(user_id: str, interview_id: str):
+async def star_analysis(user_id: str, interview_id: str) -> CompetencyFeedback:
     """
     Perform STAR analysis using local LLM. This should be a job performed by a Redis RQ Worker.
 
@@ -167,3 +188,103 @@ async def star_analysis(user_id: str, interview_id: str):
     except ValidationError as e:
         logger.error(f"LLM STAR analysis on interview={interview_id} is in invalid shape. Reason: {e} Will attempt to retry...")
         raise ValidationError(f"LLM STAR analysis on interview={interview_id} is in invalid shape. Reason: {e} Will attempt to retry...") # raise error to set RQ job to failed status
+
+async def analyze_competencies(user_id: str, interview_id: str):
+    """
+    Perform analysis on competencies (i.e. engagement, clarity, and confidence). This should be a job performed by a Redis RQ Worker.
+
+    
+    Note: STAR is technically a competency but it deserves its own analysis due to its complex nature relative to analyzing the other competencies.
+
+    Args:
+        user_id (str): User id that owns the interview to be analyzed.
+        interview_id (str): Interview id of the interview undergoing STAR analysis.
+
+    Returns:
+        result: Competency analysis results according to StarFeedbackEvaluation schemas 
+    """
+
+    class LLMResponse(BaseModel):
+        """
+        Response schema to define the shape of the expected LLM response for competency analysis.
+        """
+        clarity: CompetencyFeedback  # Evaluation on communication clarity
+        confidence: CompetencyFeedback # Evaluation on confidence
+        engagement: CompetencyFeedback # Evaluation on engagement
+
+    logger.info(f"Starting competencies analysis on interview={interview_id}...")
+
+    # extract relevant environment variables
+    base_url = os.getenv("LM_BASE_URL")
+    api_key = os.getenv("LM_API_KEY")
+    model_name = os.getenv("MODEL")
+
+    # initialize OpenAI-compliant LLM client
+    client = OpenAI(base_url=base_url, api_key=api_key)
+
+    # get interview's transcript
+    transcript = await getTranscriptById(user_id, interview_id)
+
+# initialize messsages for LLM
+    # system messages provide additional context to the LLM before inference
+    # user messages are messages that the LLM responds to
+    model_messages = [
+        {
+            "role": "system",
+            "content": COMPETENCY_FEEDBACK_PROMPT
+        },
+        {
+            "role": "user",
+            "content": transcript # pass the transcript to the LLM for star analysis
+        }
+    ]
+
+    # send task to local LLM
+    try:
+        response = client.chat.completions.create(
+            model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
+            messages = model_messages,
+        )
+    except Exception as e:
+        logger.error(f"Error communicating with LLM: {e}")
+        logger.error(f"Competencies analysis for interview={interview_id} failed. Will attempt a retry...")
+        raise BaseException(e) # raise exception to set failed job status
+    
+    db = get_firestore_client()
+
+    # parse and return LLM response
+    try:
+        logger.info(f"Verifying LLM competencies analysis on interview={interview_id}...")
+
+        llm_response = response.choices[0].message.content
+        # extract LLM's JSON response string
+        logger.info(f"LLM response={llm_response}")
+
+        # verify LLM JSON response isi the correct shape
+        validated_data = LLMResponse.model_validate_json(llm_response) # parse JSON string, if it matches the schema then instantiate; otherwise throw
+
+        logger.info(f"Competencies analysis on interview={interview_id} successful!")
+
+        # we extract each field one-by-one because if we tried uploading the object itself we risk overwriting the other fields within the interview document's overall_competency object, i.e. STAR analysis field
+        data = validated_data.model_dump()
+        clarity = data["clarity"]
+        confidence = data["confidence"]
+        engagement = data["engagement"]
+
+        # add competencies analysis to user's interview
+        # get reference to interview
+        interviewRef = db.collection("users").document(user_id).collection("interviews").document(interview_id)
+        
+        await interviewRef.update({
+            "feedback.overall_competency.clarity": clarity,
+            "feedback.overall_competency.confidence": confidence,
+            "feedback.overall_competency.engagement": engagement
+        })
+
+        return validated_data
+    
+    except ValidationError as e:
+        logger.error(f"LLM competencies analysis on interview={interview_id} is in invalid shape. Reason: {e} Will attempt to retry...")
+
+        raise ValidationError(f"LLM competencies analysis on interview={interview_id} is in invalid shape: {llm_response} Reason: {e}") # to make sure the RQ job returns a failed status, we must raise an exception
+

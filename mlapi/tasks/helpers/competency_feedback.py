@@ -269,8 +269,8 @@ def generate_competency_feedback(
         communication_clarity=communication_clarity,
         confidence=confidence,
         engagement=engagement,
-        overall_score=round(overall_score, 2),
-        summary=summary + "\n\nEvaluations:\n" + evaluations.strip()
+        # overall_score=round(overall_score, 2),
+        # summary=summary + "\n\nEvaluations:\n" + evaluations.strip()
     )
 
     logger.info("Overall competency feedback generation complete.")

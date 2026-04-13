@@ -42,7 +42,7 @@ async def analyze_star_method(request: StarFeedbackRequest):
     """
     try:
         # Trigger STAR analysis task
-        job_id = orchestrator.start_star_feedback_analysis(request.user_id, request.interview_id) 
+        job_id = orchestrator.start_star_analysis(request.user_id, request.interview_id) 
         
         return JobId(job_id=job_id)
     except HTTPException:

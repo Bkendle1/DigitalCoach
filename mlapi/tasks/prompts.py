@@ -40,31 +40,45 @@ STAR_PROMPT = """
             },
         ],
         "overall_score": [Integer score rating how well the candidate followed the STAR method overall between [0,10]],
-        "feedback": "[2-3 sentences of actionable feedback for the candidate to improve their responses. If their percentages are not near the ideal percentage distribution, advise them on how to distribute their responses better.]"
+        "feedback": "[2-3 sentences of actionable feedback speaking directly to the candidate for the candidate to improve their responses. If their percentages are not near the ideal percentage distribution, advise them on how to distribute their responses better.]"
     }
 """
 
 # COMPETENCY SCORES/FEEDBACK
-COMPETENCY_FEEDBACK_PROMT = """
+COMPETENCY_FEEDBACK_PROMPT = """
     You are an expert interview analyst and your task is to analyze the following job interview transcript. Evaluate the transcript for communication clarity, confidence, and engagement.
     Score each competency out of 10 and provide personalized, actionable feedback based on their answers. This feedback should take into account their strengths and weaknesses in each competency. 
     Taking all three scores into consideration (evenly weighted), give them an overall score out of 10 and provide a key summary on their overall performance.
     Provide your response strictly in the following JSON format. Do not include any additional text outside of the JSON object. Ignore any sentences that come from the interviewer.
     {
-        "communication_clarity": {
+        "clarity": {
             "score": [Score based on how well they communicated clearly (integer 1-10)]
-            "evaluation": [1-2 sentence feeback describing to the candidate how to improve their communication]
+            "summary": [1-2 sentences of feedback speaking directly to the candidate  describing to the candidate how to improve their communication]
         },
         "confidence": {
             "score": [Score based on how confident their response is (integer 1-10)]
-            "evaluation": [1-2 sentence feeback describing to the candidate how to improve their confidence]
+            "summary": [1-2 sentences of feedback speaking directly to the candidate  describing to the candidate how to improve their confidence]
         },
         "engagement": {
             "score": [Score based on how engaging their response is and taking into account the relevance of their response to the context of the interview (integer 1-10)]
-            "evaluation": [1-2 sentence feeback describing to the candidate how to improve their engagement]
+            "summary": [1-2 sentences of feedback speaking directly to the candidate  describing to the candidate how to improve their engagement]
         },
-        "overall_score": [Based on the communication clarity, confidence, and engagement give the user an overall score (integer 1-10)]
-        "summary": [In 3-4 sentences provide a summary on the communication clarity, confidence, and engagement and summarize the feedback for how the candidate can improve their response]
     }
 """
 
+OVERALL_FEEDBACK_PROMPT = """
+    You are an expert career coach and interview evaluator. Your task is to analyze a candidate's interview performance based on their interview transcript and quantitative speech metrics (Words Per Minute and Filler Word Count). You will generate highly personalized, practical, and actionable feedback to help the user improve their interviewing skills, as well as an overall score.
+
+    Content Quality: Evaluate the transcript for clarity, structure (e.g., use of the STAR method), relevance to the context of the interview questions, and the strength of the candidate's answers.
+
+    Speech Metrics: WPM (Words Per Minute): Assess their pacing. A conversational and clear pace is typically between 120-160 WPM. Penalize slightly if they are speaking too fast (nervous rushing) or too slow (hesitant).
+
+    Filler Words: High filler word counts (ums, uhs, likes) detract from confidence. Address this in the feedback if it is an issue.
+
+    Provide your response strictly in the following JSON format. Do not include any additional text outside of the JSON object. Ignore any sentences that come from the interviewer.
+
+    {
+        "overall_feedback": "[3-4 sentences of feedback speaking directly to the candidate. The feedback MUST be actionable. Give them specific techniques to improve (e.g., "Take a one-second pause instead of saying 'um'".]",
+        "overall_score": Provide an integer score out of 100 that accurately reflects their interview performance taking into account the quality of their responses and speech metrics.
+    }
+"""

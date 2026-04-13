@@ -4,6 +4,7 @@
 from tasks.audio_analysis import (
     detect_audio_sentiment,
     star_analysis,
+    analyze_competencies,
 ) 
 from redisStore.queue import add_task_to_queue
 from tasks.create_answer_task import create_answer
@@ -13,7 +14,8 @@ from schemas import (
     SentimentAnalysisRequest,
     StarFeedbackRequest,
     AnalyzeInterviewRequest,
-    AnalyzeInterviewResponse
+    AnalyzeInterviewResponse,
+    CompetencyFeedbackRequest
 )
 
 logger = get_logger(__name__)
@@ -37,7 +39,7 @@ def start_sentiment_analysis(req: SentimentAnalysisRequest) -> str:
 
     return job.id # returns job id for polling later
 
-def start_star_feedback_analysis(req: StarFeedbackRequest) -> str:
+def start_star_analysis(req: StarFeedbackRequest) -> str:
     """
     Start the STAR feedback analysis job by adding it to the queue.
     
@@ -56,6 +58,25 @@ def start_star_feedback_analysis(req: StarFeedbackRequest) -> str:
 
     return job.id # return job id for polling
 
+def start_competency_analysis(req: CompetencyFeedbackRequest) -> str:
+    """
+    Start the competency analysis job by adding it to the queue.
+    
+    Args:
+        text (str): The text to analyze against the competencies.
+    Returns:
+        str: The job ID of the queue competencies analysis job.
+    """
+    logger.info(f"Started competency analysis job for interview={req.interview_id}.")
+
+    # Enqueue competency analysis job
+    job = add_task_to_queue("high", analyze_competencies, req.user_id, req.interview_id)
+
+    logger.info(f"Competencies analysis for interview={req.interview_id} job ID={job.id} enqueued!")
+
+    return job.id # return job id for  
+
+
 def start_interview_analysis(req: AnalyzeInterviewRequest) -> AnalyzeInterviewResponse:
     """
     Start the interview analysis job by adding it to the task queue.
@@ -69,16 +90,19 @@ def start_interview_analysis(req: AnalyzeInterviewRequest) -> AnalyzeInterviewRe
     """
     # Enqueue audio analysis job
     sentiment_analysis_request = SentimentAnalysisRequest(user_id=req.user_id, interview_id=req.interview_id)
-
     sentiment_job_id = start_sentiment_analysis(sentiment_analysis_request)
 
     # Enqueue STAR analysis job
     star_analysis_request = StarFeedbackRequest(user_id=req.user_id, interview_id=req.interview_id)
+    star_job_id = start_star_analysis(star_analysis_request)
 
-    star_job_id = start_star_feedback_analysis(star_analysis_request)
+    # Enqueue competencies analysis job
+    competency_analysis_request = CompetencyFeedbackRequest(user_id=req.user_id, interview_id=req.interview_id)
+    competency_job_id = start_competency_analysis(competency_analysis_request)
+
     # Invoke other tasks here...
 
-    return AnalyzeInterviewResponse(sentiment_job_id=sentiment_job_id, star_job_id=star_job_id) 
+    return AnalyzeInterviewResponse(sentiment_job_id=sentiment_job_id, star_job_id=star_job_id, competency_job_id=competency_job_id) 
 
     # Enqueue the create_answer job that's dependent on the analysis job(s) 
     # answer_job = add_task_to_queue(

@@ -3,25 +3,10 @@ Interview-related schemas
 """
 
 from pydantic import BaseModel
-
-
-class CompetencyMetric(BaseModel):
-    """
-    Model that represents a competency metric such as clarity, engagement, or confidence
-    """
-    score: int # user's score in this metric
-    summary: str # ai-generated feedback about the user's competency in regards to this metric 
-    
-
-class OverallCompetency(BaseModel):
-    """
-    Model representing the overall competencies that the user will be given feedback on.
-    """
-    clarity: CompetencyMetric
-    confidence: CompetencyMetric
-    engagement: CompetencyMetric
-    star: CompetencyMetric
-
+from schemas.feedback import (
+    OverallCompetencyFeedback,
+    CompetencyFeedback
+)
 
 class Feedback(BaseModel):
     """
@@ -30,7 +15,7 @@ class Feedback(BaseModel):
     (Note: This should match the IFeedback interface in /digital-coach-app/lib/interview/models.ts)
     """
     ai_feedback: str
-    overall_competency: OverallCompetency 
+    overall_competency: OverallCompetencyFeedback 
 
 class Metrics(BaseModel):
     """
@@ -80,6 +65,7 @@ class CreateInterviewResponse(BaseModel):
     # ids of the analysis jobs started on the interview
     sentiment_job_id: str = ""
     star_job_id: str = ""
+    competency_job_id: str = ""
     
     success: bool
 
@@ -96,6 +82,7 @@ class AnalyzeInterviewResponse(BaseModel):
     """
     sentiment_job_id: str
     star_job_id: str
+    competency_job_id: str
 
 class GetInterviewRequest(BaseModel):
     """
