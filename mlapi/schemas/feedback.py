@@ -25,6 +25,45 @@ class OverallCompetencyFeedback(BaseModel):
     overall_score: float # Overall score
     summary: str # Summary of overall performance including evaluations for individual competencies
 
+class StarBreakdown(BaseModel):
+    """
+    Breakdown of each STAR component
+    """
+
+    situation: str
+    task: str
+    action: str
+    result:str
+
+class LLMStarPercentages(BaseModel):
+    """
+    Percentage of response dedicated to each STAR component
+    """
+
+    situation_percentage: int
+    task_percentage: int
+    action_percentage: int
+    result_percentage: int
+
+class LLMStarFeedback(BaseModel):
+    """
+    LLM response for STAR method analysis
+    """
+
+    star_breakdown: StarBreakdown
+    star_percentages: LLMStarPercentages
+    overall_score: float
+    feedback: str
+
+class InterviewFeedbackResponse(BaseModel):
+    """
+    Response model for interview feedback analysis job
+    """
+
+    job_id: str
+    status: JobStatus
+    result: dict | None = None
+    error: str | None = None
 
 class StarFeedbackRequest(BaseModel):
     """

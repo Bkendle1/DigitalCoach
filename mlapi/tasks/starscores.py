@@ -83,27 +83,21 @@ def predict_star_scores(*args) -> dict[str, Any]:
     result: float = round(result / total * 100, 2)
     situation: float = round(situation / total * 100, 2)
     task: float = round(task / total * 100, 2)
-    if action > 0 and result > 0 and situation > 0 and task > 0:
-        # If hits all categories, return True
-        return {
-            "fufilledStar": True,
-            "percentages": {
-                "action": action,
-                "result": result,
-                "situation": situation,
-                "task": task,
-            },
-            "classifications": classifications,
-        }
+    percentages_dict = {
+        "situation": situation,
+        "task": task,
+        "action": action,
+        "result": result,
+    }
+    classifications_out = [
+        {"sentence": c[0], "category": c[1]} for c in classifications
+    ]
+    feedback = percentageFeedback(percentages_dict)
     return {
-        "fufilledStar": False,
-        "percentages": {
-            "action": action,
-            "result": result,
-            "situation": situation,
-            "task": task,
-        },
-        "classifications": classifications,
+        "fulfilled_star": action > 0 and result > 0 and situation > 0 and task > 0,
+        "percentages": percentages_dict,
+        "classifications": classifications_out,
+        "feedback": feedback,
     }
 
 

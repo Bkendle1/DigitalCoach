@@ -7,6 +7,7 @@ import Spinner from "@App/components/atoms/Spinner";
 import AuthGuard from "@App/lib/auth/AuthGuard";
 import { useParams } from "next/navigation";
 import { useAuth } from "@App/lib/auth/AuthContextProvider";
+import { jsPDF } from "jspdf";
 
 /**
  * Webpage for a specific interview. 
