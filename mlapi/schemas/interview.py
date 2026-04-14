@@ -14,8 +14,8 @@ class Feedback(BaseModel):
     
     (Note: This should match the IFeedback interface in /digital-coach-app/lib/interview/models.ts)
     """
-    ai_feedback: str
-    overall_competency: OverallCompetencyFeedback 
+    ai_feedback: str | None
+    overall_competency: OverallCompetencyFeedback | None
 
 class Metrics(BaseModel):
     """

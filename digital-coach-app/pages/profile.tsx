@@ -11,7 +11,7 @@ import { Tooltip, IconButton } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 function ProfilePage() {
-  const { userData, user } = useAuth();
+  const { userData } = useAuth();
   const [interviews, setInterviews] = useState<any[]>([]);
 
   const opennessText = `
@@ -130,79 +130,6 @@ function ProfilePage() {
           <Card title='Major'>{userData?.concentration}</Card>
           <Card title='Experience Level'>
             {userData?.proficiency}
-          </Card>
-          <Card title='Previous Interview Scores'>
-			{
-				Object.keys(interviews).length !== 0 ? (
-					<div>
-						{
-							interviews.filter((interview) => Object.keys(interview.result).length > 0).map((interview) => { 
-								return(
-									<Card>
-										<p>Interview: {interview.title}</p>
-										<p>Time: {new Date(interview.createdAt.seconds * 1000).toString()}</p>
-										<p>Aggregate Score (0 to 100): {interview.result.aggregateScore}</p>
-										<p>Big Five Scores (-10 to 10): </p>
-										<ul>
-											<li>
-												Openness: {interview.result.bigFive.o} 
-												<Tooltip title={
-													<span style={{whiteSpace: 'pre-line' }}>{opennessText}</span>
-													}>
-													<IconButton>
-														<HelpOutlineIcon>
-														</HelpOutlineIcon>
-													</IconButton>
-												</Tooltip>
-											</li>
-											<li>
-												Conscientiousness: {interview.result.bigFive.c}
-												<Tooltip title={
-													<span style={{whiteSpace: 'pre-line' }}>{conscientiousnessText}</span>
-													}>
-													<IconButton>
-														<HelpOutlineIcon>
-														</HelpOutlineIcon>
-													</IconButton>
-												</Tooltip>
-											</li>
-											<li>Extraversion: {interview.result.bigFive.e}
-											<Tooltip title={
-													<span style={{whiteSpace: 'pre-line' }}>{extraversionText}</span>
-													}>
-													<IconButton>
-														<HelpOutlineIcon>
-														</HelpOutlineIcon>
-													</IconButton>
-												</Tooltip></li>
-											<li>Agreeableness: {interview.result.bigFive.a}
-											<Tooltip title={
-													<span style={{whiteSpace: 'pre-line' }}>{agreeablenessText}</span>
-													}>
-													<IconButton>
-														<HelpOutlineIcon>
-														</HelpOutlineIcon>
-													</IconButton>
-												</Tooltip></li>
-											<li>Neuroticism: {interview.result.bigFive.n}
-											<Tooltip title={
-													<span style={{whiteSpace: 'pre-line' }}>{neuroticismText}</span>
-													}>
-													<IconButton>
-														<HelpOutlineIcon>
-														</HelpOutlineIcon>
-													</IconButton>
-												</Tooltip></li>
-										</ul>
-									</Card>
-								)
-							})
-						}
-					</div>
-				) : (
-					<p>No previous interviews found.</p>
-				)
-			}
           </Card>
         </div>
       </div>

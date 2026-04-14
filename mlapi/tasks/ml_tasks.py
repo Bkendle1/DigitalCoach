@@ -10,7 +10,11 @@ import os
 from openai import OpenAI
 from pydantic import ValidationError, BaseModel
 from dotenv import load_dotenv
-from data.interviews import getTranscriptById
+from data.interviews import (
+    getTranscriptById, 
+    getInterviewById,
+    setIsAnalyzed
+)
 from services.firebase_init import get_firestore_client
 from tasks.prompts import (
     SENTIMENT_ANALYSIS_PROMPT,
@@ -394,14 +398,16 @@ async def overall_analysis(user_id: str, interview_id: str) -> OverallAnalysisRe
     # initialize OpenAI-compliant LLM client
     client = OpenAI(base_url=base_url, api_key=api_key)
 
-    # get interview's transcript
-    transcript = await getTranscriptById(user_id, interview_id)
+    interview = await getInterviewById(user_id, interview_id) # get interview
+    
+    # extract transcript
+    # transcript = await getTranscriptById(user_id, interview_id)
+    transcript = interview.transcript
 
-    # TODO: get the WPM 
-    wpm = 0
-    # TODO: get the filler word count
-    filler_count = 0
-
+    # extract WPM 
+    wpm = interview.metrics.wpm
+    # extract filler word count
+    filler_count = interview.metrics.filler_count
     # initialize messsages for LLM
     # system messages provide additional context to the LLM before inference
     # user messages are messages that the LLM responds to
@@ -437,7 +443,25 @@ async def overall_analysis(user_id: str, interview_id: str) -> OverallAnalysisRe
         # extract LLM's JSON response string
         logger.info(f"LLM response={llm_response}")
 
-        return
+        # verify LLM JSON response is the correct shape
+        validated_data = OverallAnalysisResponse.model_validate_json(llm_response)
+
+        # parse JSON string, if it matches the schema then instantiate; otherwise throw
+        logger.info(f"Overall analysis on interview={interview_id} successful!")
+
+        # get reference to interview
+        interviewRef = db.collection("users").document(user_id).collection("interviews").document(interview_id)
+
+        # add overall feedback and overall score to the user's interview
+        await interviewRef.update({"metrics.overall_score": validated_data.overall_score,"feedback.ai_feedback": validated_data.overall_feedback})
+
+        # set is_analyzed to true
+        await setIsAnalyzed(user_id, interview_id)
+        
+        logger.info(f"Analysis tasks on interview={interview_id} for user={user_id} successful!")
+
+        return validated_data
+        
     
     except ValidationError as e:
         logger.error(f"LLM overall analysis on interview={interview_id} is in invalid shape. Reason: {e} Will attempt to retry...")

@@ -81,5 +81,5 @@ class FillerHedgeResponse(BaseModel):
 
     filler_count: int # Total number of contextual fillers
     hedge_count: int # Total number of hedge phrases
-    most_frequent: int # A short list of the specific phrases the user relied on most.
+    most_frequent: List[str] # A short list of the specific phrases the user relied on most.
     

@@ -7,7 +7,7 @@
 export const computeWPM = (transcript: string, durationStr: string, name: string) => {
     // extract user sentences from transcript
     const userLines = transcript.split(/\n+/).filter((line) => line.startsWith(name))
-    console.log(userLines);
+
     // remove the user's name from the transcript and combine them all into a single string. (Note: the user's name is in the form of '<name>:' within the transcript)
     const userText = userLines.map((line) => line.replace(`${name}: `, "")).join(" ");
     const wordCount = userText.trim().split(/\s+/).length;

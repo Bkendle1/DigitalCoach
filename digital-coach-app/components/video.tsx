@@ -151,10 +151,13 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
             setVideoURL(url); // set download URL for video 
         };
 
-        // save time when started
+        // save time when started (format of MM/)
         timeStartedRef.current = new Date().toLocaleDateString("en-US", {
+            day: "2-digit",
+            year: "numeric",
             hour: "2-digit",
             minute: "2-digit",
+            month: "2-digit",
         });
         setTimeLeft(MAX_SESSION_TIME); // restart timer
         setVideoURL(""); // clear out old recording url 

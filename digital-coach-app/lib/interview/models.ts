@@ -1,11 +1,9 @@
-import { DocumentReference, Timestamp } from "firebase/firestore";
-
 /**
  * Interface for AI-generated feedback which provides overall feedback, clarity of responses, confidence in the responses, and how engaging the responses were. 
  * (Note: This should match the Feedback Pydantic model in /mlapi/schemas/interview.py)
  */
 export interface IFeedback {
-  ai_feedback: string,
+  ai_feedback: string | null,
   overall_competency: {
     clarity: {
       score: number,
@@ -23,7 +21,7 @@ export interface IFeedback {
       score: number,
       summary: string,
     }
-  },
+  } | null,
 }
 
 /**

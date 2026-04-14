@@ -106,14 +106,7 @@ export default function ProgressPage() {
               <div className={`${styles.infoRow} ${styles.date}`}>
                 <Calendar/>
                 <span>
-                  {new Date(`${interview.date} ${interview.timeStarted}`).toLocaleDateString("en-US", { 
-                    weekday: "long",
-                    month: "2-digit",
-                    day: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit", 
-                  })}
+                  {interview.timeStarted}
                 </span>
               </div>
               <div className={`${styles.infoRow} ${styles.duration}`}>

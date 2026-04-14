@@ -11,7 +11,7 @@ from schemas import (
 from data.interviews import (
     getUserInterviews,
     getInterviewById,
-    createInterview
+    createInterview,
 )
 
 from services.orchestrator import start_interview_analysis 
@@ -43,9 +43,7 @@ async def create_interview(request: CreateInterviewRequest):
 
         response = start_interview_analysis(analysisRequest) # start interview analysis and get the analysis job ids
 
-        logger.info(f"Analysis tasks on interview={request.interview.id} for user={request.userId} successful!")
-
-        # set is_analyzed to true
+        logger.info(f"Analysis tasks on interview={request.interview.id} for user={request.userId} enqueued!")
 
         return CreateInterviewResponse(sentiment_job_id=response.sentiment_job_id,
                                        star_job_id=response.star_job_id, competency_job_id=response.competency_job_id,

@@ -121,7 +121,10 @@ export default function NaturalConversationPage() {
       timeStarted, // HH:MM AM/PM
       duration, // MMm SSs
       // these values will be populated later by the backend once the interview has been processed
-      feedback: undefined,
+      feedback: {
+        ai_feedback: null,
+        overall_competency: null,
+      },
       metrics: {
         filler_count: NaN,
         wpm: wpm,
