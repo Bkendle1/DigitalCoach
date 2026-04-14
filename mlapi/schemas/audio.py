@@ -62,3 +62,24 @@ class SentimentAnalysisRequest(BaseModel):
     """
     user_id: str
     interview_id: str
+
+class FillerHedgeRequest(BaseModel):
+    """
+    Request model to start a filler word and hedge phrase extraction/count job
+
+    Args:
+        user_id: The id of the user whose interview we're analyzing
+        interview_id: The id of the interview who owns the transcript to analyze
+    """
+    user_id: str
+    interview_id: str
+
+class FillerHedgeResponse(BaseModel):
+    """
+    Response model to filler word and hedge phrase extraction/count job.
+    """
+
+    filler_count: int # Total number of contextual fillers
+    hedge_count: int # Total number of hedge phrases
+    most_frequent: int # A short list of the specific phrases the user relied on most.
+    

@@ -12,6 +12,8 @@ import { MAX_SESSION_TIME } from "@App/components/video";
 import { useAuth } from "@App/lib/auth/AuthContextProvider";
 import Spinner from "@App/components/atoms/Spinner";
 import { IInterview } from "@App/lib/interview/models";
+import { computeWPM } from "@App/util/computeMetrics";
+
 type Role = "user" | "interviewer";
 interface Message {
   role: Role;
@@ -41,7 +43,7 @@ export default function NaturalConversationPage() {
   const [heygenToken, setHeyGenToken] = useState(""); // HeyGen authentication token
   const [timeLeft, setTimeLeft] = useState(MAX_SESSION_TIME);
   const [cameraError, setCameraError] = useState("");
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const router = useRouter();
   const [fullTranscript, setFullTranscript] = useState(""); // transcript of the entire interview 
   const [isLoading, setIsLoading] = useState(false);
@@ -105,6 +107,9 @@ export default function NaturalConversationPage() {
    * Handle creating a new interview document within the user's collection of interviews using the interview's data like its duration.
    */
   const handleStopInterview = async (duration: string, timeStarted: string) => {
+    // compute WPM with transcript, duration, and user name
+    const wpm = computeWPM(fullTranscript, duration, userData ? userData.name : "User");
+
     const newInterview: IInterview = {
       id: uuidv4(), // create intreview id
       date: new Date().toLocaleDateString("en-US", {
@@ -117,7 +122,11 @@ export default function NaturalConversationPage() {
       duration, // MMm SSs
       // these values will be populated later by the backend once the interview has been processed
       feedback: undefined,
-      metrics: undefined,
+      metrics: {
+        filler_count: NaN,
+        wpm: wpm,
+        overall_score: NaN,
+      },
       transcript: fullTranscript,
       sentiment: undefined,
       url: undefined,
@@ -147,6 +156,7 @@ export default function NaturalConversationPage() {
       setIsLoading(false);
       return;
     }
+    setFullTranscript("") // clear transcript
     setIsLoading(false); // turn submission loading screen off before we get to the loading screen for route changes
     // reroute user to interview's webpage
     router.push(`/interviews/${newInterview.id}`);
@@ -241,7 +251,7 @@ export default function NaturalConversationPage() {
   const updateTranscript = (transcript: string, isFinal: boolean) => {
     // only add the final transcript for this turn to the overall transcript
     if (isFinal) {
-      setFullTranscript((prevTranscript) => `${prevTranscript}\n${transcript}\n`); 
+      setFullTranscript((prevTranscript) => `${prevTranscript}${transcript}\n`); 
     }
   }
 

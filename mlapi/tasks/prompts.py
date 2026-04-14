@@ -40,7 +40,7 @@ STAR_PROMPT = """
             },
         ],
         "overall_score": [Integer score rating how well the candidate followed the STAR method overall between [0,10]],
-        "feedback": "[2-3 sentences of actionable feedback speaking directly to the candidate for the candidate to improve their responses. If their percentages are not near the ideal percentage distribution, advise them on how to distribute their responses better.]"
+        "feedback": "[2-3 sentences of actionable feedback speaking directly to the candidate (i.e. referring to them as "you") for the candidate to improve their responses. If their percentages are not near the ideal percentage distribution, advise them on how to distribute their responses better.]"
     }
 """
 
@@ -53,19 +53,35 @@ COMPETENCY_FEEDBACK_PROMPT = """
     {
         "clarity": {
             "score": [Score based on how well they communicated clearly (integer 1-10)]
-            "summary": [1-2 sentences of feedback speaking directly to the candidate  describing to the candidate how to improve their communication]
+            "summary": [1-2 sentences of feedback speaking directly to the candidate (i.e. referring to them as "You") describing to the candidate how to improve their communication]
         },
         "confidence": {
             "score": [Score based on how confident their response is (integer 1-10)]
-            "summary": [1-2 sentences of feedback speaking directly to the candidate  describing to the candidate how to improve their confidence]
+            "summary": [1-2 sentences of feedback speaking directly to the candidate (i.e. referring to them as "You") describing to the candidate how to improve their confidence]
         },
         "engagement": {
             "score": [Score based on how engaging their response is and taking into account the relevance of their response to the context of the interview (integer 1-10)]
-            "summary": [1-2 sentences of feedback speaking directly to the candidate  describing to the candidate how to improve their engagement]
+            "summary": [1-2 sentences of feedback speaking directly to the candidate (i.e. referring to them as "You") describing to the candidate how to improve their engagement]
         },
     }
 """
 
+# FILLER WORD AND HEDGE PHRASE COUNT
+FILLER_HEDGE_COUNT_PROMPT = """
+    Analyze the following interview transcript spoken by the user.
+    Identify and extract all instances of contextual filler words (e.g., "like", "you know") ONLY when used as disfluencies, NOT when used grammatically correctly.
+    Also identify hedge phrases that undermine confidence (e.g., "I guess", "I think maybe", "sort of", "kind of").
+
+    Provide your response strictly in the following JSON format. Do not include any additional text outside of the JSON object. Ignore any sentences that come from the interviewer.
+
+    {
+        "filler_count": Total number of contextual fillers
+        "hedge_count": Total number of hedge phrases
+        "most_frequent": ["A short list of the specific phrases the user relied on most."]
+    }
+"""
+
+# FINAL OVERALL FEEDBACK
 OVERALL_FEEDBACK_PROMPT = """
     You are an expert career coach and interview evaluator. Your task is to analyze a candidate's interview performance based on their interview transcript and quantitative speech metrics (Words Per Minute and Filler Word Count). You will generate highly personalized, practical, and actionable feedback to help the user improve their interviewing skills, as well as an overall score.
 
@@ -78,7 +94,7 @@ OVERALL_FEEDBACK_PROMPT = """
     Provide your response strictly in the following JSON format. Do not include any additional text outside of the JSON object. Ignore any sentences that come from the interviewer.
 
     {
-        "overall_feedback": "[3-4 sentences of feedback speaking directly to the candidate. The feedback MUST be actionable. Give them specific techniques to improve (e.g., "Take a one-second pause instead of saying 'um'".]",
+        "overall_feedback": "[3-4 sentences of feedback speaking directly to the candidate (i.e. referring to them as "you"). The feedback MUST be actionable. Give them specific techniques to improve (e.g., "Take a one-second pause instead of saying 'um'".]",
         "overall_score": Provide an integer score out of 100 that accurately reflects their interview performance taking into account the quality of their responses and speech metrics.
     }
 """

@@ -9,7 +9,6 @@ from schemas.interview import (
     Feedback,
     Metrics,
 )
-from google.api_core import exceptions
 from pydantic import ValidationError
 from google.cloud import firestore
 from fastapi import HTTPException, status

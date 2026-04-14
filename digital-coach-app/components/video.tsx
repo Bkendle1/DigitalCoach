@@ -176,10 +176,11 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
             const transcriber = new StreamingTranscriber({
                 token: token,
                 sampleRate: 16000,
-                speechModel: "universal-streaming-english", // AssemblyAI has multilingual models but for now we assume the user speaks English
+                speechModel: "u3-rt-pro", // AssemblyAI's Streaming Universal 3 Pro can handle different languages as well as keep track of filler words
                 formatTurns: true, // get transcripts with proper punctuation
                 maxSpeakers: 2, // only the interviewer and user will be talking
                 speakerLabels: true, // enable speaker diarization
+                // prompt: "" // AssemblyAI's Universal 3 Pro supports prompting which can be used for punctuation rules and other things but the model also has a built-in system prompt with rules about punctuation and filler words  
             });
 
             // event handler for when connection to AssemblyAI API is established via websocket

@@ -107,9 +107,11 @@ class OverallAnalysisRequest(BaseModel):
     Args:
         user_id: The id of the user whose interview we're analyzing
         interview_id: The id of the interview who owns the transcript to analyze
+        filler_hedge_job_id: The id of the filler words and hedge phrases extraction job which must be completed before final analysis can begin.
     """
     user_id: str
     interview_id: str
+    filler_hedge_job_id: str
 
 
 class OverallAnalysisResponse(BaseModel):

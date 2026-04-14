@@ -8,7 +8,7 @@ from redisStore.myconnection import get_redis_con
 from redisStore.queue import add_task_to_queue
 
 # Functions
-from mlapi.tasks.ml_tasks import detect_audio_sentiment
+from tasks.ml_tasks import detect_audio_sentiment
 from tasks.helpers.create_answer_helpers import compute_overall_score
 from tasks.helpers.av_processing import (
     calculate_overall_audio_sentiment,
