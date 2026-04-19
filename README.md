@@ -86,7 +86,7 @@ If you want to switch to a different model, Docker Hub has plenty of AI models t
 2. In `/docker-compose.yml` in the top-level `models` section, change the `model` field to also be `model: ai/<model-name>`
 
 Notes: 
-- We don’t recommend using a system that doesn’t have a GPU because CPU inference is very slow.
+- We don’t recommend using a system that doesn’t have a GPU because CPU inference is very slow (e.g. GPU-bound inference ETC 30s, CPU-bound inference ETC 10mins).
 - As far as we know, if you have a GPU then there isn’t a way to set up DMR so that it only uses your CPU for inference. This shouldn’t be a problem and makes sense because GPU-bound inference is much faster than CPU-bound inference.
 - The model itself will be hosted on your host machine and NOT a container.
 - If you make changes to the configuration of the model within `docker-compose.yml`, you may have to unload and then load the model back again for the configurations to take effect because DMR is separate from Docker Compose. Specifically, after closing the application with `docker-compose down`, unload the model with `docker model rm <model-name>` and then redownload it with `docker model pull <model-name>`.
