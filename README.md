@@ -92,6 +92,59 @@ Notes:
 - If you make changes to the configuration of the model within `docker-compose.yml`, you may have to unload and then load the model back again for the configurations to take effect because DMR is separate from Docker Compose. Specifically, after closing the application with `docker-compose down`, unload the model with `docker model rm <model-name>` and then redownload it with `docker model pull <model-name>`.
 - It's possible that DMR ignores the context_size field defined in the LLM section of the `docker-compose.yml` file. If that's the case then run `docker model configure --context-size <size_value> <model_name>` where `<size_value>` if your desired context window size and `<model_name>` is the name of your LLM.
 
+## (Optional) Hosting Guide
+You may want to host this website on the internet for beta testing purposes. The easiest way we found was basically to get a cloud virtual machine, set up the application like on our host machine, and then get a domain so other people can use the application. Thankfully, being a student allows this process to be free (for approximately a year). Specifically, Github Student Developer Pack (GSDP) gives students access to a variety of perks, two of which this guide will utilize. Before continuing, register for the Github Student Developer Pack.
+
+First, we have to get a cloud virtual machine. GSDP offers a perk with DigitalOcean (cloud hosting platform) giving you $200 in credits for 1 year which should be plenty for our use case. Accept the offer with your Github account and then create a Droplet which is a LINUX-BASED virtual machine. You can set up the Droplet from scratch or use their 1-click Docker Droplet which has Docker Engine and Docker Compose pre-installed [here](https://marketplace.digitalocean.com/apps/docker).
+
+After you have Docker set up, you can follow the same guide used to set up the DigitalCoach application.  An important step is to make sure in your `docker-compose.yml` file, all services that will be using your local LLM will have the the following in their section:
+
+```
+extra_hosts:
+      - "host.docker.internal:host-gateway"
+```
+
+This is because the Docker Engine doesn’t automatically have `host.docker.internal` set up unlike with Docker Desktop.
+
+Additionally, you must configure your Droplet’s firewall settings so that it can be accessed from the internet. Specifically, go to your Droplet’s “Networking” tab and then “Manage Firewalls”. You want to create a firewall that has inbound rules for port 80 (HTTP), port 443 (HTTPS) and port 8000 (your FastAPI server) for all IPv4 and IPv6 sources. Now we can set up HTTPS access for our Droplet.
+
+Technically, our Droplet can be accessed by going to `http://your_droplets_public_ipv4` but the application won’t work. Since our application requires access to the user’s camera and microphone, the app must be hosted over HTTPS. To set that up we first need a domain name which brings us to the next GSDP perk from Namecheap. GSDP gives us ownership of a `.me` domain for 1 year free. Make an account with Namecheap using your Github account and then get your free domain.
+
+After registering for your domain, we must set up DNS so your Droplet’s IPv4 is mapped to your domain name. Go to your Namecheap dashboard and then select the “Domain List” tab and select the “Manage” button next to your newly registered domain. Next, select “Advanced DNS” where there should be some entries already but feel free to delete them. Then, under the “Host Records” section, click on “Add new record”, select “A Record” and then put `@` for the host to refer to your domain name and then type in your Droplet’s IPv4 address for the value and then have TTL be “Automatic”. Optionally, if you want people to access your website with `www` you can do the following.  Click “Add a new record” again and select “CNAME Record”, then have the Host be `www`, and then enter your domain name for the value, and have TTL be “Automatic”. It may take a while for these changes to propagate to all the DNS servers that make up the internet but you can check if it’s done with DNS lookup websites like this where you can enter your domain name and if it worked, you should see the IPv4 address of your Droplet.
+
+Next, we need to make your website HTTPS accessible and we can do so using a free SSL certificate provided by Let’s Encrypt (this doesn’t require you to be eligible for GSDP). Since we’re using multiple Docker containers, we also must configure Nginx as a reverse proxy and tell it how to route incoming traffic to our internal ports, e.g. 8000 for the backend and 3000 for the frontend. This is better explained by following a YouTube tutorial like [this](https://youtu.be/spbkCihFpQ8?t=182) (this link starts the video at the timestamp that’s relevant for our setup).
+
+If you’re following the video that we linked then you’ll notice that you must create a Nginx configuration file at `/etc/nginx/sites-available/your_domain_name`. You can ignore the video’s configuration files and only use the following:
+
+```
+server {
+    server_name your_domain_name www.your_domain_name;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /api/ {
+        proxy_pass http://localhost:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Notice that any requests with `/api/` will be routed to our FastAPI server, therefore, whenever you create new FastAPI routes, ensure they start with `/api/` so Nginx knows to reroute the request to `localhost:8000`.
+
+At this point, your application should now be accessible on the internet by typing `https://domain_name`. You can still view the RQ Dashboard and our other backend endpoints manually using `http://domain_name:8000/`. One final thing is to make sure your application knows where your backend is when it makes its requests using the Fetch API. To do so, in your `digital-coach-app/.env` file, change the value in `NEXT_PUBLIC_HOST` to be `https://domain_name`. Nginx will handle requests on ports 80 and 443 with the configuration that you set it up with and it knows when to route requests for our FastAPI server to the backend.
+
+That’s it, enjoy your newly hosted web application! An important note is that once the frontend is on `https://` it can’t make requests to `http://` domains as that will trigger a Mixed Content security error and block that request.
+
 # Technologies Used
 
 ## Frontend
