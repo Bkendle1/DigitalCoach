@@ -90,6 +90,7 @@ Notes:
 - As far as we know, if you have a GPU then there isn’t a way to set up DMR so that it only uses your CPU for inference. This shouldn’t be a problem and makes sense because GPU-bound inference is much faster than CPU-bound inference.
 - The model itself will be hosted on your host machine and NOT a container.
 - If you make changes to the configuration of the model within `docker-compose.yml`, you may have to unload and then load the model back again for the configurations to take effect because DMR is separate from Docker Compose. Specifically, after closing the application with `docker-compose down`, unload the model with `docker model rm <model-name>` and then redownload it with `docker model pull <model-name>`.
+- It's possible that DMR ignores the context_size field defined in the LLM section of the `docker-compose.yml` file. If that's the case then run `docker model configure --context-size <size_value> <model_name>` where `<size_value>` if your desired context window size and `<model_name>` is the name of your LLM.
 
 # Technologies Used
 
