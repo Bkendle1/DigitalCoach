@@ -38,7 +38,8 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
     const chunksRef = useRef<Blob[]>([]); // stores video as an array of chunks
     let isMounted = useRef(false);
     let timeStartedRef = useRef("");
-    const host = typeof window !== "undefined" ? "localhost:8000" : "api"; // if we're in the browser use localhost, but if we're in Docker, use the backend's service name (currently 'api')
+    const host = process.env.NEXT_PUBLIC_HOST;
+    // const host = typeof window !== "undefined" ? "localhost:8000" : "api"; // if we're in the browser use localhost, but if we're in Docker, use the backend's service name (currently 'api')
     const { userData } = useAuth(); // extract user's Firestore data  
 
     // session terminates automatically when timer runs out
@@ -66,7 +67,6 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
     useEffect(() => {
         startPreview();
         isMounted.current = true;
-
         return () => {
             // stop recording user camera and mic when component unmounts
             if (streamRef.current) {
@@ -87,7 +87,7 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
             }
             stopAudio();
             isMounted.current = false;
-        }   
+        }  
     }, []);
 
     /**

@@ -2,7 +2,9 @@
  * Handles uploading an image that will be hosted in Cloudinary.
  */
 export const uploadToCloudinary = async (file: File): Promise<string> => {
-    const host = typeof window !== "undefined" ? "localhost:8000" : "api";
+    // const host = typeof window !== "undefined" ? "localhost:8000" : "api";
+    // console.log(`profilePic.ts: ${host}`);
+    const host = process.env.NEXT_PUBLIC_HOST;
     const cloudinaryURL = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
     const api_key = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
     const MAX_FILE_SIZE = 10485760; // Cloudinary has a max file size on the free plan

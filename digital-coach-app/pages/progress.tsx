@@ -24,7 +24,9 @@ export default function ProgressPage() {
      */
     const getInterviews = async () => {
       try {
-        const host = window ? "localhost:8000" : "api"; // if we're not in browser, user backend service name (currently 'api'), otherwise use localhost
+        // const host = window ? "localhost:8000" : "api"; // if we're not in browser, user backend service name (currently 'api'), otherwise use localhost
+        const host = process.env.NEXT_PUBLIC_HOST;
+
         const response = await fetch(`http://${host}/api/interview/${user?.uid}`);
         if (response.ok) {
           console.log("Successfully fetched interviews!");

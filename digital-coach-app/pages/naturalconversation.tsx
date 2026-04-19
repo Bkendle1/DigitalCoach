@@ -48,7 +48,8 @@ export default function NaturalConversationPage() {
   const [fullTranscript, setFullTranscript] = useState(""); // transcript of the entire interview 
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
-  
+  // const host = typeof window !== "undefined" ? "localhost:8000" : "api"; // if we're in the browser use localhost, but if we're in Docker, use the backend's service name (currently 'api')
+  const host = process.env.NEXT_PUBLIC_HOST;
   // const { startRecording, stopRecording, mediaBlobUrl, previewStream } =
   //   useReactMediaRecorder({ video: true });
 
@@ -80,8 +81,6 @@ export default function NaturalConversationPage() {
     console.log("Requesting Interview Session...");
     setIsLoading(true);
     setLoadingMessage("Requesting Interview Session...");
-    const host = typeof window !== "undefined" ? "localhost:8000" : "api"; // if we're in the browser use localhost, but if we're in Docker, use the backend's service name (currently 'api')
-    console.log(`Using ${host} for the host.`);
     try {
       const response = await fetch(`http://${host}/api/heygen/session_token`, {
         method: "GET",
@@ -144,8 +143,6 @@ export default function NaturalConversationPage() {
     setIsLoading(true);
     setLoadingMessage("Submitting Interview Session...");
     console.log("Submitting Interview Session...")
-    const host = typeof window !== "undefined" ? "localhost:8000" : "api"; // if we're in the browser use localhost, but if we're in Docker, use the backend's service name (currently 'api')
-    console.log(`Using ${host} for the host.`);
     const response = await fetch(`http://${host}/api/interview`, {
       method: "POST",
       headers: {

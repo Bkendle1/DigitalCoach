@@ -21,7 +21,8 @@ export default function InterviewResults() {
     const { user } = useAuth();
 
     useEffect(() => {
-        const host = window ? "localhost:8000" : "api";
+        // const host = window ? "localhost:8000" : "api";
+        const host = process.env.NEXT_PUBLIC_HOST;
         const getInterview = async () => {
             const interviewId = params.id.trim();
             try {
@@ -69,9 +70,9 @@ export default function InterviewResults() {
                         <div className={styles.scoreDisplay}>
                             <div className={styles.scoreValue}>
                                 <p>
-                                    {interview && interview.metrics?.overall_score
+                                    {interview && interview.metrics?.overall_score != undefined
                                         ? interview.metrics?.overall_score
-                                        : NaN 
+                                        : 0 
                                     }
                                 </p>
                             </div>
@@ -120,9 +121,9 @@ export default function InterviewResults() {
 
                             <div className={styles.scoreBadge}>
                                 <span className={styles.scoreText}>
-                                    {interview && interview.feedback?.overall_competency.star.score
+                                    {interview && interview.feedback?.overall_competency.star.score != undefined
                                         ? interview.feedback.overall_competency.star.score
-                                        : NaN
+                                        : 0
                                     }
                                 </span>
                                 <p>/10</p>
@@ -149,9 +150,9 @@ export default function InterviewResults() {
 
                             <div className={styles.scoreBadge}>
                                 <span className={styles.scoreText}>
-                                    {interview && interview.feedback?.overall_competency.clarity.score
+                                    {interview && interview.feedback?.overall_competency.clarity.score != undefined
                                         ? interview.feedback.overall_competency.clarity.score
-                                        : NaN
+                                        : 0
                                     }
                                 </span>
                                 <p>/10</p>
@@ -177,9 +178,9 @@ export default function InterviewResults() {
                             </div>
                             <div className={styles.scoreBadge}>
                                 <span className={styles.scoreText}>
-                                    {interview && interview.feedback?.overall_competency.confidence.score
+                                    {interview && interview.feedback?.overall_competency.confidence.score != undefined
                                         ? interview.feedback.overall_competency.confidence.score
-                                        : NaN
+                                        : 0
                                     }    
                                 </span>
                                 <p>/10</p>
@@ -205,9 +206,9 @@ export default function InterviewResults() {
                             </div>
                             <div className={styles.scoreBadge}>
                                 <div className={styles.scoreText}>
-                                    {interview && interview.feedback?.overall_competency.engagement.score
+                                    {interview && interview.feedback?.overall_competency.engagement.score != undefined
                                         ? interview.feedback.overall_competency.engagement.score
-                                        : NaN
+                                        : 0
                                     }
                                 </div>
                                 <p>/10</p>
@@ -222,7 +223,7 @@ export default function InterviewResults() {
                             <p>Overall Sentiment:  
                                 {interview && interview.sentiment
                                     ? ` ${interview.sentiment.toString()}`
-                                    : NaN
+                                    : " Inconclusive"
                                 }
                             </p>
                         </div>

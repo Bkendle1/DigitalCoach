@@ -233,8 +233,7 @@ function InteractiveAvatar({sessionToken, onTranscriptUpdate}: InteractiveAvatar
     // create new session
     const session = new LiveAvatarSession(sessionToken, userConfig);
     sessionRef.current = session;
-    // start the session
-    await session.start();
+    
 
     // register event listener for when the avatar talks so we can add it to the transcript
     // the event returns the text that the avatar speaks so we don't have to use AssemblyAI for this
@@ -252,12 +251,22 @@ function InteractiveAvatar({sessionToken, onTranscriptUpdate}: InteractiveAvatar
     //   }
     // })
 
+    // start the session
+    try {
+      await session.start();
+    } catch (e) {
+      console.error(`Error starting HeyGen LiveAvatar session: ${e}`);
+    }
 
-    
     // when video element is mounted, attach it to the session
     if (videoRef.current) {
       session.attach(videoRef.current);
     }
+
+    
+
+    
+    
   }
 
   /**
@@ -292,6 +301,7 @@ function InteractiveAvatar({sessionToken, onTranscriptUpdate}: InteractiveAvatar
         <video 
           ref={videoRef}
           autoPlay
+          playsInline
           style={{display: sessionToken ? "block" : "none"}}
           />
         {!sessionToken && (
