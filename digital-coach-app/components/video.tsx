@@ -39,7 +39,7 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
     let isMounted = useRef(false);
     let timeStartedRef = useRef("");
     const host = process.env.NEXT_PUBLIC_HOST;
-    // const host = typeof window !== "undefined" ? "localhost:8000" : "api"; // if we're in the browser use localhost, but if we're in Docker, use the backend's service name (currently 'api')
+    // const host = typeof window !== "undefined" ? "http://localhost:8000" : "http://api"; // if we're in the browser use localhost, but if we're in Docker, use the backend's service name (currently 'api')
     const { userData } = useAuth(); // extract user's Firestore data  
 
     // session terminates automatically when timer runs out
@@ -165,7 +165,7 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
 
         // get temporary AssemblyAI authentication token from our backend
         try {
-            const response = await fetch(`http://${host}/api/assemblyai/token`, {
+            const response = await fetch(`${host}/api/assemblyai/token`, {
                 method: "GET",
             });
             const { token } = await response.json();

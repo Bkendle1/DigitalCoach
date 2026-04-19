@@ -2,7 +2,7 @@
  * Handles uploading an image that will be hosted in Cloudinary.
  */
 export const uploadToCloudinary = async (file: File): Promise<string> => {
-    // const host = typeof window !== "undefined" ? "localhost:8000" : "api";
+    // const host = typeof window !== "undefined" ? "http://localhost:8000" : "api";
     // console.log(`profilePic.ts: ${host}`);
     const host = process.env.NEXT_PUBLIC_HOST;
     const cloudinaryURL = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -17,7 +17,7 @@ export const uploadToCloudinary = async (file: File): Promise<string> => {
 
     console.log("Uploading to Cloudinary...");
     // get the signature and timestamp needed by Cloudinary for signed upload 
-    const apiResponse = await fetch(`http://${host}/api/user/profilePic`); 
+    const apiResponse = await fetch(`${host}/api/user/profilePic`); 
     const { signature, timestamp } = await apiResponse.json(); // extract signature and timestamp
 
     const formData = new FormData(); // create the form data needed for Cloudinary Upload API request

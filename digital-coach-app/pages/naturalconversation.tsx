@@ -82,7 +82,7 @@ export default function NaturalConversationPage() {
     setIsLoading(true);
     setLoadingMessage("Requesting Interview Session...");
     try {
-      const response = await fetch(`http://${host}/api/heygen/session_token`, {
+      const response = await fetch(`${host}/api/heygen/session_token`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -143,7 +143,7 @@ export default function NaturalConversationPage() {
     setIsLoading(true);
     setLoadingMessage("Submitting Interview Session...");
     console.log("Submitting Interview Session...")
-    const response = await fetch(`http://${host}/api/interview`, {
+    const response = await fetch(`${host}/api/interview`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

@@ -21,12 +21,12 @@ export default function InterviewResults() {
     const { user } = useAuth();
 
     useEffect(() => {
-        // const host = window ? "localhost:8000" : "api";
+        // const host = window ? "http://localhost:8000" : "http://api";
         const host = process.env.NEXT_PUBLIC_HOST;
         const getInterview = async () => {
             const interviewId = params.id.trim();
             try {
-                const response = await fetch(`http://${host}/api/interview/${user!.uid}/${interviewId}`);
+                const response = await fetch(`${host}/api/interview/${user!.uid}/${interviewId}`);
                 if (response.ok) {
                     console.log("Successfully fetched interview!");
                     const data = await response.json();
