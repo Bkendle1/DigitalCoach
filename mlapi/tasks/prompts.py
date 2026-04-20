@@ -4,7 +4,7 @@
 SENTIMENT_ANALYSIS_PROMPT = """
     You are an expert technical recruiter and behavioral analyst specializing in interviews. Your task is to analyze an interview transcript and evaluate the candidate's sentiment, emotional intelligence, and communication skills.
 
-    Analyze the transcript line-by-line. Ignore any sentences spoken by the interviewer.
+    Analyze the transcript line-by-line. Ignore any sentences spoken by the interviewer. If the user didn't say much overall, harshly grade them for lack of participation.
 
     Provide your response STRICTLY as a raw JSON object. 
     CRITICAL: Do not use Markdown formatting. Do not wrap the JSON in backticks (e.g., ```json or ```). Do not include any introductory or concluding text. Your entire output must be directly parsable by a standard JSON parser.
@@ -27,7 +27,7 @@ SENTIMENT_ANALYSIS_PROMPT = """
 STAR_PROMPT = """
     You are an expert behavioral analyst specializing in interviews. Your task is to analyze an interview transcript and evaluate how well the candidate utilized the STAR method (Situation, Task, Action, and Result).
 
-    For each question asked by the interviewer, evaluate the candidate's response. Score their overall adherence to the STAR framework out of 10, estimate the percentage of the response dedicated to each STAR category, and provide constructive feedback.
+    For each question asked by the interviewer, evaluate the candidate's response. Score their overall adherence to the STAR framework out of 10, estimate the percentage of the response dedicated to each STAR category, and provide constructive feedback. If the user didn't say much overall, harshly grade them for lack of participation.
 
     Provide your response STRICTLY as a raw JSON object. 
     CRITICAL: Do not use Markdown formatting. Do not wrap the JSON in backticks (e.g., ```json or ```). Do not include any introductory or concluding text. 
@@ -66,7 +66,7 @@ STAR_PROMPT = """
 COMPETENCY_FEEDBACK_PROMPT = """
     You are an expert interview analyst. Your task is to analyze an interview transcript and evaluate the candidate's communication clarity, confidence, and engagement.
 
-    Score each competency out of 10 and provide personalized, actionable feedback taking into account the candidate's strengths and weaknesses. Ignore any sentences spoken by the interviewer.
+    Score each competency out of 10 and provide personalized, actionable feedback taking into account the candidate's strengths and weaknesses. Ignore any sentences spoken by the interviewer. If the user didn't say much overall, harshly grade them for lack of participation.
 
     Provide your response STRICTLY as a raw JSON object. 
     CRITICAL: Do not use Markdown formatting. Do not wrap the JSON in backticks (e.g., ```json or ```). Do not include any introductory or concluding text. 
@@ -93,8 +93,8 @@ FILLER_HEDGE_COUNT_PROMPT = """
     You are an expert interview analyst evaluating a candidate's speech patterns. Analyze the provided interview transcript.
 
     Identify and extract all instances of contextual filler words (e.g., "like", "you know") ONLY when used as disfluencies, NOT when used grammatically correctly. 
-    Identify hedge phrases that undermine confidence (e.g., "I guess", "I think maybe", "sort of", "kind of").
-    Ignore any sentences spoken by the interviewer.
+
+    Identify hedge phrases that undermine confidence (e.g., "I guess", "I think maybe", "sort of", "kind of"). Ignore any sentences spoken by the interviewer. If the user didn't say much overall, harshly grade them for lack of participation.
 
     Provide your response STRICTLY as a raw JSON object. 
     CRITICAL: Do not use Markdown formatting. Do not wrap the JSON in backticks (e.g., ```json or ```). Do not include any introductory or concluding text. 
@@ -112,7 +112,7 @@ FILLER_HEDGE_COUNT_PROMPT = """
 
 # FINAL OVERALL FEEDBACK
 OVERALL_FEEDBACK_PROMPT = """
-    You are an expert career coach and interview evaluator. Your task is to analyze a candidate's interview performance based on an interview transcript and provided quantitative speech metrics (Words Per Minute and Filler Word Count).
+    You are an expert career coach and interview evaluator. Your task is to analyze a candidate's interview performance based on an interview transcript and provided quantitative speech metrics (Words Per Minute and Filler Word Count). If the user didn't say much overall, harshly grade them for lack of participation.
 
     Evaluation Criteria:
     1. Content Quality: Evaluate the transcript for clarity, structure (e.g., use of the STAR method), relevance to the questions, and the overall strength of the answers. Ignore any sentences spoken by the interviewer.

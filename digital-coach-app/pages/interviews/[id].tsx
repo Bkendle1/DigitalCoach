@@ -21,7 +21,6 @@ export default function InterviewResults() {
     const { user } = useAuth();
 
     useEffect(() => {
-        // const host = window ? "http://localhost:8000" : "http://api";
         const host = process.env.NEXT_PUBLIC_HOST;
         const getInterview = async () => {
             const interviewId = params.id.trim();
@@ -229,7 +228,7 @@ export default function InterviewResults() {
                         </div>
                     </div>
 
-                    {/* Transcript */}
+                    {/* Insert Transcript Here */}
 
                     {/* Action Buttons */}
                     <div className={styles.actionButtons}>

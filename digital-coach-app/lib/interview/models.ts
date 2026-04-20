@@ -1,6 +1,6 @@
 /**
- * Interface for AI-generated feedback which provides overall feedback, clarity of responses, confidence in the responses, and how engaging the responses were. 
- * (Note: This should match the Feedback Pydantic model in /mlapi/schemas/interview.py)
+ * Interfaces for AI-generated feedback which provides overall feedback, clarity of responses, confidence in the responses, and how engaging the responses were. 
+ * (Note: This should match the related Pydantic model in /mlapi/schemas/interview.py)
  */
 export interface IFeedback {
   ai_feedback: string | null,
@@ -62,28 +62,3 @@ export interface IInterview {
   url: string | undefined,
   is_analyzed: boolean // flag representing when the interview is done being analyzed
 }
-
-// export interface IInterviewDocumentReferenceAttributes {
-//   userId: string;
-//   interviewId: string;
-// }
-
-// export type TInterviewDocumentReference =
-//   | DocumentReference<IInterviewAttributes>
-//   | IInterviewDocumentReferenceAttributes;
-
-// export interface IBaseInterview {
-//   title: string;
-// }
-
-// export interface IInterviewAttributes extends IBaseInterview {
-//   completedAt: Timestamp | null;
-//   reviewedAt: Timestamp | null;
-//   createdAt: Timestamp;
-//   result: object | null;
-// }
-
-// export interface IInterview extends IInterviewAttributes {
-//   id: string;
-// }
-

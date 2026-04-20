@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from "react";
-// import styles from "@App/styles/NaturalConversationPage.module.scss";
 import { Video, VideoOff, Mic, MicOff } from "lucide-react"; 
 import styles from "@App/styles/interview/NaturalConversationPage.module.scss";
 import { useAuth } from "@App/lib/auth/AuthContextProvider";
@@ -12,7 +11,7 @@ const MIN_SESSION_DURATION = 20; // minimum duration for an interview for it to 
 interface VideoRecorderProps {
     startInterview: () => Promise<void>;
     stopInterview: (duration: string, timeStarted: string) => Promise<void>;
-    timeLeft: number; // timer
+    timeLeft: number; // interview timer
     setTimeLeft: React.Dispatch<React.SetStateAction<number>>; // pass in the setter for the parent's timeLeft state
     setCameraError: React.Dispatch<React.SetStateAction<string>>; // pass in the setter for the parent's cameraError state
     onTranscriptChange?: (transcript: string, isFinal: boolean) => void; // optional callback for sending the transcript to the parent component
@@ -39,7 +38,6 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
     let isMounted = useRef(false);
     let timeStartedRef = useRef("");
     const host = process.env.NEXT_PUBLIC_HOST;
-    // const host = typeof window !== "undefined" ? "http://localhost:8000" : "http://api"; // if we're in the browser use localhost, but if we're in Docker, use the backend's service name (currently 'api')
     const { userData } = useAuth(); // extract user's Firestore data  
 
     // session terminates automatically when timer runs out

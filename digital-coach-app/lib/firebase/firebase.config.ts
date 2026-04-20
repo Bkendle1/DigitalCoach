@@ -1,10 +1,9 @@
 /**
- * Client's Connection to Firebase Services
+ * Client's Connection to Firebase Services via Firebase Client SDK
  */
 import { getStorage, connectStorageEmulator } from "firebase/storage";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getAnalytics } from "firebase/analytics";
 import { initializeApp, getApps } from "firebase/app";
 
 // Setup Firebase configurations to allow Firebase Client SDK to connect to our backend
@@ -25,11 +24,6 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0]; //
 const auth = getAuth(app) // Firebase Authentication
 const db = getFirestore(app); // Firebase Firestore
 const storage = getStorage(app); // Firebase Storage
-
-// Analytics (client-side only)
-// if (typeof window !== "undefined" && "measurementId" in firebaseConfig) {
-//   var analytics = getAnalytics(app);
-// }
 
 // Connect emulators for development.
 // Check emulator flag set in .env

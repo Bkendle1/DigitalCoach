@@ -1,11 +1,10 @@
 /**
- * Collection of functions for Firebase Storage.
+ * Collection of functions for Firebase Storage. THIS IS STRICTLY FOR LOCAL DEVELOPMENT AS OUR PRODUCTION VERSION USES CLOUDINARY FOR MEDIA HOSTING
  */
 import {
   ref, 
   uploadBytes,
   getDownloadURL,
-  StorageReference,
 } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid"; 
 import { storage } from "@App/lib/firebase/firebase.config"; // import firebase storage service from firebase configuration

@@ -1,5 +1,4 @@
 import AuthGuard from "@App/lib/auth/AuthGuard";
-// import styles from "@App/styles/ProgressPage.module.scss";
 import styles from "@App/styles/HistoryPage.module.scss";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -24,7 +23,6 @@ export default function ProgressPage() {
      */
     const getInterviews = async () => {
       try {
-        // const host = window ? "localhost:8000" : "api"; // if we're not in browser, user backend service name (currently 'api'), otherwise use localhost
         const host = process.env.NEXT_PUBLIC_HOST;
 
         const response = await fetch(`${host}/api/interview/${user?.uid}`);
@@ -262,48 +260,3 @@ export default function ProgressPage() {
     </AuthGuard>
   );
 }
-
-// function ProgressInit() {
-//   const { userData } = useAuth();
-//   return (
-//     <div className={styles.ProgressPage}>
-//       <h1>Your Progress</h1>
-
-//       <div className={styles.ProgressPage_avatarWrapper}>
-//         {userData?.avatarUrl && (
-//           <Avatar size={125} src={userData?.avatarUrl} />
-//         )}
-//       </div>
-
-//       <div className={styles.ProgressPage_body}>
-//         <div className={styles.ProgressPage_bodyLeft}>
-//           <Card title="Initial Interview">
-//             <Link href="/video" className={styles.linksText}>
-//               Start an Interview
-//             </Link>
-//           </Card>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function Progress() {
-//   //Store user's id here
-//   const { userData } = useAuth();
-//   let hasInterviewed = userData?.hasCompletedInterview;
-//   //Add flag to user that says if they've completed an interview or not
-//   if (hasInterviewed) {
-//     return (
-//       <AuthGuard>
-//         <ProgressPage />
-//       </AuthGuard>
-//     );
-//   } else {
-//     return (
-//       <AuthGuard>
-//         <ProgressInit />
-//       </AuthGuard>
-//     );
-//   }
-// }

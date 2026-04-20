@@ -57,7 +57,6 @@ export default function SignUpPage() {
 
   const onSubmit = async (data: LoginFormInputs) => {
     const { email, password } = data;
-    // signup(email, password);
     try {
       await signup(email, password);
       // clearError();
