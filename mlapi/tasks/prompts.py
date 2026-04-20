@@ -15,7 +15,7 @@ SENTIMENT_ANALYSIS_PROMPT = """
             {
                 "text": "[The specific sentence spoken by the candidate]",
                 "sentiment": "[Must be exactly 'POSITIVE', 'NEGATIVE', or 'NEUTRAL']",
-                "confidence": [Float between 0.0 and 1.0]
+                "confidence": Float between 0.0 and 1.0
             }
         ]
     }
@@ -49,14 +49,14 @@ STAR_PROMPT = """
                 "result": "[Identify the measurable results or outcomes, or 'Not Provided']"
             },
             "star_percentages": {
-                "situation_percentage": [Integer 0-100],
-                "task_percentage": [Integer 0-100],
-                "action_percentage": [Integer 0-100],
-                "result_percentage": [Integer 0-100]
+                "situation_percentage": Integer 0-100,
+                "task_percentage": Integer 0-100,
+                "action_percentage": Integer 0-100,
+                "result_percentage": Integer 0-100
             }
         }
     ],
-    "overall_score": [Integer between 0 and 10],
+    "overall_score": Integer between 0 and 10,
     "feedback": "[2-3 sentences of actionable feedback speaking directly to the candidate (e.g., 'You did a great job...'). If their percentages deviate from the ideal distribution, advise them on how to rebalance their response.]"
     }
 """
@@ -74,15 +74,15 @@ COMPETENCY_FEEDBACK_PROMPT = """
     Use the exact following JSON structure:
     {
         "clarity": {
-            "score": [Integer 1-10 rating communication clarity],
+            "score": Integer 1-10 rating communication clarity,
             "summary": "[1-2 sentences of actionable feedback speaking directly to the candidate (e.g., 'You communicated clearly, but...').]"
         },
         "confidence": {
-            "score": [Integer 1-10 rating candidate confidence],
+            "score": Integer 1-10 rating candidate confidence,
             "summary": "[1-2 sentences of actionable feedback speaking directly to the candidate advising them on how to improve confidence.]"
         },
         "engagement": {
-            "score": [Integer 1-10 rating engagement and relevance to the interview context],
+            "score": Integer 1-10 rating engagement and relevance to the interview context,
             "summary": "[1-2 sentences of actionable feedback speaking directly to the candidate advising them on how to improve engagement.]"
         }
     }
@@ -101,8 +101,8 @@ FILLER_HEDGE_COUNT_PROMPT = """
 
     Use the exact following JSON structure:
     {
-        "filler_count": [Integer representing the total number of contextual fillers],
-        "hedge_count": [Integer representing the total number of hedge phrases],
+        "filler_count": Integer representing the total number of contextual fillers,
+        "hedge_count": Integer representing the total number of hedge phrases,
         "most_frequent": [
             "[String of the #1 most used phrase]", 
             "[String of the #2 most used phrase]"
@@ -125,6 +125,6 @@ OVERALL_FEEDBACK_PROMPT = """
     Use the exact following JSON structure:
     {
         "overall_feedback": "[3-4 sentences of highly personalized, actionable feedback speaking directly to the candidate (e.g., 'You provided strong technical examples, but...'). Give specific techniques to improve, such as 'Take a one-second pause instead of saying um'.]",
-        "overall_score": [Integer between 0 and 100 reflecting combined content and speech metrics]
+        "overall_score": Integer between 0 and 100 reflecting combined content and speech metrics
     }
 """
