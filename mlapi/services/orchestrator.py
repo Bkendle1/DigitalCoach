@@ -9,8 +9,6 @@ from tasks.ml_tasks import (
     filler_hedge_count,
 ) 
 from redisStore.queue import add_task_to_queue
-from tasks.create_answer_task import create_answer
-from tasks.starscores import predict_star_scores
 from utils.logger_config import get_logger
 from schemas import (
     SentimentAnalysisRequest,
@@ -159,15 +157,4 @@ def start_interview_analysis(req: AnalyzeInterviewRequest) -> AnalyzeInterviewRe
     return AnalyzeInterviewResponse(sentiment_job_id=sentiment_job_id,
                                     star_job_id=star_job_id, competency_job_id=competency_job_id,
                                     filler_hedge_job_id=filler_hedge_job_id,
-                                    overall_job_id=overall_job_id) 
-
-    # Enqueue the create_answer job that's dependent on the analysis job(s) 
-    # answer_job = add_task_to_queue(
-    #     "high", # priority of task (i.e. RQ queue name)
-    #     create_answer, # function to execute
-    #     video_url, # video of interview
-    #     audio_job.id, # audio job id
-    #     depends_on=[audio_job] # job doesn't start until audio_job is complete
-    # )
-    
-    # return answer_job.id
+                                    overall_job_id=overall_job_id)

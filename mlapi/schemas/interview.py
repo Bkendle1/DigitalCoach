@@ -5,7 +5,6 @@ Interview-related schemas
 from pydantic import BaseModel
 from schemas.feedback import (
     OverallCompetencyFeedback,
-    CompetencyFeedback
 )
 
 class Feedback(BaseModel):

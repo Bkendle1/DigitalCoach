@@ -4,7 +4,6 @@ from utils.logger_config import get_logger
 from schemas import StarFeedbackRequest, StarFeedbackResponse, JobId
 from services import orchestrator, jobs
 from redis import Redis
-from pydantic import ValidationError
 
 logger = get_logger(__name__)
 

@@ -6,15 +6,12 @@ from tasks.seed import start_seed
 
 from routes import (
     user,
-    jobs,
-    create_answer,
     star_feedback,
     audio_analysis,
     heygen,
     assemblyai,
     llm,
     interview,
-    test_firebase # this is for testing backend's connection to firebase
 )
 
 
@@ -79,12 +76,9 @@ app.mount("/rq", dashboard)
 
 # Add routes here
 app.include_router(user.router)
-app.include_router(jobs.router)
-app.include_router(create_answer.router)
 app.include_router(star_feedback.router)
 app.include_router(audio_analysis.router)
 app.include_router(heygen.router)
 app.include_router(assemblyai.router)
 app.include_router(llm.router)
 app.include_router(interview.router)
-app.include_router(test_firebase.router) # this is for testing only

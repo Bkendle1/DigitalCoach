@@ -4,11 +4,7 @@ Data functions related to interviews.
 
 from services.firebase_init import get_firestore_client
 from utils.logger_config import get_logger
-from schemas.interview import (
-    Interview,
-    Feedback,
-    Metrics,
-)
+from schemas.interview import Interview
 from pydantic import ValidationError
 from google.cloud import firestore
 from fastapi import HTTPException, status
@@ -69,6 +65,14 @@ async def getTranscriptById(user_id: str, interview_id: str) -> str:
         db = get_firestore_client()
         # get user's document reference
         userRef = db.collection("users").document(f"{user_id}")
+
+        userDoc = await userRef.get()
+        if not userDoc.exists:
+            logger.error(f"User with user_id={user_id} not found.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found."
+            )
         # get interview document reference
         transcriptRef = userRef.collection("interviews").document(interview_id)
 

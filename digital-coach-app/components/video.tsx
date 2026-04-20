@@ -3,7 +3,7 @@ import { Video, VideoOff, Mic, MicOff } from "lucide-react";
 import styles from "@App/styles/interview/NaturalConversationPage.module.scss";
 import { useAuth } from "@App/lib/auth/AuthContextProvider";
 import { StreamingTranscriber } from "assemblyai"; 
-
+import { useRouter } from "next/router";
 export const MAX_SESSION_TIME = 1 * 60; // sandbox mode for HeyGen LiveAvatar only lasts for around 1 minute  
 const MIN_SESSION_DURATION = 20; // minimum duration for an interview for it to be counted
 
@@ -39,6 +39,7 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
     let timeStartedRef = useRef("");
     const host = process.env.NEXT_PUBLIC_HOST;
     const { userData } = useAuth(); // extract user's Firestore data  
+    const router = useRouter();
 
     // session terminates automatically when timer runs out
     useEffect(() => {
@@ -405,13 +406,24 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
                 >
                     Start Recording
                 </button>:
-                <button 
-                    className={styles.startButton}
-                    onClick={stopRecording}
-                >
-                    Stop Recording
-                </button>}
-           
+                <>
+                    <button 
+                        className={styles.startButton}
+                        onClick={stopRecording}
+                    >
+                        Submit Recording
+                    </button>
+                    <button
+                        className={styles.startButton}
+                        onClick={() => router.reload()}
+                    >
+                        Cancel
+                    </button>
+                </>}
+            
+            
+
+
             {/* If the video download URL is ready, store it in Firebase for preview later */}
             {/* {videoURL 
             ? <a href={videoURL} download="user-interview.webm" className={styles.startButton}>Download Video</a> : <a href=""></a>} */}

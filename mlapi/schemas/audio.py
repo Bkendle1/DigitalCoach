@@ -1,7 +1,7 @@
 # Audio analysis schemas for sentiment analysis
 from enum import Enum
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 from schemas.jobs import JobStatus
 
 class AAI_Token(BaseModel):
@@ -35,13 +35,6 @@ class SentimentAnalysisResult(BaseModel):
     Result of audio sentiment analysis by AssemblyAI
     """
     sentiment_analysis: List[SentimentResult] = []
-    
-    # transcript: str # interview transcript
-    # sentiment_analysis: List[SentimentResult] = Field(default_factory=list)
-    # highlights: List[HighlightData] = Field(default_factory=list)
-    # iab_results: IABResult = Field(default_factory=IABResult)
-    # duration: float = 0.0 # duration of audio clip in seconds
-    # error: str | None = None
     
 class SentimentAnalysisJobResponse(BaseModel):
     """

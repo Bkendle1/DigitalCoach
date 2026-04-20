@@ -48,7 +48,6 @@ class StarFeedbackRequest(BaseModel):
     user_id: str
     interview_id: str
     
-
 class StarBreakdown(BaseModel):
     """
     The deconstruction of a user's response against the STAR framework.
@@ -86,10 +85,6 @@ class StarFeedbackEvaluation(BaseModel):
     star_analysis: List[StarAnalysisResult]
     overall_score: int
     feedback: str
-    # fulfilled_star: bool
-    # percentages: StarPercentages
-    # classifications: List[StarClassification]
-    # feedback: List[str]
 
 class StarFeedbackResponse(BaseModel):
     """

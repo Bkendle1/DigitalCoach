@@ -3,8 +3,7 @@ from utils.logger_config import get_logger
 from schemas import (
     CreateInterviewResponse, 
     CreateInterviewRequest,
-    AnalyzeInterviewRequest,
-    GetInterviewRequest, 
+    AnalyzeInterviewRequest, 
     GetInterviewResponse,
     Interview
 )
@@ -72,7 +71,6 @@ async def get_interview(user_id: str, interview_id: str) -> GetInterviewResponse
     
     return GetInterviewResponse(interview=interview)
     
-
 
 # GET /api/interview/{user_id}
 @router.get(

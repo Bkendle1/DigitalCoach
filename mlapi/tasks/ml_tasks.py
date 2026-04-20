@@ -6,6 +6,8 @@ from schemas import (
     OverallAnalysisResponse,
 )
 from utils.logger_config import get_logger
+from utils.transcript import extractUserTranscript
+from data.users import getUser
 import os
 from openai import OpenAI
 from pydantic import ValidationError, BaseModel
@@ -50,6 +52,10 @@ async def detect_audio_sentiment(user_id: str, interview_id: str) -> SentimentAn
     # get interview's transcript
     transcript = await getTranscriptById(user_id, interview_id)
 
+    # get user's name 
+    user = await getUser(user_id)
+    userTranscript = extractUserTranscript(transcript, user.name)
+
     # initialize messages for LLM 
     # system messages provide additional context to the LLM
     # user messages are the messages the LLM actually responds to
@@ -60,7 +66,7 @@ async def detect_audio_sentiment(user_id: str, interview_id: str) -> SentimentAn
                 },
                 {
                     "role": "user",
-                    "content": transcript # pass the transcript to the LLM for sentiment analysis
+                    "content": userTranscript # pass the transcript to the LLM for sentiment analysis
                 }
             ]
     try:
@@ -252,6 +258,10 @@ async def analyze_competencies(user_id: str, interview_id: str):
     # get interview's transcript
     transcript = await getTranscriptById(user_id, interview_id)
 
+    # get user's name 
+    user = await getUser(user_id)
+    userTranscript = extractUserTranscript(transcript, user.name)
+
     # initialize messsages for LLM
     # system messages provide additional context to the LLM before inference
     # user messages are messages that the LLM responds to
@@ -262,7 +272,7 @@ async def analyze_competencies(user_id: str, interview_id: str):
         },
         {
             "role": "user",
-            "content": transcript # pass the transcript to the LLM for competencies analysis
+            "content": userTranscript # pass the transcript to the LLM for competencies analysis
         }
     ]
 
@@ -346,8 +356,12 @@ async def filler_hedge_count(user_id: str, interview_id: str) -> FillerHedgeResp
     # initialize OpenAI-compliant LLM client
     client = OpenAI(base_url=base_url, api_key=api_key)
 
+    # get user's name 
+    user = await getUser(user_id)
+
     # get interview's transcript
     transcript = await getTranscriptById(user_id, interview_id)
+    userTranscript = extractUserTranscript(transcript, user.name)
 
     # initialize messsages for LLM
     # system messages provide additional context to the LLM before inference
@@ -359,7 +373,7 @@ async def filler_hedge_count(user_id: str, interview_id: str) -> FillerHedgeResp
         },
         {
             "role": "user",
-            "content": transcript # pass the transcript to the LLM for star analysis
+            "content": userTranscript # pass the transcript to the LLM for star analysis
         }
     ]
 
