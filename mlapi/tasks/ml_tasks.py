@@ -64,9 +64,15 @@ async def detect_audio_sentiment(user_id: str, interview_id: str) -> SentimentAn
                 }
             ]
     try:
-        response = client.chat.completions.create(
+        # response = client.chat.completions.create(
+        #     model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
+        #     messages = model_messages,
+        # )
+        response = client.beta.chat.completions.parse(
             model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
             messages = model_messages,
+            response_format=SentimentAnalysisResult,
+            max_tokens=8192
         )
 
     except Exception as e:
@@ -80,10 +86,14 @@ async def detect_audio_sentiment(user_id: str, interview_id: str) -> SentimentAn
     try:
         logger.info(f"Verifying LLM sentiment analysis on interview={interview_id}...")
 
-        llm_response = response.choices[0].message.content # extract LLM's JSON response string
+        # llm_response = response.choices[0].message.content # extract LLM's JSON response string
+
+        llm_response = response.choices[0].message.parsed
+
         logger.info(f"LLM response={llm_response}")
         # verify LLM JSON response is the correct shape 
-        validated_data = SentimentAnalysisResult.model_validate_json(llm_response) # parses JSON string, checks if it fits our response schema and instantiates our schema if successful 
+        # validated_data = SentimentAnalysisResult.model_validate_json(llm_response) # parses JSON string, checks if it fits our response schema and instantiates our schema if successful 
+        validated_data = SentimentAnalysisResult.model_validate(llm_response)
         logger.info(f"Sentiment Analysis on interview={interview_id} successful!")
 
         # determine overall sentiment
@@ -157,9 +167,15 @@ async def star_analysis(user_id: str, interview_id: str) -> CompetencyFeedback:
     
     # send task to local LLM
     try:
-        response = client.chat.completions.create(
+        # response = client.chat.completions.create(
+        #     model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
+        #     messages = model_messages,
+        # )
+        response = client.beta.chat.completions.parse(
             model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
             messages = model_messages,
+            response_format=StarFeedbackEvaluation,
+            max_tokens=8192
         )
     except Exception as e:
         logger.error(f"Error communicating with LLM: {e}")
@@ -173,11 +189,13 @@ async def star_analysis(user_id: str, interview_id: str) -> CompetencyFeedback:
     try:
         logger.info(f"Verifying LLM STAR analysis on interview={interview_id}...")
 
-        llm_response = response.choices[0].message.content
+        # llm_response = response.choices[0].message.content
+        llm_response = response.choices[0].message.parsed
         # extract LLM's JSON response string
         logger.info(f"LLM response={llm_response}")
         # verify LLM JSON response is the correct shape
-        validated_data = StarFeedbackEvaluation.model_validate_json(llm_response) # parse JSON string, if it matches the schema then instantiate; otherwise throw
+        # validated_data = StarFeedbackEvaluation.model_validate_json(llm_response) # parse JSON string, if it matches the schema then instantiate; otherwise throw
+        validated_data = StarFeedbackEvaluation.model_validate(llm_response)
         logger.info(f"STAR analysis on interview={interview_id} successful!")
 
         data = validated_data.model_dump() # generate dictionary of validated llm response
@@ -250,9 +268,15 @@ async def analyze_competencies(user_id: str, interview_id: str):
 
     # send task to local LLM
     try:
-        response = client.chat.completions.create(
-            model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
-            messages = model_messages,
+        # response = client.chat.completions.create(
+        #     model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
+        #     messages = model_messages,
+        # )
+        response = client.beta.chat.completions.parse(
+            model=model_name,
+            messages=model_messages,
+            response_format=LLMResponse,
+            max_tokens=8192
         )
     except Exception as e:
         logger.error(f"Error communicating with LLM: {e}")
@@ -265,12 +289,14 @@ async def analyze_competencies(user_id: str, interview_id: str):
     try:
         logger.info(f"Verifying LLM competencies analysis on interview={interview_id}...")
 
-        llm_response = response.choices[0].message.content
+        # llm_response = response.choices[0].message.content
+        llm_response = response.choices[0].message.parsed
         # extract LLM's JSON response string
         logger.info(f"LLM response={llm_response}")
 
-        # verify LLM JSON response isi the correct shape
-        validated_data = LLMResponse.model_validate_json(llm_response) # parse JSON string, if it matches the schema then instantiate; otherwise throw
+        # verify LLM JSON response is in the correct shape
+        # validated_data = LLMResponse.model_validate_json(llm_response) # parse JSON string, if it matches the schema then instantiate; otherwise throw
+        validated_data = LLMResponse.model_validate(llm_response)
 
         logger.info(f"Competencies analysis on interview={interview_id} successful!")
 
@@ -339,9 +365,15 @@ async def filler_hedge_count(user_id: str, interview_id: str) -> FillerHedgeResp
 
     # send task to local LLM
     try:
-        response = client.chat.completions.create(
+        # response = client.chat.completions.create(
+        #     model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
+        #     messages = model_messages,
+        # )
+        response = client.beta.chat.completions.parse(
             model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
             messages = model_messages,
+            response_format=FillerHedgeResponse,
+            max_tokens=8192
         )
     except Exception as e:
         logger.error(f"Error communicating with LLM: {e}")
@@ -354,11 +386,14 @@ async def filler_hedge_count(user_id: str, interview_id: str) -> FillerHedgeResp
     try:
         logger.info(f"Verifying LLM filler/hedge extraction on interview={interview_id}...")
 
-        llm_response = response.choices[0].message.content
+        # llm_response = response.choices[0].message.content
+        llm_response = response.choices[0].message.parsed
+
         # extract LLM's JSON response string
         logger.info(f"LLM response={llm_response}")
         # verify LLM JSON response is the correct shape
-        validated_data = FillerHedgeResponse.model_validate_json(llm_response)
+        # validated_data = FillerHedgeResponse.model_validate_json(llm_response)
+        validated_data = FillerHedgeResponse.model_validate(llm_response)
         
         # parse JSON string, if it matches the schema then instantiate; otherwise throw
         logger.info(f"Filler/hedge extraction on interview={interview_id} successful!")
@@ -424,9 +459,15 @@ async def overall_analysis(user_id: str, interview_id: str) -> OverallAnalysisRe
 
     # send task to local LLM
     try:
-        response = client.chat.completions.create(
+        # response = client.chat.completions.create(
+        #     model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
+        #     messages = model_messages,
+        # )
+        response = client.beta.chat.completions.parse(
             model=model_name, # llm model name from docker model runner (you can find this by running `docker model list` in your CMD)
             messages = model_messages,
+            response_format=OverallAnalysisResponse,
+            max_tokens=8192
         )
     except Exception as e:
         logger.error(f"Error communicating with LLM: {e}")
@@ -439,12 +480,14 @@ async def overall_analysis(user_id: str, interview_id: str) -> OverallAnalysisRe
     try:
         logger.info(f"Verifying LLM overall analysis on interview={interview_id}...")
 
-        llm_response = response.choices[0].message.content
+        # llm_response = response.choices[0].message.content
+        llm_response = response.choices[0].message.parsed
         # extract LLM's JSON response string
         logger.info(f"LLM response={llm_response}")
 
         # verify LLM JSON response is the correct shape
-        validated_data = OverallAnalysisResponse.model_validate_json(llm_response)
+        # validated_data = OverallAnalysisResponse.model_validate_json(llm_response)
+        validated_data = OverallAnalysisResponse.model_validate(llm_response)
 
         # parse JSON string, if it matches the schema then instantiate; otherwise throw
         logger.info(f"Overall analysis on interview={interview_id} successful!")
