@@ -89,6 +89,9 @@ export default function ProgressPage() {
    * @param interview The interview the button is for
    */
   const createInterviewBtn = (interview: IInterview) => {
+    if (interview == undefined || interview.metrics.overall_score == undefined) {
+      return;
+    }
     const btn = <button
       key={interview.id} // identifier for button within an array of buttons
       onClick={() => router.push(`/interviews/${interview.id}`)}

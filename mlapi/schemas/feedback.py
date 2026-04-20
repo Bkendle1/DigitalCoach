@@ -107,10 +107,16 @@ class OverallAnalysisRequest(BaseModel):
     Args:
         user_id: The id of the user whose interview we're analyzing
         interview_id: The id of the interview who owns the transcript to analyze
-        filler_hedge_job_id: The id of the filler words and hedge phrases extraction job which must be completed before final analysis can begin.
+        sentiment_job_id: The id of the related sentiment analysis job.
+        star_job_id: The id of the related STAR analysis job.
+        competency_job_id: The id of the related competencies analysis job. 
+        filler_hedge_job_id: The id of the related filler words and hedge phrases extraction job which must be completed before final analysis can begin.
     """
     user_id: str
     interview_id: str
+    sentiment_job_id: str
+    star_job_id: str
+    competency_job_id: str
     filler_hedge_job_id: str
 
 

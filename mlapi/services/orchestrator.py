@@ -111,8 +111,8 @@ def start_overall_analysis(req: OverallAnalysisRequest) -> str:
     """
     logger.info(f"Started final overall analysis job for interview={req.interview_id}.")
 
-    # Enqueue overall analysis job (requires filler/hedge extraction job to be done first)
-    job = add_task_to_queue("default", overall_analysis, req.user_id, req.interview_id, depends_on=req.filler_hedge_job_id)
+    # Enqueue overall analysis job (requires all other ML-related jobs to be done first)
+    job = add_task_to_queue("default", overall_analysis, req.user_id, req.interview_id, depends_on=[req.sentiment_job_id, req.star_job_id, req.competency_job_id, req.filler_hedge_job_id])
 
     logger.info(f"Final overall analysis for interview={req.interview_id} job ID={job.id} enqueued!")
 
@@ -146,7 +146,12 @@ def start_interview_analysis(req: AnalyzeInterviewRequest) -> AnalyzeInterviewRe
     filler_hedge_job_id = start_filler_hedge_count(filler_hedge_request)
     
     # Enqueue final overall analysis job
-    overall_analysis_request = OverallAnalysisRequest(user_id=req.user_id, interview_id=req.interview_id, filler_hedge_job_id=filler_hedge_job_id)
+    overall_analysis_request = OverallAnalysisRequest(user_id=req.user_id,
+                                                      interview_id=req.interview_id,
+                                                      sentiment_job_id=sentiment_job_id,
+                                                      star_job_id=star_job_id,
+                                                      competency_job_id=competency_job_id,
+                                                      filler_hedge_job_id=filler_hedge_job_id)
     overall_job_id = start_overall_analysis(overall_analysis_request)
     
     # Invoke other tasks here...
