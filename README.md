@@ -102,30 +102,17 @@ Notes:
   - Firestore
   - Functions
 - Sass
+- Cloudinary
 
 ## Build Tools
 
 - Yarn
-- Pipenv
-
-## Machine Learning API
-
-- Flask
-- Redis
 
 ## Machine Learning Model
 
-- RQ
 - AssemblyAI
-- FER
-- Numpy
-- Scipy
-- Matplotlib
-- Jupyter Notebook
-- Keras
-- OpenCV
-- Tensorflow
-- NLTK
+- HeyGen LiveAvatar
+- Docker Model Runner
 
 # Members
 
