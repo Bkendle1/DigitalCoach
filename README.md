@@ -157,30 +157,18 @@ That’s it, enjoy your newly hosted web application! An important note is that 
   - Firestore
   - Functions
 - Sass
+- Cloudinary
 
 ## Build Tools
 
 - Yarn
-- Pipenv
-
-## Machine Learning API
-
-- Flask
-- Redis
+- NPM
 
 ## Machine Learning Model
 
-- RQ
 - AssemblyAI
-- FER
-- Numpy
-- Scipy
-- Matplotlib
-- Jupyter Notebook
-- Keras
-- OpenCV
-- Tensorflow
-- NLTK
+- HeyGen LiveAvatar
+- Docker Model Runner
 
 # Members
 
