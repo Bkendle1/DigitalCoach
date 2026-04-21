@@ -4,7 +4,7 @@ import styles from "@App/styles/interview/NaturalConversationPage.module.scss";
 import { useAuth } from "@App/lib/auth/AuthContextProvider";
 import { StreamingTranscriber } from "assemblyai"; 
 import { useRouter } from "next/router";
-export const MAX_SESSION_TIME = 1 * 60; // sandbox mode for HeyGen LiveAvatar only lasts for around 1 minute  
+export const MAX_SESSION_TIME = 20 * 60; // sandbox mode for HeyGen LiveAvatar only lasts for around 1 minute  
 const MIN_SESSION_DURATION = 20; // minimum duration for an interview for it to be counted
 
 // Define the shape of this components props

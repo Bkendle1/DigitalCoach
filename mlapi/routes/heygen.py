@@ -34,10 +34,10 @@ async def get_session_token():
 
     # default session configuration
     interviewConfig = {
-      "avatar_id": "dd73ea75-1218-4ef3-92ce-606d5f7fbc0a", # ID for one of HeyGen LiveAvatar's avatars to choose what it looks like.
-      "voice_id": "c2527536-6d1f-4412-a643-53a3497dada9", # ID for one of HeyGen LiveAvatar's voices to choose how it sounds like.
-      "context_id": "e6a7bbca-1ac1-4a2f-b0f0-f6cfce199b97", # ID for Context created in HeyGen LiveAvatar to choose how the avatar behaves and what it knows. # old context: "595268c3-a4cf-499d-bf85-efd006fe8a47" 
-      "is_sandbox": True # HeyGen LiveAvatar has a sandbox mode so the developer can test without using credits under strict session configurations. (Only a subset of avatars are available in sandbox mode)
+      "avatar_id": "65f9e3c9-d48b-4118-b73a-4ae2e3cbb8f0", # ID for one of HeyGen LiveAvatar's avatars to choose what it looks like. # sandbox avatar: dd73ea75-1218-4ef3-92ce-606d5f7fbc0a
+      "voice_id": "b2bd6569-a537-4342-aeca-a1f15d2a2c97", # ID for one of HeyGen LiveAvatar's voices to choose how it sounds like. # sandbox voice: c2527536-6d1f-4412-a643-53a3497dada9
+      "context_id": "e6a7bbca-1ac1-4a2f-b0f0-f6cfce199b97", # ID for Context created in HeyGen LiveAvatar to choose how the avatar behaves and what it knows. # current context: "e6a7bbca-1ac1-4a2f-b0f0-f6cfce199b97" 
+      "is_sandbox": False # HeyGen LiveAvatar has a sandbox mode so the developer can test without using credits under strict session configurations. (Only a subset of avatars are available in sandbox mode)
     }
 
     # Session configuration
