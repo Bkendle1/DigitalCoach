@@ -1,6 +1,7 @@
 {
     "$schema": "https://typedoc.org/schema.json",
     "entryPoints": ["./components", "./lib", "./pages"],
+    "entryPointStrategy": "expand",
     "out": "docs",
     "exclude": ["**/node_modules/**", "**/*.test.ts", "**/*.test.tsx"],
     "excludeExternals": true,
