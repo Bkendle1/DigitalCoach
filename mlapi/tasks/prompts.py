@@ -43,7 +43,7 @@ STAR_PROMPT = """
 """
 
 # COMPETENCY SCORES/FEEDBACK
-COMPETENCY_FEEDBACK_PROMT = """
+COMPETENCY_FEEDBACK_PROMPT = """
     You are an expert interview analyst and your task is to analyze the following job interview transcript. Evaluate the transcript for communication clarity, confidence, and engagement.
     Score each on a scale of 10 and provide personalized feedback based on their answers. Providing feedback on their strengths and weaknesses in each category. 
     Taking all three scores into consideration (evenly weighted), give them an overall score out of 10 and provide a key summary on their overall performance.
