@@ -26,7 +26,7 @@ SENTIMENT_ANALYSIS_PROMPT = """
 # STAR_SCORES
 STAR_PROMPT = """
     You are an expert behavioral analyst specializing in interviews. 
-    FIRST: Analyze the interview transcript and deduce the specific job role or industry the candidate is targeting based on the context of their answers and assume the posiition as an interviewer specialized for that role.
+    FIRST: Analyze the interview transcript and deduce the specific job role or industry the candidate is targeting based on the context of their answers and assume the position as an interviewer specialized for that role.
     SECOND: Analyze the interview transcript and evaluate how well the candidate utilized the STAR method (Situation, Task, Action, and Result) based on the specific skills and expectations of that deduced role.
 
     For each question asked by the interviewer, evaluate the candidate's response. Score their overall adherence to the STAR framework out of 10, estimate the percentage of the response dedicated to each STAR category, and provide constructive feedback. If the user didn't say much in their transcript or their transcript is empty, give them a 0 in their overall score and criticize them within your feedback because of a lack of participation.
@@ -68,7 +68,7 @@ STAR_PROMPT = """
 # COMPETENCY SCORES/FEEDBACK
 COMPETENCY_FEEDBACK_PROMPT = """
     You are an expert interview analyst. 
-    FIRST: Analyze the interview transcript and deduce the specific job role or industry the candidate is targeting based on the context of their answers and assume the posiition as an interviewer specialized for that role.
+    FIRST: Analyze the interview transcript and deduce the specific job role or industry the candidate is targeting based on the context of their answers and assume the position as an interviewer specialized for that role.
     SECOND: Analyze the interview transcript and evaluate the candidate's communication clarity, confidence, and engagement, judging them against the specific communication standards required for that inferred role.
 
     Score each competency out of 10 and provide personalized, actionable feedback taking into account the candidate's strengths and weaknesses. Ignore any sentences spoken by the interviewer if any. If the user didn't say much in their transcript or its empty, give them a 0 for their clarity score, confidence score, and engagement score and also criticize them within your clarity, confidence, and engagement feedbacks because of a lack of participation.

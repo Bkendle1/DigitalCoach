@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { LiveAvatarSession, AgentEventsEnum } from "@heygen/liveavatar-web-sdk";
+import { LiveAvatarSession, AgentEventsEnum, SessionEvent } from "@heygen/liveavatar-web-sdk";
 import styles from "@App/styles/interview/NaturalConversationPage.module.scss";
 import { VideoOff } from "lucide-react";
 
@@ -41,6 +41,13 @@ function InteractiveAvatar({sessionToken, onTranscriptUpdate}: InteractiveAvatar
     //   }
     // })
 
+    // attach video element to session once the video and audio tracks arrive
+    session.on(SessionEvent.SESSION_STREAM_READY, () => {
+        if (videoRef.current) {
+          session.attach(videoRef.current);
+        }
+    });
+
     // start the session
     try {
       await session.start();
@@ -48,11 +55,6 @@ function InteractiveAvatar({sessionToken, onTranscriptUpdate}: InteractiveAvatar
       console.error(`Error starting HeyGen LiveAvatar session: ${e}`);
     }
 
-    // when video element is mounted, attach it to the session
-    if (videoRef.current) {
-      session.attach(videoRef.current);
-    }
-    
   }
 
   /**
