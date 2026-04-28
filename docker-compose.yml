@@ -27,7 +27,7 @@ services:
       - ./digital-coach-app:/app
       - /app/node_modules # Preserve node_modules inside the container
       - /app/.next
-    command: yarn dev # Start the Next.js development server
+    command: npm run dev # Start the Next.js development server
     ports:
       # Expose port 3000 for the frontend
       - "3000:3000"
