@@ -1,10 +1,9 @@
 /**
- * Client's Connection to Firebase Services
+ * Client's Connection to Firebase Services via Firebase Client SDK
  */
 import { getStorage, connectStorageEmulator } from "firebase/storage";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getAnalytics } from "firebase/analytics";
 import { initializeApp, getApps } from "firebase/app";
 
 // Setup Firebase configurations to allow Firebase Client SDK to connect to our backend
@@ -26,11 +25,6 @@ const auth = getAuth(app) // Firebase Authentication
 const db = getFirestore(app); // Firebase Firestore
 const storage = getStorage(app); // Firebase Storage
 
-// Analytics (client-side only)
-// if (typeof window !== "undefined" && "measurementId" in firebaseConfig) {
-//   var analytics = getAnalytics(app);
-// }
-
 // Connect emulators for development.
 // Check emulator flag set in .env
 const useEmulator = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === "true"; 
@@ -38,7 +32,6 @@ if (useEmulator) {
   console.log("Using Firebase Emulator services.")
   // Determine host (browser or Docker) if we're in the browser (window exists), use localhost and if we're in a Docker container, use the service name 'firebase'.
   const emulatorHost = typeof window !== "undefined" ? "localhost" : "firebase";
-
   // If we're in the browser, use localhost for auth emulator. If in Docker, use 'firebase' service name.
   const authURL = typeof window !== "undefined" ? "http://localhost:9099" : "http://firebase:9099";
 

@@ -55,7 +55,6 @@ export default function RegisterPage() {
       if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR == "true") {
         console.log("Uploading to Firebase Storage Emulator...");
         avatarURL = await uploadFile(
-          // data.avatar[0],
           imageFile,
           EStorageFolders.profilePic, // use profile picture folder
           user.uid, // use authentication ID for filename 

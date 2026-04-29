@@ -1,5 +1,4 @@
 import AuthGuard from "@App/lib/auth/AuthGuard";
-// import styles from "@App/styles/ProgressPage.module.scss";
 import styles from "@App/styles/HistoryPage.module.scss";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -24,8 +23,9 @@ export default function ProgressPage() {
      */
     const getInterviews = async () => {
       try {
-        const host = window ? "localhost:8000" : "api"; // if we're not in browser, user backend service name (currently 'api'), otherwise use localhost
-        const response = await fetch(`http://${host}/api/interview/${user?.uid}`);
+        const host = process.env.NEXT_PUBLIC_HOST;
+
+        const response = await fetch(`${host}/api/interview/${user?.uid}`);
         if (response.ok) {
           console.log("Successfully fetched interviews!");
           const data = await response.json();
@@ -87,6 +87,9 @@ export default function ProgressPage() {
    * @param interview The interview the button is for
    */
   const createInterviewBtn = (interview: IInterview) => {
+    if (interview == undefined || interview.metrics.overall_score == undefined) {
+      return;
+    }
     const btn = <button
       key={interview.id} // identifier for button within an array of buttons
       onClick={() => router.push(`/interviews/${interview.id}`)}
@@ -106,14 +109,7 @@ export default function ProgressPage() {
               <div className={`${styles.infoRow} ${styles.date}`}>
                 <Calendar/>
                 <span>
-                  {new Date(`${interview.date} ${interview.timeStarted}`).toLocaleDateString("en-US", { 
-                    weekday: "long",
-                    month: "2-digit",
-                    day: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit", 
-                  })}
+                  {interview.timeStarted}
                 </span>
               </div>
               <div className={`${styles.infoRow} ${styles.duration}`}>
@@ -264,48 +260,3 @@ export default function ProgressPage() {
     </AuthGuard>
   );
 }
-
-// function ProgressInit() {
-//   const { userData } = useAuth();
-//   return (
-//     <div className={styles.ProgressPage}>
-//       <h1>Your Progress</h1>
-
-//       <div className={styles.ProgressPage_avatarWrapper}>
-//         {userData?.avatarUrl && (
-//           <Avatar size={125} src={userData?.avatarUrl} />
-//         )}
-//       </div>
-
-//       <div className={styles.ProgressPage_body}>
-//         <div className={styles.ProgressPage_bodyLeft}>
-//           <Card title="Initial Interview">
-//             <Link href="/video" className={styles.linksText}>
-//               Start an Interview
-//             </Link>
-//           </Card>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function Progress() {
-//   //Store user's id here
-//   const { userData } = useAuth();
-//   let hasInterviewed = userData?.hasCompletedInterview;
-//   //Add flag to user that says if they've completed an interview or not
-//   if (hasInterviewed) {
-//     return (
-//       <AuthGuard>
-//         <ProgressPage />
-//       </AuthGuard>
-//     );
-//   } else {
-//     return (
-//       <AuthGuard>
-//         <ProgressInit />
-//       </AuthGuard>
-//     );
-//   }
-// }

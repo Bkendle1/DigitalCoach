@@ -1,4 +1,5 @@
 from rq.job import Job
+from rq import Retry
 from rq.queue import Queue
 from redisStore.myconnection import get_redis_con
 from utils.logger_config import get_logger
@@ -44,6 +45,7 @@ def add_task_to_queue(priority, task, *args, depends_on=None) -> Job:
             task,
             *args,
             depends_on=depends_on,
+            retry=Retry(max=3) # retry failed job up to 3 times
         )
         logger.info(f"Task {task.__name__} enqueued with job ID: {job.get_id()}")
         return job

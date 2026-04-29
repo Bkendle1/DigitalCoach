@@ -80,7 +80,7 @@ async def start_seed():
         "id": "vsoSA7V72JFdBPMLJL29",
         "date": "03/04/2024", # MM/DD/YY
         "timestamp": int(time.time() * 1000), # timestamp when interview was created in milliseconds since the epoch 
-        "timeStarted": datetime.now().strftime("%H:%M"), # HH:MM 12-hour
+        "timeStarted": datetime.now().strftime("%m/%d/%Y, %H:%M"), # HH:MM 12-hour
         "duration": "5m 30s", # MMm SSs (not 0-padded)
         "feedback": {
             "ai_feedback": "Your enthusiasm was evident, and you established a great rapport early on. You used the STAR method effectively for behavioral questions, but your technical answers were slightly vague. Next time, focus more on specific metrics to quantify your past achievements, and try to pause briefly before answering complex questions to gather your thoughts.",
@@ -126,7 +126,7 @@ async def start_seed():
         "id": "k8nLB9X23mRpTQXCZK44",
         "date": "05/12/2026", # MM/DD/YY
         "timestamp": int(time.time() * 1000)+1, # timestamp when interview was created in milliseconds since the epoch (the +1 is for the seed data ONLY because the timestamps match when seeding the database which doesn't reflect realistic use)
-        "timeStarted": datetime.now().strftime("%H:%M"), # HH:MM 12-hour
+        "timeStarted": datetime.now().strftime("%m/%d/%Y, %H:%M"), # HH:MM 12-hour
         "duration": "12m 15s", # MMm SSs (not 0-padded)
         "feedback": {
             "ai_feedback": "You demonstrate a high level of technical authority and leadership. Your explanation of system architecture was top-tier. However, your answers tended to run long, which occasionally led to the interviewer cutting you off to stay on schedule. For future rounds, aim for 'Bluf' (Bottom Line Up Front) to ensure your main point isn't lost in the detail.",

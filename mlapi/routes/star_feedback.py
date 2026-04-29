@@ -4,7 +4,6 @@ from utils.logger_config import get_logger
 from schemas import StarFeedbackRequest, StarFeedbackResponse, JobId
 from services import orchestrator, jobs
 from redis import Redis
-from pydantic import ValidationError
 
 logger = get_logger(__name__)
 
@@ -41,15 +40,8 @@ async def analyze_star_method(request: StarFeedbackRequest):
         HTTPException: If the text is too short or analysis fails.
     """
     try:
-        # Check that the input text is long enough for analysis
-        if not request.text or len(request.text.strip()) < 10:
-            raise HTTPException(
-                status_code=400,
-                detail="Text is too short for analysis. Please provide a more detailed response.",
-            )
-
         # Trigger STAR analysis task
-        job_id = orchestrator.start_star_feedback_analysis(request.text) 
+        job_id = orchestrator.start_star_analysis(request.user_id, request.interview_id) 
         
         return JobId(job_id=job_id)
     except HTTPException:

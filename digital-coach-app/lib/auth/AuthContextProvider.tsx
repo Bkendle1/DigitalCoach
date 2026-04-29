@@ -1,9 +1,3 @@
-// import { PropsWithChildren, useMemo } from "react";
-// import AuthService from "./AuthService";
-// import { AuthContext } from "./AuthContext";
-// import UserService from "../user/UserService";
-// import { DocumentSnapshot } from "firebase/firestore";
-
 import {
     createContext,
     useContext,
@@ -20,14 +14,7 @@ import {
     onAuthStateChanged,
 } from "firebase/auth";
 
-import {
-    // doc,
-    // getDoc,
-    // setDoc,
-    Timestamp,
-} from "firebase/firestore";
-
-import { auth, db } from "@App/lib/firebase/firebase.config"; // import Firebase services from Firebase configuration
+import { auth } from "@App/lib/firebase/firebase.config"; // import Firebase services from Firebase configuration
 import { IUser } from "@App/lib/user/models";
 import { getUser, createUser } from "@App/lib/user/UserService";
 

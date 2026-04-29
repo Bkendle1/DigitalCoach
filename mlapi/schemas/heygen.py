@@ -2,8 +2,7 @@
 Schemas for HeyGen related data models.
 """
 
-from pydantic import BaseModel, HttpUrl
-
+from pydantic import BaseModel
 
 class HeyGenSessionRequest(BaseModel):
     """
@@ -14,10 +13,3 @@ class HeyGenSessionRequest(BaseModel):
     voice_id: str = "c2527536-6d1f-4412-a643-53a3497dada9" # What the avatar sounds like 
     context_id: str = "595268c3-a4cf-499d-bf85-efd006fe8a47" # What the avatar knows
     is_sandbox: bool = False # Toggle HeyGen LiveAvatar's sandbox mode 
-
-class HeyGenSessionResponse(BaseModel):
-    """
-    HeyGen Session Response Model.
-    """
-
-    session_url: HttpUrl # URL to connect to the created HeyGen LiveAvatar session

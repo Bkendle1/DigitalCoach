@@ -3,16 +3,16 @@ from utils.logger_config import get_logger
 from schemas import (
     CreateInterviewResponse, 
     CreateInterviewRequest,
-    AnalyzeInterviewRequest,
-    GetInterviewRequest, 
+    AnalyzeInterviewRequest, 
     GetInterviewResponse,
     Interview
 )
 from data.interviews import (
     getUserInterviews,
     getInterviewById,
-    createInterview
+    createInterview,
 )
+
 from services.orchestrator import start_interview_analysis 
 
 logger = get_logger(__name__) # create a logger instance to log messages
@@ -23,7 +23,7 @@ router = APIRouter(prefix="/api/interview", tags=["interview"])
     "/",
     response_model=CreateInterviewResponse,
     summary="Create partially populated interview given after user finishes their interview.",
-    description="Creates interview document populated with initial data from user's interview before it gets analyzed.",
+    description="Creates interview document populated with initial data from user's interview before it gets analyzed. Then, perform analysis tasks.",
 )
 async def create_interview(request: CreateInterviewRequest):
     logger.info(f"Attempting to create new interview document for user={request.userId}...")
@@ -40,8 +40,15 @@ async def create_interview(request: CreateInterviewRequest):
             interview_id=request.interview.id
         )
 
-        job_id = start_interview_analysis(analysisRequest)
-        return CreateInterviewResponse(job_id=job_id, success=True)
+        response = start_interview_analysis(analysisRequest) # start interview analysis and get the analysis job ids
+
+        logger.info(f"Analysis tasks on interview={request.interview.id} for user={request.userId} enqueued!")
+
+        return CreateInterviewResponse(sentiment_job_id=response.sentiment_job_id,
+                                       star_job_id=response.star_job_id, competency_job_id=response.competency_job_id,
+                                       overall_job_id=response.overall_job_id,
+                                       filler_hedge_job_id=response.filler_hedge_job_id,
+                                       success=True)
     except Exception as e:
         logger.error(f"Unexpected internal server error occurred during interview analysis id={request.interview.id}: {e}")
         raise HTTPException(
@@ -64,7 +71,6 @@ async def get_interview(user_id: str, interview_id: str) -> GetInterviewResponse
     
     return GetInterviewResponse(interview=interview)
     
-
 
 # GET /api/interview/{user_id}
 @router.get(

@@ -11,11 +11,15 @@ class User(BaseModel):
 
     (Note: This should match the IUser interface in /digital-coach-app/lib/user/models.ts)
     """
-    id: str | None = None
-    email: str
-    registrationCompletedAt: datetime.datetime | None = None
+    avatarURL: str = ""
+    concentration: str = ""
     createdAt: datetime.datetime
+    email: str
     hasCompletedInterview: bool
+    id: str | None = None
+    name: str = ""
+    proficiency: str = ""
+    registrationCompletedAt: datetime.datetime | None = None
 
 class CreateUserRequest(BaseModel):
     """

@@ -1,18 +1,17 @@
 import React, { useRef, useState, useEffect } from "react";
-// import styles from "@App/styles/NaturalConversationPage.module.scss";
 import { Video, VideoOff, Mic, MicOff } from "lucide-react"; 
 import styles from "@App/styles/interview/NaturalConversationPage.module.scss";
 import { useAuth } from "@App/lib/auth/AuthContextProvider";
 import { StreamingTranscriber } from "assemblyai"; 
-
-export const MAX_SESSION_TIME = 1 * 60; // sandbox mode for HeyGen LiveAvatar only lasts for around 1 minute  
+import { useRouter } from "next/router";
+export const MAX_SESSION_TIME = 20 * 60; // sandbox mode for HeyGen LiveAvatar only lasts for around 1 minute  
 const MIN_SESSION_DURATION = 20; // minimum duration for an interview for it to be counted
 
 // Define the shape of this components props
 interface VideoRecorderProps {
     startInterview: () => Promise<void>;
     stopInterview: (duration: string, timeStarted: string) => Promise<void>;
-    timeLeft: number; // timer
+    timeLeft: number; // interview timer
     setTimeLeft: React.Dispatch<React.SetStateAction<number>>; // pass in the setter for the parent's timeLeft state
     setCameraError: React.Dispatch<React.SetStateAction<string>>; // pass in the setter for the parent's cameraError state
     onTranscriptChange?: (transcript: string, isFinal: boolean) => void; // optional callback for sending the transcript to the parent component
@@ -38,8 +37,9 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
     const chunksRef = useRef<Blob[]>([]); // stores video as an array of chunks
     let isMounted = useRef(false);
     let timeStartedRef = useRef("");
-    const host = typeof window !== "undefined" ? "localhost:8000" : "api"; // if we're in the browser use localhost, but if we're in Docker, use the backend's service name (currently 'api')
+    const host = process.env.NEXT_PUBLIC_HOST;
     const { userData } = useAuth(); // extract user's Firestore data  
+    const router = useRouter();
 
     // session terminates automatically when timer runs out
     useEffect(() => {
@@ -66,7 +66,6 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
     useEffect(() => {
         startPreview();
         isMounted.current = true;
-
         return () => {
             // stop recording user camera and mic when component unmounts
             if (streamRef.current) {
@@ -87,7 +86,7 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
             }
             stopAudio();
             isMounted.current = false;
-        }   
+        }  
     }, []);
 
     /**
@@ -151,10 +150,13 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
             setVideoURL(url); // set download URL for video 
         };
 
-        // save time when started
+        // save time when started (format of MM/)
         timeStartedRef.current = new Date().toLocaleDateString("en-US", {
+            day: "2-digit",
+            year: "numeric",
             hour: "2-digit",
             minute: "2-digit",
+            month: "2-digit",
         });
         setTimeLeft(MAX_SESSION_TIME); // restart timer
         setVideoURL(""); // clear out old recording url 
@@ -162,7 +164,7 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
 
         // get temporary AssemblyAI authentication token from our backend
         try {
-            const response = await fetch(`http://${host}/api/assemblyai/token`, {
+            const response = await fetch(`${host}/api/assemblyai/token`, {
                 method: "GET",
             });
             const { token } = await response.json();
@@ -176,10 +178,11 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
             const transcriber = new StreamingTranscriber({
                 token: token,
                 sampleRate: 16000,
-                speechModel: "universal-streaming-english", // AssemblyAI has multilingual models but for now we assume the user speaks English
+                speechModel: "u3-rt-pro", // AssemblyAI's Streaming Universal 3 Pro can handle different languages as well as keep track of filler words
                 formatTurns: true, // get transcripts with proper punctuation
                 maxSpeakers: 2, // only the interviewer and user will be talking
                 speakerLabels: true, // enable speaker diarization
+                // prompt: "" // AssemblyAI's Universal 3 Pro supports prompting which can be used for punctuation rules and other things but the model also has a built-in system prompt with rules about punctuation and filler words  
             });
 
             // event handler for when connection to AssemblyAI API is established via websocket
@@ -403,13 +406,24 @@ function VideoRecorder({startInterview, stopInterview, timeLeft, setTimeLeft, se
                 >
                     Start Recording
                 </button>:
-                <button 
-                    className={styles.startButton}
-                    onClick={stopRecording}
-                >
-                    Stop Recording
-                </button>}
-           
+                <>
+                    <button 
+                        className={styles.startButton}
+                        onClick={stopRecording}
+                    >
+                        Submit Recording
+                    </button>
+                    <button
+                        className={styles.startButton}
+                        onClick={() => router.reload()}
+                    >
+                        Cancel
+                    </button>
+                </>}
+            
+            
+
+
             {/* If the video download URL is ready, store it in Firebase for preview later */}
             {/* {videoURL 
             ? <a href={videoURL} download="user-interview.webm" className={styles.startButton}>Download Video</a> : <a href=""></a>} */}

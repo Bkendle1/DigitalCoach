@@ -9,7 +9,7 @@ import UnAuthGuard from "@App/lib/auth/UnAuthGuard";
 import { TextField } from "@App/components/molecules/TextField";
 import LoginIcon from "@mui/icons-material/Login";
 import CenteredComponent from "@App/components/atoms/CenteredComponent";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 interface LoginFormInputs {
   email: string;
@@ -31,9 +31,7 @@ export default function LoginPage() {
 
   const {
     error: authError,
-    // userData,
     clearError,
-    // loginWithGoogle,
     login,
   } = useAuth();
 
@@ -103,8 +101,6 @@ export default function LoginPage() {
               <LoginIcon />
               Login
             </Button>
-
-            {/* <Button onClick={loginWithGoogle}>Login with Google</Button> */}
 
             <p className={styles.footerText}>
               New user? <Link href="/auth/signup">Create an account</Link>

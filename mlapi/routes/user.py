@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Request
+from fastapi import APIRouter, HTTPException, status
 from utils.logger_config import get_logger
 from schemas import CreateUserResponse, CreateUserRequest, GetUserRequest, GetUserResponse
 from services.firebase_init import get_firestore_client
@@ -6,6 +6,7 @@ import cloudinary
 from dotenv import load_dotenv
 import os
 import time
+from data.users import getUser
 
 logger = get_logger(__name__) # create a logger instance to log messages
 
@@ -42,15 +43,17 @@ async def create_user(request: CreateUserRequest):
     description="Retrieves an user document with a given id.",
 )
 async def get_user(request: GetUserRequest):
-    db = get_firestore_client()
+    
     logger.info(f"Attempting to retrieve user document with id {request.userId}...")
     try:
-        user = await db.collection("users").document(request.userId).get()
-        logger.info("Retrieved user!")
+        user = await getUser(request.userId)
         return GetUserResponse(user=user)
     except Exception as e:
-        logger.info(f"Failed to retrieve user: {e}")
-        return GetUserResponse(user=None)
+        logger.error(f"Unexpected internal server error occurred during getting user id={request.userId}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get user."
+        )
 
 # GET /api/user/profilePic
 @router.get(

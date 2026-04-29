@@ -4,14 +4,7 @@ Data functions related to interviews.
 
 from services.firebase_init import get_firestore_client
 from utils.logger_config import get_logger
-from schemas.interview import (
-    Interview,
-    Feedback,
-    Metrics,
-    OverallCompetency,
-    CompetencyMetric,
-)
-from google.api_core import exceptions
+from schemas.interview import Interview
 from pydantic import ValidationError
 from google.cloud import firestore
 from fastapi import HTTPException, status
@@ -59,7 +52,6 @@ async def createInterview(userId: str, interview: Interview):
             detail="Failed to create interview."
         )
 
-
 async def getTranscriptById(user_id: str, interview_id: str) -> str:
     """
     Returns the transcript with the given interview id from the given user.
@@ -73,6 +65,14 @@ async def getTranscriptById(user_id: str, interview_id: str) -> str:
         db = get_firestore_client()
         # get user's document reference
         userRef = db.collection("users").document(f"{user_id}")
+
+        userDoc = await userRef.get()
+        if not userDoc.exists:
+            logger.error(f"User with user_id={user_id} not found.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found."
+            )
         # get interview document reference
         transcriptRef = userRef.collection("interviews").document(interview_id)
 
@@ -141,6 +141,9 @@ async def getUserInterviews(user_id: str) -> list[Interview]:
 async def getInterviewById(user_id: str, interview_id: str) -> Interview:
     """
     Retrieves an interview document with a given id from a user with a given id.
+
+    Returns:
+        interview (Interview): The inteview wrapped within the Interview Pydantic schema
     """
 
     db = get_firestore_client() # get firestore client
@@ -185,6 +188,54 @@ async def getInterviewById(user_id: str, interview_id: str) -> Interview:
                 detail="Interview shape malformed within the database."
             )
         
+    except HTTPException:
+        raise 
+    except Exception as e:
+        logger.error(f"Internal server error occurred when getting interview: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error occurred when getting interview."
+        )
+
+async def setIsAnalyzed(user_id: str, interview_id: str): 
+    """
+    Set the is_analyzed flag for an interview to true to show that the interview is done being analyzed.
+
+    Args:
+        user_id (str): Id of the user who owns the intervivew.
+        interview_id (str): Id of the interview whose analysis is complete.
+    """
+    db = get_firestore_client()
+
+    try:
+        # verify user exists
+        userRef = db.collection("users").document(user_id)
+        userDoc = await userRef.get()
+
+        # since get() doesn't throw an exception, we check its exists property
+        if (not userDoc.exists):
+            logger.error(f"Can't find user with id={user_id}.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found."
+            )
+            
+        logger.info(f"User={user_id} found!")
+        # verify that interview exists
+        interviewRef = userRef.collection("interviews").document(interview_id) # get interview reference
+        interviewDoc = await interviewRef.get()
+        if (not interviewDoc.exists):
+            logger.error(f"Can't find interview with id={interview_id}.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Interview not found."
+            )
+            
+        logger.info(f"Interview={interview_id} found!")
+
+        # set the is_analyzed flag to true
+        await interviewRef.update({"is_analyzed": True})
+        return
     except HTTPException:
         raise 
     except Exception as e:

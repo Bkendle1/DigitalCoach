@@ -4,42 +4,16 @@ import { useAuth } from "@App/lib/auth/AuthContextProvider";
 import AuthGuard from "@App/lib/auth/AuthGuard";
 import styles from "@App/styles/Home.module.scss";
 import Card from "@App/components/atoms/Card";
-import IssuesChart from "@App/components/molecules/IssuesChart";
 import { TrendingUp, Award, Target, Video, History } from "lucide-react";
+import Link from "next/link";
 import Spinner from "@App/components/atoms/Spinner";
 
-// import ScoreChart from "@App/components/molecules/ScoreChart";
-import PracticeCalendar from "@App/components/molecules/PracticeCalendar";
-// import useGetFeaturedQuestionSets from "@App/lib/questionSets/useGetFeaturedQuestionSets";
-import Link from "next/link";
-// import useGetUserAverageScore from "@App/lib/interviewQuestion/useGetUserAverageScore";
-// import useFetchUserInterviews from "@App/lib/interview/useFetchUserInterviews";
-// import useGetAnswersByUserId from "@App/lib/answer/useGetAnswerByUserId";
-// import seed from "@App/pages/api/seed";
 
 const Home: NextPage = () => {
   const { userData } = useAuth();
 
-  // const {
-  //   data: questionSets,
-  //   isLoading,
-  //   isFetching,
-  // } = useGetFeaturedQuestionSets();
-  // console.log(questionSets, isLoading, isFetching);
-
-  // const {
-  //   data: answerData,
-  //   isLoading: isAnswerLoading,
-  //   isFetching: isAnswerFetching,
-  // } = useGetAnswersByUserId(user?.uid);
-
-  // const {
-  //   data: averageScore,
-  //   isLoading: isLoadingAverageScore,
-  //   isFetching: isFetchingAverageScore,
-  // } = useGetUserAverageScore(user?.uid);
-
   const [tip, setTips] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const tips = [
@@ -60,41 +34,21 @@ const Home: NextPage = () => {
       "Highlight your achievements and relevant experiences during the interview. Use specific examples to demonstrate your skills and capabilities.",
       "Follow up with a thank-you email after the interview. Express your gratitude for the opportunity and reiterate your interest in the position.",
     ];
-    const randInd = Math.floor(Math.random() * tips.length);
-    setTips(tips[randInd]);
+    const randIdx = Math.floor(Math.random() * tips.length);
+    setTips(tips[randIdx]);
   }, []);
 
-  // if (isLoading || isFetching) return <div>Loading...</div>;
+  useEffect(() => {
+    if (userData) {
+      setIsLoading(true);
+    }
+  }, [userData])
 
-  const mockIssuesData = [
-    {
-      skill: "No Eye Contact",
-      value: 0.9,
-    },
-    {
-      skill: "Filler Word",
-      value: 0.75,
-    },
-    {
-      skill: "Long Pause",
-      value: 0.65,
-    },
-    {
-      skill: "Voice Not Clear",
-      value: 0.6,
-    },
-    {
-      skill: "Off Topic",
-      value: 0.4,
-    },
-  ];
-  // const events =
-  //   answerData?.docs.map((answer) => {
-  //     return {
-  //       start: answer.data().createdAt.toDate().toISOString(),
-  //       end: answer.data().createdAt.toDate().toISOString(),
-  //     };
-  //   }) || [];
+  if (isLoading) {
+    <div>
+      <Spinner />
+    </div>
+  }
 
   return (
     <AuthGuard>
@@ -130,14 +84,7 @@ const Home: NextPage = () => {
           <div className={styles.mainColumn}>
             
             <section className={styles.bottomGrid}>
-              {/* Top Left Card */}
-              <div className={styles.gridItem}>
-                <Card title={"Most Common Flags"} multiline>
-                  <div className={styles.issuesChartWrapper}>
-                    <IssuesChart chartData={mockIssuesData} />
-                  </div>
-                </Card>
-              </div>
+              
 
               {/* Top Right Card */}
               <div className={styles.gridItem}>
@@ -174,7 +121,7 @@ const Home: NextPage = () => {
                       <div className={styles.featureText}>
                         <h4>Pacing Feedback</h4>
                         <p>
-                          Learn if you&apos;re speaking too fast, too slow, or just
+                          Learn if you're speaking too fast, too slow, or just
                           right for optimal communication
                         </p>
                       </div>
@@ -188,9 +135,7 @@ const Home: NextPage = () => {
                       <div className={styles.featureText}>
                         <h4>Filler Word Detection</h4>
                         <p>
-                          Track usage of &quot;um&quot;, &quot;uh&quot;,
-                          &quot;like&quot; and other filler words that can detract
-                          from your message
+                          Track usage of "um", "uh", "like" and other filler words that can detract from your message
                         </p>
                       </div>
                     </div>

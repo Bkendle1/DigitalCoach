@@ -169,6 +169,8 @@ That’s it, enjoy your newly hosted web application! An important note is that 
 - AssemblyAI
 - HeyGen LiveAvatar
 - Docker Model Runner
+- HeyGen LiveAvatar
+- Docker Model Runner
 
 # Members
 
