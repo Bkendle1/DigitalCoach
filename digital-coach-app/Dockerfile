@@ -10,9 +10,9 @@ WORKDIR /app
 
 # Install dependencies specified in package.json
 # yarn.lock is included to ensure consistent versions of packages are installed
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 # frozen-lockfile ensures that yarn installs dependencies exactly as specified in yarn.lock
-RUN yarn install --frozen-lockfile
+RUN npm ci
 
 # --- Stage 2: Build source code only when needed ---
 # Use lightweight Node.js base image 
@@ -53,7 +53,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the Next.js application for production
 # The docker compose file will override this command in development mode to run the dev server instead
-RUN yarn build
+RUN npm run build
 
 # --- Stage 3: Production image ---
 # Use a lightweight Node.js base image for the production environment
