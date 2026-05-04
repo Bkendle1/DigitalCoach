@@ -1,7 +1,7 @@
 services:
   # --- Frontend Service --- 
   frontend:
-    build: /digital-coach-app # Path to frontend Dockerfile
+    build: ./digital-coach-app # Path to frontend Dockerfile
     # Put secrets in the container environment as they're for runtime use
     environment:
       - NODE_ENV=development # Set Node environment to development to do things like enable emulators
@@ -46,7 +46,7 @@ services:
   # --- Backend Services ---
   # API service 
   api:
-    build: /mlapi # Path to backend Dockerfile
+    build: ./mlapi # Path to backend Dockerfile
     ports:
       - "8000:8000" # Expose port 8000 for the API
     env_file:
