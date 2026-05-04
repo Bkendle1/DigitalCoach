@@ -10,7 +10,7 @@ interface InteractiveAvatarProps {
 
 function InteractiveAvatar({sessionToken, onTranscriptUpdate}: InteractiveAvatarProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const sessionRef = useRef<LiveAvatarSession>(null);
+  const sessionRef = useRef<LiveAvatarSession | null>(null);
   const userConfig = {
     voiceChat: true,
   };
@@ -53,7 +53,26 @@ function InteractiveAvatar({sessionToken, onTranscriptUpdate}: InteractiveAvatar
       await session.start();
     } catch (e) {
       console.error(`Error starting HeyGen LiveAvatar session: ${e}`);
+      await stopSession(); // if session start fails then clean up session
     }
+
+  }
+
+  /**
+   * Turn off all tracks from avatar's video element
+   */
+  const stopAttachedMedia = () => {
+    if (!videoRef.current) return;
+
+    // turn off tracks
+    const mediaStream = videoRef.current.srcObject as MediaStream | null;
+    if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop())
+    }
+
+    videoRef.current.pause(); // pause video
+    videoRef.current.srcObject = null; // detach avatar from video element
+    videoRef.current.load(); // reset video element
 
   }
 
@@ -62,21 +81,31 @@ function InteractiveAvatar({sessionToken, onTranscriptUpdate}: InteractiveAvatar
    */
   const stopSession = async () => {
     console.log("Stopping session...");
-    // stop session
-    if (sessionRef.current) {
-      await sessionRef.current.stop();
+    const session = sessionRef.current;
+    sessionRef.current = null;
+
+    try {
+        // stop session
+        if (session) {
+          await session.stop();
+        }
+    } catch (e) {
+        console.error(`Error stopping HeyGen LiveAvatar session: ${e}`);
+    } finally {
+        stopAttachedMedia();
     }
+    
   }
 
   useEffect(() => {
     // start session once session token is received
     if (sessionToken) {
-      startSession();
+        startSession();
     }
 
     // stop heygen session when component unmounts
     return () => {
-      stopSession();
+        stopSession();
     }
   }, [sessionToken]);
 
