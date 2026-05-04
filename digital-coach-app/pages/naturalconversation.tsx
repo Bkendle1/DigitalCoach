@@ -110,7 +110,10 @@ export default function NaturalConversationPage() {
     }
     setFullTranscript("") // clear transcript
     setIsLoading(false); // turn submission loading screen off before we get to the loading screen for route changes
+
     // reroute user to interview's webpage
+    // use a hard refresh to ensure that the browser releases the camera and microphone
+    // window.location.href = `/interviews/${newInterview.id}`; 
     router.push(`/interviews/${newInterview.id}`);
   }
 

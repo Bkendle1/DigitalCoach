@@ -1,23 +1,17 @@
 services:
   # --- Frontend Service --- 
   frontend:
-    build:
-      context: ./digital-coach-app # Path to frontend Dockerfile
-      target: deps # For development, build up to the 'deps' stage
+    build: /digital-coach-app # Path to frontend Dockerfile
     # Put secrets in the container environment as they're for runtime use
     environment:
       - NODE_ENV=development # Set Node environment to development to do things like enable emulators
     # Required so changes are reflected in Next.js without restarting the container
-      - WATCHPACK_POLLING=true
-      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true # only for webpack
     env_file:
       - ./digital-coach-app/.env # load environment variables from .env file
     volumes:
       # Mount the frontend code for live development
       - ./digital-coach-app:/app
-    #   - /app/node_modules # Preserve node_modules inside the container
-    #   - /app/.next
-    command: npm run dev # Start the Next.js development server
     ports:
       # Expose port 3000 for the frontend
       - "3000:3000"
@@ -52,15 +46,13 @@ services:
   # --- Backend Services ---
   # API service 
   api:
-    build: ./mlapi # Path to backend Dockerfile
+    build: /mlapi # Path to backend Dockerfile
     ports:
       - "8000:8000" # Expose port 8000 for the API
     env_file:
       - ./mlapi/.env # load the environment variables before starting container
     environment:  
-      - WORKERS_COUNT=3
       - ENVIRONMENT=development # used when connecting to Firebase to switch between emulators and real services
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/digital-coach-firebase-adminsdk.json # directory for firebase admin key
     volumes:
       - ./mlapi:/app # Mount backend code for live development
       - /app/.venv # Preserves the virtual environment inside the container
@@ -94,9 +86,7 @@ services:
     env_file:
       - ./mlapi/.env # load the environment variables before starting container
     environment:  
-      - WORKERS_COUNT=3
       - ENVIRONMENT=development # used when connecting to Firebase to switch between emulators and real services
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/digital-coach-firebase-adminsdk.json # directory for firebase admin key
     volumes:
       - ./mlapi/data:/app/data
       - ./mlapi:/app
@@ -117,9 +107,7 @@ services:
     env_file:
       - ./mlapi/.env # load the environment variables before starting container
     environment:  
-      - WORKERS_COUNT=3
       - ENVIRONMENT=development # used when connecting to Firebase to switch between emulators and real services
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/digital-coach-firebase-adminsdk.json # directory for firebase admin key
     volumes:
       - ./mlapi/data:/app/data
       - ./mlapi:/app
