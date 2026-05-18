@@ -36,6 +36,9 @@ To manage all the technologies used for this application, we chose Docker for co
 
 When the application's containers are spun up, you have access to the following:
 - The FastAPI server listens on `localhost:8000`.
+    - Seeding the Firebase services at `localhost:8000/seed`.
+    - Test API endpoints at `localhost:8000/docs`.
+    - Monitor Redis RQ tasks at `localhost:8000/rq`
 - The Next.js website is served at `localhost:3000`.
 - The Firebase emulation console is served at `localhost:4000`.
 
@@ -146,7 +149,7 @@ That’s it, enjoy your newly hosted web application! An important note is that 
 - Redis' RQ (workers for ML tasks)
 - OpenAI (manage OpenAI-compliant ML models)
 
-## Machine Learning Model
+## Machine Learning Models
 
 - AssemblyAI (transcription)
 - Docker Model Runner (local LLM)
