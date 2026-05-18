@@ -23,9 +23,30 @@ For more detailed documentation on the different parts of the app ([frontend](/d
 1. Copy the `env.example` file in the `/mlapi` directory and rename it `.env`. Populate the `AAPI_KEY` key in the `.env` file with the API key from AssemblyAI.
 1. Create a HeyGen LiveAvatar account [here](https://app.liveavatar.com/signin) and get an API key.
 1. Populate the `HEYGEN_LIVEAVATAR_API` key in the `.env` file with the API key from HeyGen LiveAvatar.
+1. Within the Firebase project, go to **Settings** -> **Service accounts** and scroll down and click "Generate new private key". This is your Firebase Admin SDK private key which you'll save in `/mlapi` directory. Rename the file to be *EXACTLY* "digital-coach-firebase-adminsdk.json". 
 1. Install uv for install Python packages [here](https://docs.astral.sh/uv/getting-started/installation/).
 1. Run `uv sync` to create a Python virtual environment with all the dependencies installed. 
 From now on, when you’re working on the backend, its recommended that you use the virtual environment by running `mlapi/.venv/Scripts/activate` in your project's terminal.
+
+## Firebase
+- Firebase Console
+    - Within your project, `digital-coach-app/firestore.rules` has some rules that will be enforced within the Firebase Firestore service. The emulators will use these rules automatically but we need to deploy these rules to the cloud Firebase services by running: `firebase deploy --only firestore:rules`.
+- Firebase CLI
+    1. Ensure Firebase CLI is installed within your project by going into `/digital-coach-app` and running: `npm list firebase-tools`. If it’s not installed then within the same directory run: `npm install firebase-tools --save-dev`.
+    2. Authenticate Firebase CLI using the Google account connected to your project in Firebase Console with `firebase login`. Before logging in, the command will give you some options, you can say no to all of them. A new window should open up where you can log in with your Google account.
+    3. When previewing your past interviews in `http://localhost:3000/progress`, you may get an error within your Docker Compose `api` container logs saying something to the effect of: "The query requires an index". This is normal because Firestore needs to create some indexes on the fields being used for querying the database. The error also provides a link that will navigate you to where you need to go on the Firebase Console website to create the index. After creating the index, the error will go away but it may take a while for the index to be built.
+- Toggle between Emulators and Cloud Services
+    - The project is currently set up to use local Firebase emulators to make developing easier. Additionally, the project is set up to switch to using the Firebase Cloud services with minimal changes.
+        1. Within the `docker-compose.yml` file do the following:
+            1. Comment out the entire `firebase` section within the `services` section as this was only for the emulators.
+            2. Comment out any references to the `firebase` service in any of the other container’s `depends_on` field like within the `api`’s section.
+        2. In `digital-coach-app/.env` file:
+            1. Set the value of `NEXT_PUBLIC_USE_FIREBASE_EMULATOR` to the string `"false"`.
+            2. Set the value of `NEXT_PUBLIC_FIREBASE_PROJECT_ID` to be the id of your Firebase project. (You can check if you go to `digital-coach-app` and run the command `firebase projects:list`)
+        3. In `mlapi/.env` file: 
+            1. Set the value of `FIREBASE_USE_EMULATORS` to the string `"false"`.
+            2. Set the value of `GCLOUD_PROJECT` to be the id of your Firebase project. (You can check if you go to `digital-coach-app` and run the command `firebase projects:list`)
+            3. Comment out `FIRESTORE_EMULATOR_HOST`, `FIREBASE_AUTH_EMULATOR_HOST`, and `FIREBASE_STORAGE_EMULATOR_HOST` entries.
 
 ## Docker Compose
 To manage all the technologies used for this application, we chose Docker for containerization. This has the benefit of portability across various systems and also has Docker Model Runner which makes hosting local LLMs easier.
