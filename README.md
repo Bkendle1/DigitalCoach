@@ -29,9 +29,12 @@ For more detailed documentation on the different parts of the app ([frontend](/d
 From now on, when you’re working on the backend, its recommended that you use the virtual environment by running `mlapi/.venv/Scripts/activate` in your project's terminal.
 
 ## Firebase
-- Firebase Console
-    - Within your project, `digital-coach-app/firestore.rules` has some rules that will be enforced within the Firebase Firestore service. The emulators will use these rules automatically but we need to deploy these rules to the cloud Firebase services by running: `firebase deploy --only firestore:rules`.
-- Firebase CLI
+<details> 
+
+<summary>**Firebase Console**</summary>
+    Within your project, `digital-coach-app/firestore.rules` has some rules that will be enforced within the Firebase Firestore service. The emulators will use these rules automatically but we need to deploy these rules to the cloud Firebase services by running: `firebase deploy --only firestore:rules`.
+</details> 
+- **Firebase CLI**
     1. Ensure Firebase CLI is installed within your project by going into `/digital-coach-app` and running: `npm list firebase-tools`. If it’s not installed then within the same directory run: `npm install firebase-tools --save-dev`.
     2. Authenticate Firebase CLI using the Google account connected to your project in Firebase Console with `firebase login`. Before logging in, the command will give you some options, you can say no to all of them. A new window should open up where you can log in with your Google account.
     3. When previewing your past interviews in `http://localhost:3000/progress`, you may get an error within your Docker Compose `api` container logs saying something to the effect of: "The query requires an index". This is normal because Firestore needs to create some indexes on the fields being used for querying the database. The error also provides a link that will navigate you to where you need to go on the Firebase Console website to create the index. After creating the index, the error will go away but it may take a while for the index to be built.
