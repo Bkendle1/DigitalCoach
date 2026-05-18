@@ -19,17 +19,17 @@ For more detailed documentation on the different parts of the app ([frontend](/d
 
 ## Backend
 1. Install Python 3.10 [here](https://www.python.org/downloads/)
-1. Create an account with AssemblyAI (here)[https://www.assemblyai.com/dashboard/signup] and get an API key.
+1. Create an account with AssemblyAI [here](https://www.assemblyai.com/dashboard/signup) and get an API key.
 1. Copy the `env.example` file in the `/mlapi` directory and rename it `.env`. Populate the `AAPI_KEY` key in the `.env` file with the API key from AssemblyAI.
-1. Create a HeyGen LiveAvatar account (here)[https://app.liveavatar.com/signin] and get an API key.
+1. Create a HeyGen LiveAvatar account [here](https://app.liveavatar.com/signin) and get an API key.
 1. Populate the `HEYGEN_LIVEAVATAR_API` key in the `.env` file with the API key from HeyGen LiveAvatar.
-1. Install uv for install Python packages (here)[https://docs.astral.sh/uv/getting-started/installation/].
+1. Install uv for install Python packages [here](https://docs.astral.sh/uv/getting-started/installation/).
 1. Run `uv sync` to create a Python virtual environment with all the dependencies installed. 
 From now on, when you’re working on the backend, its recommended that you use the virtual environment by running `mlapi/.venv/Scripts/activate` in your project's terminal.
 
 ## Docker Compose
 To manage all the technologies used for this application, we chose Docker for containerization. This has the benefit of portability across various systems and also has Docker Model Runner which makes hosting local LLMs easier.
-1. Download Docker Desktop (here)[https://www.docker.com/products/docker-desktop/]
+1. Download Docker Desktop [here](https://www.docker.com/products/docker-desktop/)
 1. Run `docker compose build` to create the images defined in the `docker-compose.yml` file. This may take a few minutes. 
     - **NOTE**: Whenever you add/remove dependencies from this project you MUST rebuild the images with the same command.
 1. To start the application, run `docker compose up -d` the `-d` flag is optional but it runs your containers in the background which frees up your terminal. 
@@ -137,6 +137,14 @@ That’s it, enjoy your newly hosted web application! An important note is that 
   - Authentication
 - Sass
 - Cloudinary
+
+## Backend
+- FastAPI 
+- Pydantic
+- Firebase
+    - Firestore
+- Redis' RQ (workers for ML tasks)
+- OpenAI (manage OpenAI-compliant ML models)
 
 ## Machine Learning Model
 
