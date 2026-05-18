@@ -40,16 +40,16 @@ Within your project, `digital-coach-app/firestore.rules` has some rules that wil
 
 ### Toggling between Emulators and Cloud Services
 The project is currently set up to use local Firebase emulators to make developing easier. Additionally, the project is set up to switch to using the Firebase Cloud services with minimal changes.
-    1. Within the `docker-compose.yml` file do the following:
-        1. Comment out the entire `firebase` section within the `services` section as this was only for the emulators.
-        2. Comment out any references to the `firebase` service in any of the other container’s `depends_on` field like within the `api`’s section.
-    2. In `digital-coach-app/.env` file:
-        1. Set the value of `NEXT_PUBLIC_USE_FIREBASE_EMULATOR` to the string `"false"`.
-        2. Set the value of `NEXT_PUBLIC_FIREBASE_PROJECT_ID` to be the id of your Firebase project. (You can check if you go to `digital-coach-app` and run the command `firebase projects:list`)
-    3. In `mlapi/.env` file: 
-        1. Set the value of `FIREBASE_USE_EMULATORS` to the string `"false"`.
-        2. Set the value of `GCLOUD_PROJECT` to be the id of your Firebase project. (You can check if you go to `digital-coach-app` and run the command `firebase projects:list`)
-        3. Comment out `FIRESTORE_EMULATOR_HOST`, `FIREBASE_AUTH_EMULATOR_HOST`, and `FIREBASE_STORAGE_EMULATOR_HOST` entries.
+1. Within the `docker-compose.yml` file do the following:
+    1. Comment out the entire `firebase` section within the `services` section as this was only for the emulators.
+    2. Comment out any references to the `firebase` service in any of the other container’s `depends_on` field like within the `api`’s section.
+2. In `digital-coach-app/.env` file:
+    1. Set the value of `NEXT_PUBLIC_USE_FIREBASE_EMULATOR` to the string `"false"`.
+    2. Set the value of `NEXT_PUBLIC_FIREBASE_PROJECT_ID` to be the id of your Firebase project. (You can check if you go to `digital-coach-app` and run the command `firebase projects:list`)
+3. In `mlapi/.env` file: 
+    1. Set the value of `FIREBASE_USE_EMULATORS` to the string `"false"`.
+    2. Set the value of `GCLOUD_PROJECT` to be the id of your Firebase project. (You can check if you go to `digital-coach-app` and run the command `firebase projects:list`)
+    3. Comment out `FIRESTORE_EMULATOR_HOST`, `FIREBASE_AUTH_EMULATOR_HOST`, and `FIREBASE_STORAGE_EMULATOR_HOST` entries.
 
 ## Docker Compose
 To manage all the technologies used for this application, we chose Docker for containerization. This has the benefit of portability across various systems and also has Docker Model Runner which makes hosting local LLMs easier.
