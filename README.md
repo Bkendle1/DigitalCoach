@@ -1,66 +1,44 @@
-# DigitalCoach
+# Digital Coach
 
-Senior Design Project for Fall 2025-Spring 2026
+Senior Design Project for Fall 2025 - Spring 2026
 
-DigitalCoach is an AI-powered interview prep web application that allows job seekers to practice interviewing and receive immediate feedback. Some key features of DigitalCoach include creating interview sets from our database of questions and then recording corresponding video responses. Our AI uses machine learning models to analyze audio and video through a sentiment analysis. At the end, users are left with an overall score and actionable feedback.
+Digital Coach is an AI-powered interview prep web application that allows job seekers to practice interviewing and receive personalized, actionable feedback. Key features of Digital Coach include creating interview sets from our database of questions and then recording corresponding video responses and realtime mock interviews with an AI avatar. Our app uses machine learning models to analyze audio and video against common interview metrics such as the STAR framework. At the end, users are provided with scores for each metric along with feedback focused on that metric and an overall performance score accompanied with actionable feedback.
 
-For more detailed documentation on the different parts of the app ([frontend](/digital-coach-app/README.md), [ml-api](/ml-api/README.md), [ml model](/ml/README.md)) refer to the README.md file in the root directory of the folders.
+For more detailed documentation on the different parts of the app ([frontend](/digital-coach-app/README.md) and [mlapi](/mlapi/README.md)) refer to the README.md file in the root directory of the folders.
 
 # Setup Instructions
 
-## Setup
-
-1. Create a firebase app [here](https://console.firebase.google.com)
-1. Create a service account for the firebase app you've created using the Google Cloud console with [instructions here](https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating)
-1. Populate the `.env` files in `digital-coach-app/` and `digital-coach-app/functions/` directory with the service account credentials. The files in the repository are just sample env files. Make sure that the files are named .env without the example part!
-1. Install the latest stable version of Node [here](https://nodejs.org/en/)
-1. Install yarn [here](https://classic.yarnpkg.com/en/docs/install)
-1. Install Python 3.10 [here](https://www.python.org/downloads/)
-1. Install redis [here](https://redis.io/docs/getting-started/)
-1. Install pipenv [here](https://pipenv.pypa.io/en/latest/)
-   - Make sure you run this in administrator mode if you're on Windows!
-1. Install nltk with `pip install nltk`
-1. Open python with `python` in the command line
-   - Ensure you are running python 3.10!
-1. Type into the python console:
-   ```
-   import nltk
-   nltk.download()
-   ```
-   and download all packages in the UI prompt (sorry we didn't figure out which ones you really need)
-1. Create an account with Assembly AI and get an API key
-1. Populate the .env file in `ml-api/` with the API key from AssemblyAI. The files in the repository are just sample env files. Make sure that the files are named .env without the example part!
-1. Ensure that firebase is connected: run `firebase login` and click the link to login and authenticate
-1. Run `firebase projects:list` to see the projectId
-1. Set the current project using the projectId from the previous step: `firebase use <projectId>`
-
 ## Frontend
-
-- Prerequisites
-  - Ensure you are running Windows or Ubuntu to avoid complier issues
-  - Use Node v20.19.2
-
-1. cd to the `digital-coach-app` directory
-1. run `yarn install` to install dependencies for Next.JS
-1. run `npm install -g firebase-tools` to install firebase
-1. cd to the `functions` directory
-1. run `yarn install` to install dependencies for the firebase functions
-1. run `yarn add typescript@latest` to upgrade typescript
-1. run `yarn build --skipLibCheck` to build the firebase functions modules
-1. cd back to the `digital-coach-app` directory
-1. run `yarn run emulate` to run the firebase emulator
-1. in another terminal in the `digital-coach-app` directory, run `yarn run dev` to run the Next.JS dev server
-1. Navigate to `localhost:3000/api/seed` to seed the database.
-
-- The Next.JS dev server is served at `localhost:3000`
-- The Firebase emulation console is served at `localhost:4000`
+1. Create a Firebase project [here](https://console.firebase.google.com)
+1. Within your Firebase project, create a Web app by going to **Project Overview** -> **Add app**.
+1. Within your Firebase project, enable Authentication and Firestore services. Within the Authentication service, go to **Sign-in method** -> **Add new provider** and enable "Email/Password" sign-in method.
+1. Get your Firebase configurations by going to **Settings** -> **General** and scrolling down to where you should see your web app selected.
+1. Duplicate the `.env.example` file in `/digital-coach-app` directory and rename it as `.env`. Populate the `.env` file with the Firebase configurations from the previous step.
+1. Install Node LTS [here](https://nodejs.org/en/)
+1. `cd` into the `/digital-coach-app` directory and run `npm install` to install all npm packages needed by the frontend.
 
 ## Backend
+1. Install Python 3.10 [here](https://www.python.org/downloads/)
+1. Create an account with AssemblyAI (here)[https://www.assemblyai.com/dashboard/signup] and get an API key.
+1. Copy the `env.example` file in the `/mlapi` directory and rename it `.env`. Populate the `AAPI_KEY` key in the `.env` file with the API key from AssemblyAI.
+1. Create a HeyGen LiveAvatar account (here)[https://app.liveavatar.com/signin] and get an API key.
+1. Populate the `HEYGEN_LIVEAVATAR_API` key in the `.env` file with the API key from HeyGen LiveAvatar.
+1. Install uv for install Python packages (here)[https://docs.astral.sh/uv/getting-started/installation/].
+1. Run `uv sync` to create a Python virtual environment with all the dependencies installed. 
+From now on, when you’re working on the backend, its recommended that you use the virtual environment by running `mlapi/.venv/Scripts/activate` in your project's terminal.
 
-1. start your redis server with the instructions from the installation page [here](https://redis.io/docs/getting-started/)
-1. cd to the `ml-api` directory
-1. run `pipenv install` to install the dependencies for the flask API
-1. run `pipenv run serve` to start the Flask API server
+## Docker Compose
+To manage all the technologies used for this application, we chose Docker for containerization. This has the benefit of portability across various systems and also has Docker Model Runner which makes hosting local LLMs easier.
+1. Download Docker Desktop (here)[https://www.docker.com/products/docker-desktop/]
+1. Run `docker compose build` to create the images defined in the `docker-compose.yml` file. This may take a few minutes. 
+    - **NOTE**: Whenever you add/remove dependencies from this project you MUST rebuild the images with the same command.
+1. To start the application, run `docker compose up -d` the `-d` flag is optional but it runs your containers in the background which frees up your terminal. 
+
+When the application's containers are spun up, you have access to the following:
+- The FastAPI server listens on `localhost:8000`.
+- The Next.js website is served at `localhost:3000`.
+- The Firebase emulation console is served at `localhost:4000`.
+
 
 ## Local LLM Setup
 The AI model(s) used for this application are implemented via the Docker Model Runner (DMR). This provides the following advantages:
@@ -150,33 +128,27 @@ That’s it, enjoy your newly hosted web application! An important note is that 
 
 ## Frontend
 
-- Next.JS
+- Next.js
 - React
+- TypeScript
 - Firebase
-  - Storage
+  - Storage (emulator only)
   - Firestore
-  - Functions
+  - Authentication
 - Sass
 - Cloudinary
 
-## Build Tools
-
-- Yarn
-- NPM
-
 ## Machine Learning Model
 
-- AssemblyAI
-- HeyGen LiveAvatar
-- Docker Model Runner
-- HeyGen LiveAvatar
-- Docker Model Runner
+- AssemblyAI (transcription)
+- Docker Model Runner (local LLM)
+- HeyGen LiveAvatar (mock interview avatar)
 
 # Members
 
-- Ming Lin (Fullstack)
-- Max Shi (Fullstack)
-- Hamzah Nizami (Machine Learning)
-- Suzy Shailesh (UX/UI Design)
-- Michael McCreesh (QA)
-- Aparajita Rana (Product Management)
+- Britt Li Kendle
+- Ivana Lu
+- Hans Iselborn
+- Mikkail Allen
+- Thomas Kain
+- Isabella Baratta
