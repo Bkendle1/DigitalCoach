@@ -6,6 +6,9 @@ Digital Coach is an AI-powered interview prep web application that allows job se
 
 # Architecture Overview
 The user workflow starts with account creation via Firebase Auth, which automatically creates a new document in the Firestore `users` collection. Next, the user configures their profile by uploading a profile picture to Cloudinary (or Firebase Storage Emulator) and choosing a username. Once authenticated, they can initiate a mock interview featuring real-time video interaction through a HeyGen LiveAvatar and live audio transcription powered by AssemblyAI. When the session concludes, a new record is saved to the user's `interviews` Firestore subcollection, and the session data is sent to the FastAPI backend. This backend triggers concurrent RQ workers to perform asynchronous LLM tasks, such as sentiment analysis and filler word counting. As individual workers complete their analysis, they dynamically update fields within the corresponding Firestore interview document, ultimately refreshing the Next.js frontend with a comprehensive interview performance review.
+
+Below is a mermaid diagram that shows the flow of the application's architecture:
+
 ```mermaid
 flowchart TD
     %% Styling & Theme %%
