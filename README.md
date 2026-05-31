@@ -231,6 +231,12 @@ At this point, your application should now be accessible on the internet by typi
 
 That’s it, enjoy your newly hosted web application! An important note is that once the frontend is on `https://` it can’t make requests to `http://` domains as that will trigger a Mixed Content security error and block that request.
 
+# CI/CD Setup
+Currently, we use Playwright for testing our app when pushing changes to a branch. But since our app has sensitive secrets in `.env` files, additional set up is required for the Playwright tests to work properly on GitHub Actions. Only ONE of the team members have to do the following since this affects the repo itself:
+    1. On the repo’s GitHub page, go to **Settings** → **Secrets and Variables** → **Actions** → **New repository secret**. And then add each varaible within `.env` files.
+    2. The Firebase Admin SDK JSON isn’t added to the remote repository for security reasons. Thus, for Playwright to run its tests in GitHub Actions, we need to recreate the JSON. To do so, add the JSON as a secret that’s encoded in base64 and then add it to the repo's GitHub Secrets with the name `FIREBASE_ADMIN_SDK_BASE64`. Then in the `playwright.yml` we read from that secret and pipe it to base64 to decode it back and then redirect the output into a brand new JSON file.
+        - To do the encoding on Windows, open Powershell and run the following `[Convert]::ToBase64String([IO.File]::ReadAllBytes("path\to\digital-coach-firebase-adminsdk.json")) | Set-Clipboard`. 
+
 # Technologies Used
 
 ## Frontend
