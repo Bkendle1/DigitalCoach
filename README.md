@@ -80,7 +80,7 @@ flowchart TD
 # Setup Instructions
 
 ## Frontend
-1. Create a Firebase project [here](https://console.firebase.google.com)
+1. Create a Firebase project [here](https://console.firebase.google.com).
 1. Within your Firebase project, create a Web app by going to **Project Overview** -> **Add app**.
 1. Within your Firebase project, enable Authentication and Firestore services. Within the Authentication service, go to **Sign-in method** -> **Add new provider** and enable "Email/Password" sign-in method.
 1. Get your Firebase configurations by going to **Settings** -> **General** and scrolling down to where you should see your web app selected.
@@ -89,7 +89,7 @@ flowchart TD
 1. `cd` into the `/digital-coach-app` directory and run `npm install` to install all npm packages needed by the frontend.
 
 ## Backend
-1. Install Python 3.10 [here](https://www.python.org/downloads/)
+1. Install Python 3.10 [here](https://www.python.org/downloads/).
 1. Create an account with AssemblyAI [here](https://www.assemblyai.com/dashboard/signup) and get an API key.
 1. Copy the `env.example` file in the `/mlapi` directory and rename it `.env`. Populate the `AAPI_KEY` key in the `.env` file with the API key from AssemblyAI.
 1. Create a HeyGen LiveAvatar account [here](https://app.liveavatar.com/signin) and get an API key.
