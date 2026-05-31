@@ -85,7 +85,7 @@ flowchart TD
 1. Within your Firebase project, enable Authentication and Firestore services. Within the Authentication service, go to **Sign-in method** -> **Add new provider** and enable "Email/Password" sign-in method.
 1. Get your Firebase configurations by going to **Settings** -> **General** and scrolling down to where you should see your web app selected.
 1. Duplicate the `.env.example` file in `/digital-coach-app` directory and rename it as `.env`. Populate the `.env` file with the Firebase configurations from the previous step. Note: You can leave the default value for the `NEXT_PUBLIC_FIREBASE_PROJECT_ID` key if you plan on using the Firebase emulators.
-1. Install Node LTS [here](https://nodejs.org/en/)
+1. Install Node LTS [here](https://nodejs.org/en/).
 1. `cd` into the `/digital-coach-app` directory and run `npm install` to install all npm packages needed by the frontend.
 
 ## Backend
