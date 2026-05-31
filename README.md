@@ -257,13 +257,13 @@ Currently, we use Playwright for testing our app when pushing changes to a branc
 - Pydantic
 - Firebase
     - Firestore
-- Redis' RQ (workers for ML tasks)
+- Redis' RQ (for ML tasks)
 - OpenAI (manage OpenAI-compliant ML models)
 
 ## Machine Learning Models
 
 - AssemblyAI (transcription)
-- Docker Model Runner (local LLM)
+- Docker Model Runner (local LLM hosting)
 - HeyGen LiveAvatar (mock interview avatar)
 
 # Members
