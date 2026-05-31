@@ -6,6 +6,76 @@ Digital Coach is an AI-powered interview prep web application that allows job se
 
 For more detailed documentation on the different parts of the app ([frontend](/digital-coach-app/README.md) and [mlapi](/mlapi/README.md)) refer to the README.md file in the root directory of the folders.
 
+# Architecture Overview
+The user workflow starts with account creation via Firebase Auth, which automatically creates a new document in the Firestore `users` collection. Next, the user configures their profile by uploading a profile picture to Cloudinary (or Firebase Storage Emulator) and choosing a username. Once authenticated, they can initiate a mock interview featuring real-time video interaction through a HeyGen LiveAvatar and live audio transcription powered by AssemblyAI. When the session concludes, a new record is saved to the user's `interviews` Firestore subcollection, and the session data is sent to the FastAPI backend. This backend triggers concurrent RQ workers to perform asynchronous LLM tasks, such as sentiment analysis and filler word counting. As individual workers complete their analysis, they dynamically update fields within the corresponding Firestore interview document, ultimately refreshing the Next.js frontend with a comprehensive interview performance review.
+```
+flowchart TD
+    %% Styling & Theme %%
+    classDef frontend fill:#0070f3,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef backend fill:#009688,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef database fill:#FFCA28,stroke:#fff,stroke-width:2px,color:#000;
+    classDef external fill:#7E57C2,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef sub_process fill:#cfd8dc,stroke:#37474f,stroke-width:1px,color:#000;
+
+    %% Components %%
+    subgraph Frontend_Layer ["Frontend (Next.js)"]
+        UI["User Interface / App Pages"]:::frontend
+    end
+
+    subgraph Auth_Storage ["Auth & Document Database"]
+        FB_Auth["Firebase Auth"]:::database
+        FS_Users["Firestore: /users collection"]:::database
+        FS_Interviews["Firestore: /users/{id}/interviews subcollection"]:::database
+    end
+
+    subgraph Assets_Streaming ["Assets & AI Services"]
+        Cloudinary["Cloudinary (Profile Pics)"]:::external
+        AssemblyAI["AssemblyAI (Live Transcription)"]:::external
+        HeyGen["HeyGen LiveAvatar"]:::external
+    end
+
+    subgraph Backend_Layer ["Backend (FastAPI & RQ)"]
+        API["FastAPI App Server"]:::backend
+        Redis["Redis Queue (RQ)"]:::database
+        RQ_Workers["Simultaneous RQ Workers"]:::sub_process
+        
+        subgraph Tasks ["LLM Analysis Tasks"]
+            T1["Sentiment Analysis"]:::backend
+            T2["Filler Word Count"]:::backend
+            T3["Other LLM Metrics..."]:::backend
+        end
+    end
+
+    %% Flow Steps %%
+    
+    %% Phase 1: Onboarding
+    UI -->|1. Sign Up / Login| FB_Auth
+    FB_Auth -->|2. Success Trigger| FS_Users
+    UI -->|3. Upload Profile Pic| Cloudinary
+    Cloudinary -->|4. Return Asset URL| UI
+    UI -->|5. Update Username & Pic URL| FS_Users
+
+    %% Phase 2: Active Session
+    UI -->|6. Start Simulation| HeyGen
+    UI <-->|7. Live WebRTC Streaming| HeyGen
+    UI -->|8. Live Audio Stream| AssemblyAI
+    AssemblyAI -->|9. Real-time Transcripts| UI
+
+    %% Phase 3: Post-Interview Submission
+    UI -->|10. Interview Completes: Save Metadata| FS_Interviews
+    UI -->|11. Send Interview Data| API
+    
+    %% Phase 4: Async Processing Queue
+    API -->|12. Push Jobs| Redis
+    Redis -->|13. Distribute Simultaneously| RQ_Workers
+    RQ_Workers --> T1 & T2 & T3
+    
+    %% Phase 5: Updates and Cycle Reset
+    T1 & T2 & T3 -->|14. Independent Field Updates when Done| FS_Interviews
+    FS_Interviews -.->|15. Real-time Sync / Fetch Results| UI
+    UI -.->|16. Cycle Repeats for Next Interview| UI
+```
+
 # Setup Instructions
 
 ## Frontend
