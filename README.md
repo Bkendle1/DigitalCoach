@@ -13,7 +13,7 @@ For more detailed documentation on the different parts of the app ([frontend](/d
 1. Within your Firebase project, create a Web app by going to **Project Overview** -> **Add app**.
 1. Within your Firebase project, enable Authentication and Firestore services. Within the Authentication service, go to **Sign-in method** -> **Add new provider** and enable "Email/Password" sign-in method.
 1. Get your Firebase configurations by going to **Settings** -> **General** and scrolling down to where you should see your web app selected.
-1. Duplicate the `.env.example` file in `/digital-coach-app` directory and rename it as `.env`. Populate the `.env` file with the Firebase configurations from the previous step.
+1. Duplicate the `.env.example` file in `/digital-coach-app` directory and rename it as `.env`. Populate the `.env` file with the Firebase configurations from the previous step. Note: You can leave the default value for the `NEXT_PUBLIC_FIREBASE_PROJECT_ID` key if you plan on using the Firebase emulators.
 1. Install Node LTS [here](https://nodejs.org/en/)
 1. `cd` into the `/digital-coach-app` directory and run `npm install` to install all npm packages needed by the frontend.
 
@@ -23,10 +23,20 @@ For more detailed documentation on the different parts of the app ([frontend](/d
 1. Copy the `env.example` file in the `/mlapi` directory and rename it `.env`. Populate the `AAPI_KEY` key in the `.env` file with the API key from AssemblyAI.
 1. Create a HeyGen LiveAvatar account [here](https://app.liveavatar.com/signin) and get an API key.
 1. Populate the `HEYGEN_LIVEAVATAR_API` key in the `.env` file with the API key from HeyGen LiveAvatar.
-1. Within the Firebase project, go to **Settings** -> **Service accounts** and scroll down and click "Generate new private key". This is your Firebase Admin SDK private key which you'll save in `/mlapi` directory. Rename the file to be *EXACTLY* "digital-coach-firebase-adminsdk.json". 
+1. Within the Firebase project, go to **Settings** -> **Service accounts** and scroll down and click "Generate new private key". This is your Firebase Admin SDK private key which you'll save in `/mlapi` directory. Rename the file to be EXACTLY: digital-coach-firebase-adminsdk.json. 
 1. Install uv for install Python packages [here](https://docs.astral.sh/uv/getting-started/installation/).
-1. Run `uv sync` to create a Python virtual environment with all the dependencies installed. 
+1. Within /mlapi directory, run `uv sync` to create a Python virtual environment with all the dependencies installed. 
 From now on, when you’re working on the backend, its recommended that you use the virtual environment by running `mlapi/.venv/Scripts/activate` in your project's terminal.
+
+## Cloudinary (Optional)
+Cloudinary is a online platform that allows you to store media files onto the cloud. We currently use this for storing users' profile pictures when not using the Firebase emulators because Firebase Storage doesn't come with Firebase's free tier. Thus, you may skip this step if you plan on using the Firebase emulators. 
+
+To set up Cloudinary:
+    - Create a Cloudinary account [here](https://cloudinary.com/users/register_free)
+    - Within your `/digital-coach-app/.env` file:
+        - Populate `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` with your cloud's name which should be located on your Cloudinary Dashboard.
+        - Populate `NEXT_PUBLIC_CLOUDINARY_API_KEY` with your Cloudinary API key which should be located in your Settings.
+    - Within your `/mlapi/.env/` file, populate `CLOUDINARY_API_SECRET` with your API secret which should be next to your API key.
 
 ## Firebase
 
