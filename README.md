@@ -95,7 +95,7 @@ flowchart TD
 1. Create a HeyGen LiveAvatar account [here](https://app.liveavatar.com/signin) and get an API key.
 1. Populate the `HEYGEN_LIVEAVATAR_API` key in the `.env` file with the API key from HeyGen LiveAvatar.
 1. Within the Firebase project, go to **Settings** -> **Service accounts** and scroll down and click "Generate new private key". This is your Firebase Admin SDK private key which you'll save in `/mlapi` directory. Rename the file to be EXACTLY: digital-coach-firebase-adminsdk.json. 
-1. Install uv for install Python packages [here](https://docs.astral.sh/uv/getting-started/installation/).
+1. Install uv to install Python packages [here](https://docs.astral.sh/uv/getting-started/installation/).
 1. Within /mlapi directory, run `uv sync` to create a Python virtual environment with all the dependencies installed. 
 From now on, when you’re working on the backend, its recommended that you use the virtual environment by running `mlapi/.venv/Scripts/activate` in your project's terminal.
 
