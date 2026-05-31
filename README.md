@@ -134,7 +134,7 @@ The project is currently set up to use local Firebase emulators to make developi
 
 ## Docker Compose
 To manage all the technologies used for this application, we chose Docker for containerization. This has the benefit of portability across various systems and also has Docker Model Runner which makes hosting local LLMs easier.
-1. Download Docker Desktop [here](https://www.docker.com/products/docker-desktop/)
+1. Download Docker Desktop [here](https://www.docker.com/products/docker-desktop/).
 1. Run `docker compose build` to create the images defined in the `docker-compose.yml` file. This may take a few minutes. 
     - **NOTE**: Whenever you add/remove dependencies from this project you MUST rebuild the images with the same command.
 1. To start the application, run `docker compose up -d` the `-d` flag is optional but it runs your containers in the background which frees up your terminal. 
