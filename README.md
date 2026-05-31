@@ -103,11 +103,11 @@ From now on, when you’re working on the backend, its recommended that you use 
 Cloudinary is a online platform that allows you to store media files onto the cloud. We currently use this for storing users' profile pictures when not using the Firebase emulators because Firebase Storage doesn't come with Firebase's free tier. Thus, you may skip this step if you plan on using the Firebase emulators. 
 
 To set up Cloudinary:
-    - Create a Cloudinary account [here](https://cloudinary.com/users/register_free)
-    - Within your `/digital-coach-app/.env` file:
-        - Populate `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` with your cloud's name which should be located on your Cloudinary Dashboard.
-        - Populate `NEXT_PUBLIC_CLOUDINARY_API_KEY` with your Cloudinary API key which should be located in your Settings.
-    - Within your `/mlapi/.env/` file, populate `CLOUDINARY_API_SECRET` with your API secret which should be next to your API key.
+- Create a Cloudinary account [here](https://cloudinary.com/users/register_free)
+- Within your `/digital-coach-app/.env` file:
+    - Populate `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` with your cloud's name which should be located on your Cloudinary Dashboard.
+    - Populate `NEXT_PUBLIC_CLOUDINARY_API_KEY` with your Cloudinary API key which should be located in your Settings.
+- Within your `/mlapi/.env/` file, populate `CLOUDINARY_API_SECRET` with your API secret which should be next to your API key.
 
 ## Firebase
 
