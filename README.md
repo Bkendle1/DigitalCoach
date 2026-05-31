@@ -6,6 +6,76 @@ Digital Coach is an AI-powered interview prep web application that allows job se
 
 For more detailed documentation on the different parts of the app ([frontend](/digital-coach-app/README.md) and [mlapi](/mlapi/README.md)) refer to the README.md file in the root directory of the folders.
 
+# Architecture Overview
+The user workflow starts with account creation via Firebase Auth, which automatically creates a new document in the Firestore `users` collection. Next, the user configures their profile by uploading a profile picture to Cloudinary (or Firebase Storage Emulator) and choosing a username. Once authenticated, they can initiate a mock interview featuring real-time video interaction through a HeyGen LiveAvatar and live audio transcription powered by AssemblyAI. When the session concludes, a new record is saved to the user's `interviews` Firestore subcollection, and the session data is sent to the FastAPI backend. This backend triggers concurrent RQ workers to perform asynchronous LLM tasks, such as sentiment analysis and filler word counting. As individual workers complete their analysis, they dynamically update fields within the corresponding Firestore interview document, ultimately refreshing the Next.js frontend with a comprehensive interview performance review.
+```mermaid
+flowchart TD
+    %% Styling & Theme %%
+    classDef frontend fill:#0070f3,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef backend fill:#009688,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef database fill:#FFCA28,stroke:#fff,stroke-width:2px,color:#000;
+    classDef external fill:#7E57C2,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef sub_process fill:#cfd8dc,stroke:#37474f,stroke-width:1px,color:#000;
+
+    %% Components %%
+    subgraph Frontend_Layer ["Frontend (Next.js)"]
+        UI["User Interface / App Pages"]:::frontend
+    end
+
+    subgraph Auth_Storage ["Auth & Document Database"]
+        FB_Auth["Firebase Auth"]:::database
+        FS_Users["Firestore: /users collection"]:::database
+        FS_Interviews["Firestore: /users/{id}/interviews subcollection"]:::database
+    end
+
+    subgraph Assets_Streaming ["Assets & AI Services"]
+        Cloudinary["Cloudinary (Profile Pics)"]:::external
+        AssemblyAI["AssemblyAI (Live Transcription)"]:::external
+        HeyGen["HeyGen LiveAvatar"]:::external
+    end
+
+    subgraph Backend_Layer ["Backend (FastAPI & RQ)"]
+        API["FastAPI App Server"]:::backend
+        Redis["Redis Queue (RQ)"]:::database
+        RQ_Workers["Simultaneous RQ Workers"]:::sub_process
+        
+        subgraph Tasks ["LLM Analysis Tasks"]
+            T1["Sentiment Analysis"]:::backend
+            T2["Filler Word Count"]:::backend
+            T3["Other LLM Metrics..."]:::backend
+        end
+    end
+
+    %% Flow Steps %%
+    
+    %% Phase 1: Onboarding
+    UI -->|1. Sign Up / Login| FB_Auth
+    FB_Auth -->|2. Success Trigger| FS_Users
+    UI -->|3. Upload Profile Pic| Cloudinary
+    Cloudinary -->|4. Return Asset URL| UI
+    UI -->|5. Update Username & Pic URL| FS_Users
+
+    %% Phase 2: Active Session
+    UI -->|6. Start Simulation| HeyGen
+    UI <-->|7. Live WebRTC Streaming| HeyGen
+    UI -->|8. Live Audio Stream| AssemblyAI
+    AssemblyAI -->|9. Real-time Transcripts| UI
+
+    %% Phase 3: Post-Interview Submission
+    UI -->|10. Interview Completes: Save Metadata| FS_Interviews
+    UI -->|11. Send Interview Data| API
+    
+    %% Phase 4: Async Processing Queue
+    API -->|12. Push Jobs| Redis
+    Redis -->|13. Distribute Simultaneously| RQ_Workers
+    RQ_Workers --> T1 & T2 & T3
+    
+    %% Phase 5: Updates and Cycle Reset
+    T1 & T2 & T3 -->|14. Independent Field Updates when Done| FS_Interviews
+    FS_Interviews -.->|15. Real-time Sync / Fetch Results| UI
+    UI -.->|16. Cycle Repeats for Next Interview| UI
+```
+
 # Setup Instructions
 
 ## Frontend
@@ -160,6 +230,12 @@ Notice that any requests with `/api/` will be routed to our FastAPI server, ther
 At this point, your application should now be accessible on the internet by typing `https://domain_name`. You can still view the RQ Dashboard and our other backend endpoints manually using `http://domain_name:8000/`. One final thing is to make sure your application knows where your backend is when it makes its requests using the Fetch API. To do so, in your `digital-coach-app/.env` file, change the value in `NEXT_PUBLIC_HOST` to be `https://domain_name`. Nginx will handle requests on ports 80 and 443 with the configuration that you set it up with and it knows when to route requests either to our FastAPI server or our Next.js frontend.
 
 That’s it, enjoy your newly hosted web application! An important note is that once the frontend is on `https://` it can’t make requests to `http://` domains as that will trigger a Mixed Content security error and block that request.
+
+# CI/CD Setup
+Currently, we use Playwright for testing our app when pushing changes to a branch. But since our app has sensitive secrets in `.env` files, additional set up is required for the Playwright tests to work properly on GitHub Actions. Only ONE of the team members have to do the following since this affects the repo itself:
+    1. On the repo’s GitHub page, go to **Settings** → **Secrets and Variables** → **Actions** → **New repository secret**. And then add each varaible within `.env` files.
+    2. The Firebase Admin SDK JSON isn’t added to the remote repository for security reasons. Thus, for Playwright to run its tests in GitHub Actions, we need to recreate the JSON. To do so, add the JSON as a secret that’s encoded in base64 and then add it to the repo's GitHub Secrets with the name `FIREBASE_ADMIN_SDK_BASE64`. Then in the `playwright.yml` we read from that secret and pipe it to base64 to decode it back and then redirect the output into a brand new JSON file.
+        - To do the encoding on Windows, open Powershell and run the following `[Convert]::ToBase64String([IO.File]::ReadAllBytes("path\to\digital-coach-firebase-adminsdk.json")) | Set-Clipboard`. 
 
 # Technologies Used
 
