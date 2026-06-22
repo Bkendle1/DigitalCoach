@@ -1,8 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
-from mlapi.schemas.create_answer import AudioSentimentResult
-from mlapi.main import app
+from schemas.create_answer import AudioSentimentResult
+from main import app
 
 
 client = TestClient(app)
@@ -68,7 +68,7 @@ def mock_rq_job():
 
 def test_create_audio_analysis_job(mock_rq_job):
     """Test creating an audio analysis job"""
-    with patch("mlapi.routes.audio_analysis.add_task_to_queue", return_value=mock_rq_job):
+    with patch("routes.audio_analysis.add_task_to_queue", return_value=mock_rq_job):
         response = client.post(
             "/api/audio_analysis/", json={"video_url": "https://example.com/test.mp4"}
         )
@@ -84,7 +84,7 @@ def test_get_audio_analysis_pending():
     mock_job.is_started = False
 
     with patch("rq.job.Job.fetch", return_value=mock_job):
-        with patch("mlapi.redisStore.myconnection.get_redis_con"):
+        with patch("redisStore.myconnection.get_redis_con"):
             response = client.get("/api/audio_analysis/test-job-id")
             assert response.status_code == 200
             result = response.json()
@@ -101,7 +101,7 @@ def test_get_audio_analysis_processing():
     mock_job.is_started = True
 
     with patch("rq.job.Job.fetch", return_value=mock_job):
-        with patch("mlapi.redisStore.myconnection.get_redis_con"):
+        with patch("redisStore.myconnection.get_redis_con"):
             response = client.get("/api/audio_analysis/test-job-id")
             assert response.status_code == 200
             result = response.json()
@@ -117,7 +117,7 @@ def test_get_audio_analysis_failed():
     mock_job.exc_info = "Test error"
 
     with patch("rq.job.Job.fetch", return_value=mock_job):
-        with patch("mlapi.redisStore.myconnection.get_redis_con"):
+        with patch("redisStore.myconnection.get_redis_con"):
             response = client.get("/api/audio_analysis/test-job-id")
             assert response.status_code == 200
             result = response.json()
@@ -143,7 +143,7 @@ def test_get_audio_analysis_completed(mock_audio_result):
     }
 
     with patch("rq.job.Job.fetch", return_value=mock_job):
-        with patch("mlapi.redisStore.myconnection.get_redis_con"):
+        with patch("redisStore.myconnection.get_redis_con"):
             # Patch the dict/model_dump method at the route level instead of on the object
             with patch(
                 "mlapi.routes.audio_analysis.AudioSentimentResult.model_dump",
@@ -174,7 +174,7 @@ def test_get_audio_analysis_result(mock_audio_result):
     }
 
     with patch("rq.job.Job.fetch", return_value=mock_job):
-        with patch("mlapi.redisStore.myconnection.get_redis_con"):
+        with patch("redisStore.myconnection.get_redis_con"):
             # Replace the actual return value with a simple dict to avoid serialization issues
             with patch.object(
                 AudioSentimentResult, "model_dump", return_value=result_dict
@@ -191,7 +191,7 @@ def test_get_audio_analysis_result_not_finished():
     mock_job.is_started = True
 
     with patch("rq.job.Job.fetch", return_value=mock_job):
-        with patch("mlapi.redisStore.myconnection.get_redis_con"):
+        with patch("redisStore.myconnection.get_redis_con"):
             # Force exception to be raised with the expected message
             with patch(
                 "mlapi.routes.audio_analysis.HTTPException",
@@ -211,7 +211,7 @@ def test_get_audio_analysis_result_failed():
     mock_job.exc_info = "Test error"
 
     with patch("rq.job.Job.fetch", return_value=mock_job):
-        with patch("mlapi.redisStore.myconnection.get_redis_con"):
+        with patch("redisStore.myconnection.get_redis_con"):
             # Force exception to be raised with the expected message
             with patch(
                 "mlapi.routes.audio_analysis.HTTPException",
