@@ -1,12 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-<<<<<<< HEAD
 from services.firebase_setup import initialize_firebase # initialize Firebase connection when backend starts
 from rq_dashboard_fast import RedisQueueDashboard
 from routes import (
-=======
-from mlapi.routes import (
->>>>>>> eaa629c (saving changes in order to merge)
     jobs,
     create_answer,
     star_feedback,
